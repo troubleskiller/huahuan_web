@@ -14,7 +14,7 @@ class ApplicationContext {
     return _instance!;
   }
 
-  Map beanMap = Map();
+  Map beanMap = {};
   late YamlMap yamlMap;
   late Map variableMap;
   late String privacy;
@@ -41,8 +41,6 @@ class ApplicationContext {
       var profilesStr = await rootBundle
           .loadString('config/application-$profilesActive.yaml');
       variableMap = await loadYaml(profilesStr);
-      print('profile-$profilesActive');
-      print(variableMap);
     }
 
     TroProperties troProperties = TroProperties();
@@ -56,14 +54,11 @@ class ApplicationContext {
   loadApplication() async {
     var yamlStr = await rootBundle.loadString('config/application.yaml');
     yamlMap = loadYaml(yamlStr);
-    print("application:");
-    print(yamlMap.nodes);
     await parseCryProperties();
   }
 
   loadPrivacy() async {
     privacy = await rootBundle.loadString('PRIVACY');
-    print(privacy);
   }
 
   addBean(String key, object) {

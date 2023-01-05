@@ -1,3 +1,5 @@
+import 'package:huahuan_web/model/admin/Customer_model.dart';
+import 'package:huahuan_web/model/admin/role_model.dart';
 import 'package:huahuan_web/model/admin/treeVo.dart';
 
 class UserInfo extends TreeData {
@@ -12,6 +14,8 @@ class UserInfo extends TreeData {
     this.customerId,
     this.isEnable,
     this.created,
+    this.customerModel,
+    this.roles,
   }) : super(id, creatorId);
 
   factory UserInfo.fromJson(dynamic json) {
@@ -26,11 +30,14 @@ class UserInfo extends TreeData {
       customerId: json['customerId'],
       isEnable: json['isEnable'],
       created: json['created'],
+      customerModel: json['customer'] != null
+          ? CustomerModel.fromJson(json['customer'])
+          : null,
+      roles: json['roles'] != null
+          ? List.from(json['roles']).map((e) => Role.fromJson(e)).toList()
+          : null,
     );
   }
-
-//是否被选择
-  bool? selected;
 
   int? id;
   String? name;
@@ -42,6 +49,12 @@ class UserInfo extends TreeData {
   int? customerId;
   int? isEnable;
   String? created;
+
+  ///用户权限
+  List<Role>? roles;
+
+  //用户所属公司
+  CustomerModel? customerModel;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -55,6 +68,13 @@ class UserInfo extends TreeData {
     map['customerId'] = customerId;
     map['isEnable'] = isEnable;
     map['created'] = created;
+    map['customerModel'] = customerModel;
+    if (roles != null) {
+      map['roles'] = roles?.map((v) => v.toJson()).toList();
+    }
+    if (customerModel != null) {
+      map['customer'] = customerModel?.toJson();
+    }
     return map;
   }
 }

@@ -1,7 +1,6 @@
 import 'package:get_storage/get_storage.dart';
 import 'package:huahuan_web/constant/constant.dart';
 import 'package:huahuan_web/model/admin/menu_model.dart';
-import 'package:huahuan_web/model/admin/subSystem_model.dart';
 import 'package:huahuan_web/model/admin/tabPage_model.dart';
 
 import '../model/admin/user_info.dart';
@@ -63,19 +62,6 @@ class StoreUtil {
     return data == null
         ? []
         : List.from(data).map((e) => MenuModel.fromJson(e)).toList();
-  }
-
-  //
-  static List<Subsystem> getSubsystemList() {
-    var data = GetStorage().read(Constant.KEY_SUBSYSTEM_LIST);
-    return data == null
-        ? []
-        : List.from(data).map((e) => Subsystem.fromMap(e)).toList();
-  }
-
-  static Subsystem? getCurrentSubsystem() {
-    var data = GetStorage().read(Constant.KEY_CURRENT_SUBSYSTEM);
-    return data == null ? null : Subsystem.fromMap(data);
   }
 
   static List<TabPage> getDefaultTabs() {

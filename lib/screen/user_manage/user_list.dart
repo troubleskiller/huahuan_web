@@ -4,6 +4,7 @@ import 'package:huahuan_web/model/admin/user_info.dart';
 import 'package:huahuan_web/model/api/page_model.dart';
 import 'package:huahuan_web/model/api/request_api.dart';
 import 'package:huahuan_web/model/api/response_api.dart';
+import 'package:huahuan_web/screen/user_manage/user_edit.dart';
 import 'package:huahuan_web/util/tro_util.dart';
 import 'package:huahuan_web/widget/button/icon_button.dart';
 import 'package:huahuan_web/widget/dialog/tro_dialog.dart';
@@ -39,18 +40,18 @@ class UserListState extends State {
 
   //todo: 编辑页面
   _edit({UserInfo? userInfo}) {
-    // showDialog(
-    //   context: context,
-    //   builder: (BuildContext context) => Dialog(
-    //     child: UserEdit(
-    //       userInfo: userInfo,
-    //     ),
-    //   ),
-    // ).then((v) {
-    //   if (v != null) {
-    //     _query();
-    //   }
-    // });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => Dialog(
+        child: UserEdit(
+          userInfo: userInfo,
+        ),
+      ),
+    ).then((v) {
+      if (v != null) {
+        _query();
+      }
+    });
   }
 
   @override
@@ -210,19 +211,13 @@ class MyDS extends DataTableSource {
         DataCell(Text(userInfo.name ?? '--')),
 
         //用户账号
-        DataCell(Text(userInfo.id.toString() ?? '--')),
+        DataCell(Text(userInfo.id.toString())),
         //用户电话
         DataCell(Text(userInfo.tel ?? '--')),
         //用户所属客户
-        DataCell(Text(
-            //     DictUtil.getDictItemName(
-            //   userInfo.deptId,
-            //   ConstantDict.CODE_DEPT,
-            //   defaultValue: '--',
-            // )!
-            userInfo.customerId.toString() ?? '--')),
-        //用户权限等级
-        DataCell(Text(userInfo.creatorId.toString() ?? '--')),
+        DataCell(Text(userInfo.customerModel?.name.toString() ?? '--')),
+        //用户权限等级 todo:add 权限
+        DataCell(Text(userInfo.creatorId.toString())),
         DataCell(ButtonBar(
           alignment: MainAxisAlignment.start,
           children: <Widget>[
