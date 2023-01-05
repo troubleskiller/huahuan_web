@@ -104,31 +104,31 @@ class UserListState extends State {
             columns: <DataColumn>[
               DataColumn(
                 label: Text('用户名'),
-                onSort: (int columnIndex, bool ascending) =>
-                    myDS.sort('name', ascending),
+                // onSort: (int columnIndex, bool ascending) =>
+                //     myDS.sort('name', ascending),
               ),
               DataColumn(
                 label: Text('用户账号'),
-                onSort: (int columnIndex, bool ascending) =>
-                    myDS.sort('id', ascending),
+                // onSort: (int columnIndex, bool ascending) =>
+                //     myDS.sort('id', ascending),
               ),
               DataColumn(
                 label: Text('用户电话'),
-                onSort: (int columnIndex, bool ascending) =>
-                    myDS.sort('tel', ascending),
+                // onSort: (int columnIndex, bool ascending) =>
+                //     myDS.sort('tel', ascending),
               ),
               DataColumn(
                 label: Text('用户所属客户'),
-                onSort: (int columnIndex, bool ascending) =>
-                    myDS.sort('customerId', ascending),
+                // onSort: (int columnIndex, bool ascending) =>
+                //     myDS.sort('customerId', ascending),
               ),
               DataColumn(
                 label: Text('用户权限等级'),
-                onSort: (int columnIndex, bool ascending) =>
-                    myDS.sort('create_time', ascending),
+                // onSort: (int columnIndex, bool ascending) =>
+                //     myDS.sort('create_time', ascending),
               ),
               DataColumn(
-                label: Text('operating'),
+                label: Text('操作'),
               ),
             ],
             source: myDS,
@@ -224,7 +224,7 @@ class MyDS extends DataTableSource {
         //用户权限等级
         DataCell(Text(userInfo.creatorId.toString() ?? '--')),
         DataCell(ButtonBar(
-          // alignment: MainAxisAlignment.start,
+          alignment: MainAxisAlignment.start,
           children: <Widget>[
             IconButton(
               icon: Icon(Icons.edit),
