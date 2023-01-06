@@ -226,6 +226,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.6.4"
+  latlng:
+    dependency: transitive
+    description:
+      name: latlng
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.2.0"
   lints:
     dependency: transitive
     description:
@@ -240,6 +247,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.3"
+  map:
+    dependency: "direct main"
+    description:
+      name: map
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.3.5+1"
   matcher:
     dependency: transitive
     description:

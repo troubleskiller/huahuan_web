@@ -89,7 +89,7 @@ class UserListState extends State {
         padding: const EdgeInsets.all(10.0),
         children: <Widget>[
           PaginatedDataTable(
-            header: Text('userList'),
+            header: Text('用户管理'),
             rowsPerPage: rowsPerPage,
             onRowsPerPageChanged: (int? value) {
               setState(() {
@@ -123,11 +123,11 @@ class UserListState extends State {
                 // onSort: (int columnIndex, bool ascending) =>
                 //     myDS.sort('customerId', ascending),
               ),
-              DataColumn(
-                label: Text('用户权限等级'),
-                // onSort: (int columnIndex, bool ascending) =>
-                //     myDS.sort('create_time', ascending),
-              ),
+              // DataColumn(
+              //   label: Text('用户权限等级'),
+              //   // onSort: (int columnIndex, bool ascending) =>
+              //   //     myDS.sort('create_time', ascending),
+              // ),
               DataColumn(
                 label: Text('操作'),
               ),
@@ -161,6 +161,7 @@ class MyDS extends DataTableSource {
   late BuildContext context;
   late List<UserInfo> dataList;
   RequestBodyApi requestBodyApi = RequestBodyApi(data: UserInfo(id: 1));
+
   // int selectedCount = 0;
   PageModel page = PageModel();
 
@@ -211,13 +212,13 @@ class MyDS extends DataTableSource {
         DataCell(Text(userInfo.name ?? '--')),
 
         //用户账号
-        DataCell(Text(userInfo.id.toString())),
+        DataCell(Text(userInfo.loginName ?? '--')),
         //用户电话
         DataCell(Text(userInfo.tel ?? '--')),
         //用户所属客户
         DataCell(Text(userInfo.customerModel?.name.toString() ?? '--')),
-        //用户权限等级 todo:add 权限
-        DataCell(Text(userInfo.creatorId.toString())),
+        // //用户权限等级 todo:add 权限
+        // DataCell(Text(userInfo.creatorId.toString())),
         DataCell(ButtonBar(
           alignment: MainAxisAlignment.start,
           children: <Widget>[
@@ -255,6 +256,6 @@ class MyDS extends DataTableSource {
   @override
   int get selectedRowCount => 0;
 
-  // @override
-  // int get selectedRowCount => selectedCount;
+// @override
+// int get selectedRowCount => selectedCount;
 }

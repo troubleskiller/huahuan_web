@@ -8,9 +8,9 @@ enum TabMenuOption {
   closeAllToTheLeft
 }
 
-enum Role {
-  admin,
-  manager,
-  watcher,
-  customer,
-}
+// enum Role {
+//   admin,
+//   manager,
+//   watcher,
+//   customer,
+// }

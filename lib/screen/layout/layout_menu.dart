@@ -135,14 +135,14 @@ class _LayoutMenuState extends State<LayoutMenu> {
           key: Key(treeVO.data!.id!.toString()),
           initiallyExpanded: hasChildrenOpened || expandAll,
           leading: expandMenu! ? Icon(iconData) : null,
-          onExpansionChanged: (a) {
-            if (a) {
-              if (currentOpenedTabPageId != treeVO.data!.id &&
-                  widget.onClick != null) {
-                widget.onClick!(treeVO.data);
-              }
-            }
-          },
+          // onExpansionChanged: (a) {
+          //   if (a) {
+          //     // if (currentOpenedTabPageId != treeVO.data!.id &&
+          //     //     widget.onClick != null) {
+          //     //   widget.onClick!(treeVO.data);
+          //     // }
+          //   }
+          // },
           title: title,
           childrenPadding: EdgeInsets.only(left: expandMenu! ? 30 : 0),
           children: _getMenuListTile(treeVO.children, currentOpenedTabPageId),

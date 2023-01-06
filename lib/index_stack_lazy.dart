@@ -1,9 +1,3 @@
-/// @author: cairuoyu
-/// @homepage: http://cairuoyu.com
-/// @github: https://github.com/cairuoyu/flutter_admin
-/// @date: 2021/8/18
-/// @version: 1.0
-/// @description:
 import 'package:flutter/material.dart';
 
 class IndexedStackLazy extends StatefulWidget {

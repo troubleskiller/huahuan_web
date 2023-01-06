@@ -1,4 +1,6 @@
+import 'package:bruno/bruno.dart';
 import 'package:flutter/material.dart';
+import 'package:huahuan_web/model/admin/role_model.dart';
 import 'package:huahuan_web/model/admin/user_info.dart';
 import 'package:huahuan_web/util/tro_util.dart';
 import 'package:huahuan_web/widget/button/icon_button.dart';
@@ -18,6 +20,7 @@ class UserEdit extends StatefulWidget {
 class UserEditState extends State<UserEdit> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   UserInfo? _userInfo = UserInfo();
+  List<Role> roles = [];
 
   @override
   void initState() {
@@ -25,6 +28,11 @@ class UserEditState extends State<UserEdit> {
     if (widget.userInfo != null) {
       _userInfo = widget.userInfo;
     }
+  }
+
+  ///得到所有可用的角色权限
+  void getAllRolesAccessible() async {
+    // roles = await RoleApi.selectAllRole(widget.userInfo.id)
   }
 
   @override
@@ -44,10 +52,10 @@ class UserEditState extends State<UserEdit> {
             },
           ),
           TroInput(
-            value: _userInfo!.id.toString(),
+            value: _userInfo!.loginName,
             label: '账号',
             onSaved: (v) {
-              _userInfo!.id = int.parse(v);
+              _userInfo!.loginName = v;
             },
           ),
           TroInput(
@@ -66,16 +74,44 @@ class UserEditState extends State<UserEdit> {
           ),
           // //todo：所属客户
           // TroSelect(
-          //   label: S.of(context).personGender,
-          //   value: _userInfo!.gender,
-          //   dataList: DictUtil.getDictSelectOptionList(ConstantDict.CODE_GENDER),
+          //   label: '所属客户',
+          //   value: _userInfo!.customerModel!.name,
+          //   dataList:
+          //       DictUtil.getDictSelectOptionList(ConstantDict.CODE_GENDER),
           //   onSaved: (v) {
           //     _userInfo!.gender = v;
           //   },
           // ),
           // //todo：所拥有权限
+          Container(
+            height: 130,
+            child: ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: 5,
+              itemBuilder: (BuildContext context, int index) {
+                return BrnCheckbox(
+                  radioIndex: index,
+                  disable: index == 2,
+                  childOnRight: false,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 5),
+                    child: Text(
+                      "选项$index",
+                    ),
+                  ),
+                  onValueChangedAtIndex: (index, value) {
+                    if (value) {
+                      BrnToast.show("第$index项被选中", context);
+                    } else {
+                      BrnToast.show("第$index项取消选中", context);
+                    }
+                  },
+                );
+              },
+            ),
+          )
           // TroSelect(
-          //   label: S.of(context).personDepartment,
+          //   label: '用户角色',
           //   value: _userInfo!.deptId,
           //   dataList: DictUtil.getDictSelectOptionList(ConstantDict.CODE_DEPT),
           //   onSaved: (v) {
@@ -114,7 +150,7 @@ class UserEditState extends State<UserEdit> {
     );
     var result = Scaffold(
       appBar: AppBar(
-        title: Text(widget.userInfo == null ? 'add' : 'modify'),
+        title: Text(widget.userInfo == null ? '添加新用户' : '修改用户信息'),
       ),
       body: SingleChildScrollView(
         child: Column(
