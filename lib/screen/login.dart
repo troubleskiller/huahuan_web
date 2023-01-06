@@ -238,6 +238,33 @@ class _LoginState extends State<Login> {
         "icon": "person",
         "parentId": 3,
         "isDel": 1
+      },      {
+        "id": 5,
+        "name": "角色管理",
+        "thisName": "Role Manage",
+        "type": 1,
+        "url": "/role",
+        "icon": "role",
+        "parentId": 3,
+        "isDel": 1
+      },      {
+        "id": 6,
+        "name": "项目管理",
+        "thisName": "Event Manage",
+        "type": 1,
+        "url": "",
+        "icon": "menu",
+        "parentId": 3,
+        "isDel": 1
+      },      {
+        "id": 7,
+        "name": "项目管理",
+        "thisName": "Event Manage",
+        "type": 1,
+        "url": "/event",
+        "icon": "dashboard",
+        "parentId": 3,
+        "isDel": 1
       }
     ]);
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => Layout()));

@@ -7,6 +7,7 @@
 import 'package:flutter/material.dart';
 import 'package:huahuan_web/model/admin/tabPage_model.dart';
 import 'package:huahuan_web/screen/layout/layout.dart';
+import 'package:huahuan_web/screen/user_manage/role_list.dart';
 import 'package:huahuan_web/screen/user_manage/user_list.dart';
 
 class Routes {
@@ -15,6 +16,7 @@ class Routes {
   static Map<String, Widget> layoutPagesMap = {
     '/': Layout(),
     '/user': UserList(),
+    '/role': RoleList(),
     // '/addRole': AddRole(),
     // '/dashboard': Dashboard(),
     // '/sAreaAgeGenderMain': SAreaAgeGenderMain(),
