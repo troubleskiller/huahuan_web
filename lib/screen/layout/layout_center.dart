@@ -51,11 +51,13 @@ class LayoutCenterState extends State<LayoutCenter>
     TabBar tabBar = TabBar(
       controller: tabController,
       isScrollable: true,
-      indicator: const UnderlineTabIndicator(),
+      ///tabBar 自定义边框
+      indicator: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.only(topLeft: Radius.circular(12),topRight:  Radius.circular(12),),),
       tabs: openedTabPageList.map<Tab>((TabPage? tabPage) {
         var tabContent = Row(
           children: <Widget>[
-            Text(tabPage!.name ?? ''),
+            Text(tabPage!.name ?? '',style: TextStyle(color: Colors.black),),
+            SizedBox(width: 20,),
             if (!defaultTabs.contains(tabPage))
               Material(
                 type: MaterialType.transparency,
@@ -68,7 +70,7 @@ class LayoutCenterState extends State<LayoutCenter>
                       Utils.closeTab(tabPage);
                       setState(() {});
                     },
-                    icon: const Icon(Icons.close),
+                    icon: const Icon(Icons.close,color: Colors.black,),
                   ),
                 ),
               )
@@ -157,7 +159,7 @@ class LayoutCenterState extends State<LayoutCenter>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
-            color: context.theme.primaryColor,
+            color: Colors.transparent,
             child: Row(
               children: <Widget>[
                 Expanded(child: tabBar),
@@ -168,7 +170,7 @@ class LayoutCenterState extends State<LayoutCenter>
                   icon: Icon(
                       isMaximize ? Icons.close_fullscreen : Icons.open_in_full),
                   iconSize: 20,
-                  color: Colors.white,
+                  color: Colors.black
                 )
               ],
             ),

@@ -116,7 +116,7 @@ class _LayoutMenuState extends State<LayoutMenu> {
     var result = Utils.isMenuDisplayTypeDrawer(context)
         ? Drawer(child: menuStack)
         : SizedBox(
-            width: expandMenu! ? 200 : 60,
+            width: expandMenu! ? 180 : 60,
             child: menuStack,
           );
     return result;
@@ -127,7 +127,16 @@ class _LayoutMenuState extends State<LayoutMenu> {
     List<Widget> listTileList = data.map<Widget>((TreeVO<MenuModel> treeVO) {
       IconData iconData = Utils.toIconData(treeVO.data!.icon);
       String name = treeVO.data!.name ?? '';
-      Text title = Text(expandMenu! ? name : '');
+      Text title = Text(
+        expandMenu! ? name : '',
+        ///如果选中当前的标题，则该标题字段颜色变为蓝色
+        style: TextStyle(
+            color: currentOpenedTabPageId == treeVO.data!.id
+                ? Colors.blue
+                : null,
+            fontSize: 14,
+        ),
+      );
       if (treeVO.children.length > 0) {
         bool hasChildrenOpened = treeVO.children
             .any((element) => currentOpenedTabPageId == element.data!.id);
@@ -144,14 +153,14 @@ class _LayoutMenuState extends State<LayoutMenu> {
           //   }
           // },
           title: title,
-          childrenPadding: EdgeInsets.only(left: expandMenu! ? 30 : 0),
+          childrenPadding: EdgeInsets.only(left: expandMenu! ? 15 : 0),
           children: _getMenuListTile(treeVO.children, currentOpenedTabPageId),
         );
       } else {
         return ListTile(
-          tileColor: currentOpenedTabPageId == treeVO.data!.id
-              ? Colors.blue.shade100
-              : null,
+          // tileColor: currentOpenedTabPageId == treeVO.data!.id
+          //     ? Colors.blue.shade100
+          //     : null,
           leading: Icon(iconData, color: context.theme.primaryColor),
           title: title,
           onTap: () {

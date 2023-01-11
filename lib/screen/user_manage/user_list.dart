@@ -138,12 +138,13 @@ class UserListState extends State {
       ),
     );
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          SizedBox(height: 10),
-          // form,
+          // SizedBox(height: 10),
+          // // form,
           buttonBar,
           Expanded(
             child: table,
