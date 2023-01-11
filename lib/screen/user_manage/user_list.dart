@@ -9,6 +9,7 @@ import 'package:huahuan_web/screen/user_manage/user_edit.dart';
 import 'package:huahuan_web/util/tro_util.dart';
 import 'package:huahuan_web/widget/button/icon_button.dart';
 import 'package:huahuan_web/widget/dialog/tro_dialog.dart';
+import 'package:huahuan_web/widget/input/TroSelect.dart';
 
 class UserList extends StatefulWidget {
   @override
@@ -231,6 +232,13 @@ class MyDS extends DataTableSource {
         // DataCell(Text(userInfo.creator ?? '--')),
         //用户所属客户
         DataCell(Text(userInfo.customerModel?.name.toString() ?? '--')),
+        ///todo 下拉选择器实现当前页面即可修改所属客户
+        ///「客户：单个管理员可创建多个客户
+        ///管理员配置「目前自己名下的客户」给下属用户
+        ///datalist：管理员拥有的所有客户
+        ///value：配置给当前用户名下的客户
+        ///」
+        // DataCell(TroSelect(dataList: [],)),
         //创建时间
         ///创建时间：先读取毫秒级的时间，再通过拆字符串得到精确到秒的时间。
         DataCell(Text(
