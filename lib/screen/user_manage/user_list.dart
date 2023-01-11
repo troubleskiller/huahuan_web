@@ -1,3 +1,4 @@
+import 'package:bruno/bruno.dart';
 import 'package:flutter/material.dart';
 import 'package:huahuan_web/api/user_api.dart';
 import 'package:huahuan_web/model/admin/user_info.dart';
@@ -123,6 +124,16 @@ class UserListState extends State {
                 // onSort: (int columnIndex, bool ascending) =>
                 //     myDS.sort('customerId', ascending),
               ),
+              DataColumn(
+                label: Text('用户创建时间'),
+                // onSort: (int columnIndex, bool ascending) =>
+                //     myDS.sort('customerId', ascending),
+              ),
+              DataColumn(
+                label: Text('用户是否启用'),
+                // onSort: (int columnIndex, bool ascending) =>
+                //     myDS.sort('customerId', ascending),
+              ),
               // DataColumn(
               //   label: Text('用户权限等级'),
               //   // onSort: (int columnIndex, bool ascending) =>
@@ -216,10 +227,23 @@ class MyDS extends DataTableSource {
         DataCell(Text(userInfo.loginName ?? '--')),
         //用户电话
         DataCell(Text(userInfo.tel ?? '--')),
+        //todo： 创建者
+        // DataCell(Text(userInfo.creator ?? '--')),
         //用户所属客户
         DataCell(Text(userInfo.customerModel?.name.toString() ?? '--')),
+        //创建时间
+        ///创建时间：先读取毫秒级的时间，再通过拆字符串得到精确到秒的时间。
+        DataCell(Text(
+            DateTime.parse(userInfo.created ?? '').toString().split('.')[0])),
         // //用户权限等级 todo:add 权限
-        // DataCell(Text(userInfo.creatorId.toString())),
+        //是否启用，状态
+        DataCell(BrnSwitchButton(
+            value: userInfo.isEnable==1,
+            onChanged: (value) {
+              userInfo.isEnable= value?1:0;
+              notifyListeners();
+              //todo: 设置更改用户启用状态api
+            })),
         DataCell(ButtonBar(
           alignment: MainAxisAlignment.start,
           children: <Widget>[
