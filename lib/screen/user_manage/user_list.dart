@@ -9,9 +9,12 @@ import 'package:huahuan_web/screen/user_manage/user_edit.dart';
 import 'package:huahuan_web/util/tro_util.dart';
 import 'package:huahuan_web/widget/button/icon_button.dart';
 import 'package:huahuan_web/widget/dialog/tro_dialog.dart';
-import 'package:huahuan_web/widget/input/TroSelect.dart';
 
+///当前页面只有admin 和 manger 可以看到
+///展示的是admin 或 manager 创建的自用户
 class UserList extends StatefulWidget {
+  const UserList({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return UserListState();
@@ -22,19 +25,11 @@ class UserListState extends State {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   ScrollController scrollController = ScrollController();
   int rowsPerPage = 10;
-  MyDS myDS = new MyDS();
+  MyDS myDS = MyDS();
   UserInfo formData = UserInfo();
 
-  // _reset() {
-  //   // this.formData = UserInfo();
-  //   // formKey.currentState!.reset();
-  //   // myDS.page.data = formData.toJson();
-  //   myDS.loadData();
-  // }
 
   _query() {
-    // formKey.currentState?.save();
-    // myDS.page.data = formData.toJson();
     myDS.page.currentPage = 0;
     myDS.page.pageSize = rowsPerPage;
     myDS.loadData();
@@ -64,7 +59,7 @@ class UserListState extends State {
     myDS.page.pageSize = rowsPerPage;
     myDS.page.currentPage = 0;
     myDS.addListener(() {
-      if (mounted) this.setState(() {});
+      if (mounted) setState(() {});
     });
     WidgetsBinding.instance.addPostFrameCallback((c) {
       _query();
@@ -75,8 +70,6 @@ class UserListState extends State {
   Widget build(BuildContext context) {
     var buttonBar = ButtonBar(
       children: <Widget>[
-        // ButtonWithIcon(
-        //     label: 'query', iconData: Icons.search, onPressed: () => _query()),
         ButtonWithIcon(
             label: 'reset', iconData: Icons.refresh, onPressed: () => _query()),
         ButtonWithIcon(
@@ -91,7 +84,7 @@ class UserListState extends State {
         padding: const EdgeInsets.all(10.0),
         children: <Widget>[
           PaginatedDataTable(
-            header: Text('用户管理'),
+            header: const Text('用户管理'),
             rowsPerPage: rowsPerPage,
             onRowsPerPageChanged: (int? value) {
               setState(() {
@@ -102,44 +95,30 @@ class UserListState extends State {
                 }
               });
             },
-            availableRowsPerPage: <int>[2, 5, 10, 20],
+            availableRowsPerPage: const <int>[2, 5, 10, 20],
             onPageChanged: myDS.onPageChanged,
-            columns: <DataColumn>[
+            columns: const <DataColumn>[
               DataColumn(
                 label: Text('用户名'),
-                // onSort: (int columnIndex, bool ascending) =>
-                //     myDS.sort('name', ascending),
               ),
               DataColumn(
                 label: Text('用户账号'),
-                // onSort: (int columnIndex, bool ascending) =>
-                //     myDS.sort('id', ascending),
               ),
               DataColumn(
                 label: Text('用户电话'),
-                // onSort: (int columnIndex, bool ascending) =>
-                //     myDS.sort('tel', ascending),
               ),
               DataColumn(
                 label: Text('用户所属客户'),
-                // onSort: (int columnIndex, bool ascending) =>
-                //     myDS.sort('customerId', ascending),
               ),
               DataColumn(
                 label: Text('用户创建时间'),
-                // onSort: (int columnIndex, bool ascending) =>
-                //     myDS.sort('customerId', ascending),
               ),
               DataColumn(
                 label: Text('用户是否启用'),
-                // onSort: (int columnIndex, bool ascending) =>
-                //     myDS.sort('customerId', ascending),
               ),
-              // DataColumn(
-              //   label: Text('用户权限等级'),
-              //   // onSort: (int columnIndex, bool ascending) =>
-              //   //     myDS.sort('create_time', ascending),
-              // ),
+              DataColumn(
+                label: Text('用户权限'),
+              ),
               DataColumn(
                 label: Text('操作'),
               ),
@@ -155,8 +134,7 @@ class UserListState extends State {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          // SizedBox(height: 10),
-          // // form,
+          const SizedBox(height: 20),
           buttonBar,
           Expanded(
             child: table,
@@ -175,7 +153,6 @@ class MyDS extends DataTableSource {
   late List<UserInfo> dataList;
   RequestBodyApi requestBodyApi = RequestBodyApi(data: UserInfo(id: 1));
 
-  // int selectedCount = 0;
   PageModel page = PageModel();
 
   sort(column, ascending) {
@@ -190,10 +167,8 @@ class MyDS extends DataTableSource {
 
     dataList = page.data!.map<UserInfo>((v) {
       UserInfo userInfo = UserInfo.fromJson(v);
-      // userInfo.selected = false;
       return userInfo;
     }).toList();
-    // selectedCount = 0;
     notifyListeners();
   }
 
@@ -214,12 +189,6 @@ class MyDS extends DataTableSource {
 
     return DataRow.byIndex(
       index: index,
-      // selected: userInfo.selected!,
-      // onSelectChanged: (bool? value) {
-      //   userInfo.selected = value;
-      //   selectedCount += value! ? 1 : -1;
-      //   notifyListeners();
-      // },
       cells: <DataCell>[
         //用户名
         DataCell(Text(userInfo.name ?? '--')),
@@ -232,18 +201,10 @@ class MyDS extends DataTableSource {
         // DataCell(Text(userInfo.creator ?? '--')),
         //用户所属客户
         DataCell(Text(userInfo.customerModel?.name.toString() ?? '--')),
-        ///todo 下拉选择器实现当前页面即可修改所属客户
-        ///「客户：单个管理员可创建多个客户
-        ///管理员配置「目前自己名下的客户」给下属用户
-        ///datalist：管理员拥有的所有客户
-        ///value：配置给当前用户名下的客户
-        ///」
-        // DataCell(TroSelect(dataList: [],)),
         //创建时间
         ///创建时间：先读取毫秒级的时间，再通过拆字符串得到精确到秒的时间。
         DataCell(Text(
             DateTime.parse(userInfo.created ?? '').toString().split('.')[0])),
-        // //用户权限等级 todo:add 权限
         //是否启用，状态
         DataCell(BrnSwitchButton(
             value: userInfo.isEnable==1,
@@ -252,17 +213,24 @@ class MyDS extends DataTableSource {
               notifyListeners();
               //todo: 设置更改用户启用状态api
             })),
+        // //用户权限等级 todo:add 权限
+        DataCell(IconButton(
+          icon: const Icon(Icons.person),
+          onPressed: () {
+            state._edit(userInfo: userInfo);
+          },
+        ),),
         DataCell(ButtonBar(
           alignment: MainAxisAlignment.start,
           children: <Widget>[
             IconButton(
-              icon: Icon(Icons.edit),
+              icon: const Icon(Icons.edit),
               onPressed: () {
                 state._edit(userInfo: userInfo);
               },
             ),
             IconButton(
-              icon: Icon(Icons.delete),
+              icon: const Icon(Icons.delete),
               onPressed: () {
                 troConfirm(context, 'confirmDelete', (context) async {
                   var result =

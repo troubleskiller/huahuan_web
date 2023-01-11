@@ -254,7 +254,7 @@ class _LoginState extends State<Login> {
         "type": 1,
         "url": "",
         "icon": "menu",
-        "parentId": 3,
+        "parentId": null,
         "isDel": 1
       },      {
         "id": 7,
@@ -263,7 +263,7 @@ class _LoginState extends State<Login> {
         "type": 1,
         "url": "/event",
         "icon": "dashboard",
-        "parentId": 3,
+        "parentId": 6,
         "isDel": 1
       }
     ]);
