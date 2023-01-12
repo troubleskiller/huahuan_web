@@ -5,6 +5,7 @@ import 'package:huahuan_web/model/admin/user_info.dart';
 import 'package:huahuan_web/model/api/page_model.dart';
 import 'package:huahuan_web/model/api/request_api.dart';
 import 'package:huahuan_web/model/api/response_api.dart';
+import 'package:huahuan_web/screen/user_manage/role_edit_in_user_list.dart';
 import 'package:huahuan_web/screen/user_manage/user_edit.dart';
 import 'package:huahuan_web/util/tro_util.dart';
 import 'package:huahuan_web/widget/button/icon_button.dart';
@@ -24,15 +25,30 @@ class UserList extends StatefulWidget {
 class UserListState extends State {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   ScrollController scrollController = ScrollController();
+  ScrollController aController = ScrollController();
   int rowsPerPage = 10;
   MyDS myDS = MyDS();
   UserInfo formData = UserInfo();
-
 
   _query() {
     myDS.page.currentPage = 0;
     myDS.page.pageSize = rowsPerPage;
     myDS.loadData();
+  }
+
+  _roles({UserInfo? userInfo}){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => Dialog(
+        child: RoleEditInUserScreen(
+          userInfo: userInfo,
+        ),
+      ),
+    ).then((v) {
+      if (v != null) {
+        _query();
+      }
+    });
   }
 
   //todo: 编辑页面
@@ -117,7 +133,7 @@ class UserListState extends State {
                 label: Text('用户是否启用'),
               ),
               DataColumn(
-                label: Text('用户权限'),
+                label: Text('用户角色'),
               ),
               DataColumn(
                 label: Text('操作'),
@@ -137,7 +153,15 @@ class UserListState extends State {
           const SizedBox(height: 20),
           buttonBar,
           Expanded(
-            child: table,
+            child: Scrollbar(
+                controller: aController,
+                child: SingleChildScrollView(
+                  controller: aController,
+                  scrollDirection: Axis.horizontal,
+                  child: Container(height: 800,
+                      width: 1280,
+                      child: table),
+                )),
           ),
         ],
       ),
@@ -207,19 +231,21 @@ class MyDS extends DataTableSource {
             DateTime.parse(userInfo.created ?? '').toString().split('.')[0])),
         //是否启用，状态
         DataCell(BrnSwitchButton(
-            value: userInfo.isEnable==1,
+            value: userInfo.isEnable == 1,
             onChanged: (value) {
-              userInfo.isEnable= value?1:0;
+              userInfo.isEnable = value ? 1 : 0;
               notifyListeners();
               //todo: 设置更改用户启用状态api
             })),
         // //用户权限等级 todo:add 权限
-        DataCell(IconButton(
-          icon: const Icon(Icons.person),
-          onPressed: () {
-            state._edit(userInfo: userInfo);
-          },
-        ),),
+        DataCell(
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              state._roles(userInfo: userInfo);
+            },
+          ),
+        ),
         DataCell(ButtonBar(
           alignment: MainAxisAlignment.start,
           children: <Widget>[

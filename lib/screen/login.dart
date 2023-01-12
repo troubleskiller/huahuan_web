@@ -238,7 +238,16 @@ class _LoginState extends State<Login> {
         "icon": "person",
         "parentId": 3,
         "isDel": 1
-      },      {
+      },    {
+        "id": 9,
+        "name": "项目授权",
+        "thisName": "User Manage",
+        "type": 1,
+        "url": "/event",
+        "icon": "dashboard",
+        "parentId": 3,
+        "isDel": 1
+      },   {
         "id": 5,
         "name": "角色管理",
         "thisName": "Role Manage",
@@ -258,6 +267,15 @@ class _LoginState extends State<Login> {
         "isDel": 1
       },      {
         "id": 7,
+        "name": "项目管理",
+        "thisName": "Event Manage",
+        "type": 1,
+        "url": "/event",
+        "icon": "dashboard",
+        "parentId": 6,
+        "isDel": 1
+      },      {
+        "id": 8,
         "name": "项目管理",
         "thisName": "Event Manage",
         "type": 1,
