@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:huahuan_web/constant/enum.dart';
 import 'package:huahuan_web/screen/layout/layout_controller.dart';
+import 'package:huahuan_web/widget/common/LangSwitch.dart';
 import 'package:huahuan_web/widget/select_widget.dart';
 import 'package:provider/provider.dart';
 
@@ -34,6 +36,12 @@ class LayoutSetting extends StatelessWidget {
           ListTile(
             title: Text('menuDisplay'),
             trailing: menuDisplayType,
+          ),
+          Divider(thickness: 1),
+
+          ListTile(
+            title: Text(tr('language')),
+            trailing: LangSwitch(),
           ),
           Divider(thickness: 1),
           ListTile(

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:huahuan_web/api/project_api.dart';
 import 'package:huahuan_web/constant/common_constant.dart';
@@ -62,7 +63,7 @@ class _ProjectManagerState extends State<ProjectManager> {
                     child: Column(
                       children: [
                         Text(
-                          '- 项目名称',
+                          tr('Project Name'),
                           style: TextStyle(fontSize: 30, color: Colors.black),
                         ),
                         Expanded(
