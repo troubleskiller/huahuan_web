@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:huahuan_web/api/user_api.dart';
+import 'package:huahuan_web/constant/common_constant.dart';
 import 'package:huahuan_web/model/admin/menu_model.dart';
 import 'package:huahuan_web/model/admin/user_info.dart';
 import 'package:huahuan_web/screen/layout/layout_center.dart';
@@ -54,6 +55,7 @@ class _LayoutState extends State<Layout> {
     Scaffold subWidget = controller.isMaximize
         ? Scaffold(body: body)
         : Scaffold(
+            backgroundColor: CommonConstant.backgroundColor,
             key: scaffoldStateKey,
             drawer: layoutMenu,
             endDrawer: LayoutSetting(),

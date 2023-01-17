@@ -159,7 +159,7 @@ class UserListState extends State {
                   controller: aController,
                   scrollDirection: Axis.horizontal,
                   child: Container(height: 800,
-                      width: 1280,
+                      width: 1400,
                       child: table),
                 )),
           ),

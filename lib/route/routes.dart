@@ -6,6 +6,7 @@
 /// @description:
 import 'package:flutter/material.dart';
 import 'package:huahuan_web/model/admin/tabPage_model.dart';
+import 'package:huahuan_web/screen/event_manage/event_manager.dart';
 import 'package:huahuan_web/screen/layout/layout.dart';
 import 'package:huahuan_web/screen/user_manage/role_list.dart';
 import 'package:huahuan_web/screen/user_manage/user_list.dart';
@@ -17,6 +18,7 @@ class Routes {
     '/': Layout(),
     '/user': UserList(),
     '/role': RoleList(),
+    '/event':ProjectManager(),
     // '/addRole': AddRole(),
     // '/dashboard': Dashboard(),
     // '/sAreaAgeGenderMain': SAreaAgeGenderMain(),

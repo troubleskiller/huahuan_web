@@ -59,6 +59,8 @@ class HttpUtil {
             "User-Agent": "Mozilla 5.10", // 这里的设置是必须的必
             "USERNAME": "SANDBOX",
             "token": StoreUtil.read(Constant.KEY_TOKEN),
+            ///永久token
+            // "token": 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxIiwiZXhwIjoxNjczOTI0NzMwfQ.RwxVoeV_RRNN2dqrCklkBTlExulwbkP49MOCvu6yExk',
           });
     } else {
       options = BaseOptions(
