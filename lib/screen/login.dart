@@ -249,7 +249,7 @@ class _LoginState extends State<Login> {
         "isDel": 1
       },   {
         "id": 5,
-        "name": "角色管理",
+        "name": "角色授权",
         "thisName": "Role Manage",
         "type": 1,
         "url": "/role",

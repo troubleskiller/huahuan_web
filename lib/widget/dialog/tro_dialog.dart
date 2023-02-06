@@ -52,7 +52,7 @@ void troConfirm(BuildContext context, String content, onConfirm) {
   );
 }
 
-cryDialog({
+troDialog({
   required BuildContext context,
   required String title,
   Widget? body,

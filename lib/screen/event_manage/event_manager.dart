@@ -131,14 +131,15 @@ class _ProjectManagerState extends State<ProjectManager> {
                                 children: [
                                   Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                        MainAxisAlignment.start,
                                     children: [
                                       TroInput(
                                         label: '项目名称',
                                         value: curProject.name ?? '--',
                                         onChange: (value) {},
                                       ),
-                                      Text(curProject.created ?? '--')
+                                      SizedBox(width: 100,),
+                                      Text(curProject.created??'--')
                                     ],
                                   ),
                                   TroInput(
@@ -182,13 +183,13 @@ class _ProjectManagerState extends State<ProjectManager> {
                           children: [
                             Expanded(
                               child: Container(
-                                color: Colors.blue,
+                                child: Text('这里是工况信息和灾害信息'),
                               ),
                               flex: 3,
                             ),
                             Expanded(
                               child: Container(
-                                color: Colors.red,
+                                child: Text('这里是项目下属相关测项选择'),
                               ),
                               flex: 1,
                             )

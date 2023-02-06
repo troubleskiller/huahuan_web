@@ -58,9 +58,9 @@ class HttpUtil {
             "Content-Type": "application/json",
             "User-Agent": "Mozilla 5.10", // 这里的设置是必须的必
             "USERNAME": "SANDBOX",
-            "token": StoreUtil.read(Constant.KEY_TOKEN),
+            // "token": StoreUtil.read(Constant.KEY_TOKEN),
             ///永久token
-            // "token": 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxIiwiZXhwIjoxNjczOTI0NzMwfQ.RwxVoeV_RRNN2dqrCklkBTlExulwbkP49MOCvu6yExk',
+            "token": 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxIiwiZXhwIjoxNjc2Nzg2MTAyfQ.lqr_GlfOHGS6_9YMDBkOK8gcKZRZi51bticdq9CJBO0',
           });
     } else {
       options = BaseOptions(

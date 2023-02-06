@@ -36,7 +36,7 @@ class UserListState extends State {
     myDS.loadData();
   }
 
-  _roles({UserInfo? userInfo}){
+  _roles({UserInfo? userInfo}) {
     showDialog(
       context: context,
       builder: (BuildContext context) => Dialog(
@@ -158,9 +158,7 @@ class UserListState extends State {
                 child: SingleChildScrollView(
                   controller: aController,
                   scrollDirection: Axis.horizontal,
-                  child: Container(height: 800,
-                      width: 1400,
-                      child: table),
+                  child: Container(height: 800, width: 1920, child: table),
                 )),
           ),
         ],

@@ -2,7 +2,8 @@ mall:
   profiles:
     active: test
   api:
-    baseUrl: http://192.168.31.213:14500
+    baseUrl: http://huahuan.f3322.net:14500
+    ##baseUrl: http://192.168.31.213:14500
     connectTimeout: 10000
     receiveTimeout: 3000
   logger:

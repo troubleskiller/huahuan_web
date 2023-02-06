@@ -5,7 +5,7 @@ class RenameDialog extends AlertDialog {
       : super(
           key: key,
           content: contentWidget,
-          contentPadding: EdgeInsets.zero,
+          contentPadding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
               side: const BorderSide(color: Colors.black, width: 3)),
