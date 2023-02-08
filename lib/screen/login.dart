@@ -243,7 +243,7 @@ class _LoginState extends State<Login> {
         "name": "项目授权",
         "thisName": "User Manage",
         "type": 1,
-        "url": "/event",
+        "url": "/eventAuth",
         "icon": "dashboard",
         "parentId": 3,
         "isDel": 1

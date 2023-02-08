@@ -5,7 +5,6 @@ import 'package:huahuan_web/constant/common_constant.dart';
 import 'package:huahuan_web/model/admin/project_model.dart';
 import 'package:huahuan_web/model/admin/user_info.dart';
 import 'package:huahuan_web/model/api/response_api.dart';
-import 'package:huahuan_web/screen/event_manage/event_list.dart';
 import 'package:flutter_2d_amap/flutter_2d_amap.dart';
 import 'package:huahuan_web/util/store_util.dart';
 import 'package:huahuan_web/widget/input/TroInput.dart';

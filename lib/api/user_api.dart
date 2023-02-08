@@ -22,9 +22,15 @@ class UserApi {
     return responseBodyApi;
   }
 
-  static Future<ResponseBodyApi> deleteUserById(data) async {
+  static Future<ResponseBodyApi> deleteUser(data) async {
     ResponseBodyApi responseBodyApi =
         await HttpUtil.post('/user/deleteUser', data: data, requestToken: true);
+    return responseBodyApi;
+  }
+
+  static Future<ResponseBodyApi> recoveryUser(data) async {
+    ResponseBodyApi responseBodyApi =
+        await HttpUtil.post('/user/recovery', data: data, requestToken: true);
     return responseBodyApi;
   }
 }

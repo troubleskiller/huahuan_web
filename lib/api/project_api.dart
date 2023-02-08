@@ -22,4 +22,18 @@ class ProjectApi {
     await HttpUtil.post('/project/delete', data: data, requestToken: true);
     return responseBodyApi;
   }
+
+  static Future<ResponseBodyApi> cancelProject(data) async {
+    ResponseBodyApi responseBodyApi =
+    await HttpUtil.post('/project/cancel', data: data, requestToken: true);
+    return responseBodyApi;
+  }
+
+
+  static Future<ResponseBodyApi> empowerProject(data) async {
+    ResponseBodyApi responseBodyApi =
+    await HttpUtil.post('/project/empower', data: data, requestToken: true);
+    return responseBodyApi;
+  }
+
 }

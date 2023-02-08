@@ -258,7 +258,7 @@ class MyDS extends DataTableSource {
               onPressed: () {
                 troConfirm(context, 'confirmDelete', (context) async {
                   var result =
-                      await UserApi.deleteUserById('{"id": ${userInfo.id}}');
+                      await UserApi.deleteUser('{"id": ${userInfo.id}}');
                   if (result.code == 200) {
                     loadData();
                     TroUtils.message('success');

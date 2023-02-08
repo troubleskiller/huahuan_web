@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:huahuan_web/screen/event_manage/event_manager.dart';
 import 'package:huahuan_web/screen/layout/layout_controller.dart';
 import 'package:huahuan_web/screen/login.dart';
 import 'package:provider/provider.dart';
