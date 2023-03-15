@@ -16,6 +16,7 @@ class UserInfo extends TreeData {
     this.created,
     this.customerModel,
     this.role,
+    this.roleId,
   }) : super(id, creatorId);
 
   factory UserInfo.fromJson(dynamic json) {
@@ -30,6 +31,7 @@ class UserInfo extends TreeData {
       customerId: json['customerId'],
       isEnable: json['isEnable'],
       created: json['created'],
+      roleId: json['roleId'],
       customerModel: json['customer'] != null
           ? CustomerModel.fromJson(json['customer'])
           : null,
@@ -48,6 +50,7 @@ class UserInfo extends TreeData {
   int? creatorId;
   int? customerId;
   int? isEnable;
+  int? roleId;
   String? created;
 
   ///用户权限
@@ -68,6 +71,7 @@ class UserInfo extends TreeData {
     map['customerId'] = customerId;
     map['isEnable'] = isEnable;
     map['created'] = created;
+    map['roleId'] = roleId;
     map['customerModel'] = customerModel;
     if (role != null) {
       map['roles'] = role?.toJson();

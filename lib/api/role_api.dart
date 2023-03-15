@@ -2,9 +2,9 @@ import 'package:huahuan_web/model/api/response_api.dart';
 import 'package:huahuan_web/util/api/http_util.dart';
 
 class RoleApi {
-  static Future<ResponseBodyApi> selectAllRole(data) async {
+  static Future<ResponseBodyApi> selectAllRole() async {
     ResponseBodyApi responseBodyApi =
-        await HttpUtil.post('/role/selectAll', data: data, requestToken: true);
+        await HttpUtil.post('/role/selectAll', requestToken: true);
     return responseBodyApi;
   }
 
@@ -29,6 +29,11 @@ class RoleApi {
   static Future<ResponseBodyApi> addRole(data) async {
     ResponseBodyApi responseBodyApi =
     await HttpUtil.post('/role/addRole', data: data, requestToken: true);
+    return responseBodyApi;
+
+  }  static Future<ResponseBodyApi> selectOne(data) async {
+    ResponseBodyApi responseBodyApi =
+    await HttpUtil.post('/role/selectOne', data: data, requestToken: true);
     return responseBodyApi;
   }
 

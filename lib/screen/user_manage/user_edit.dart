@@ -1,7 +1,13 @@
 import 'package:bruno/bruno.dart';
 import 'package:flutter/material.dart';
+import 'package:huahuan_web/api/customer_api.dart';
+import 'package:huahuan_web/api/role_api.dart';
+import 'package:huahuan_web/api/user_api.dart';
+import 'package:huahuan_web/model/admin/Customer_model.dart';
 import 'package:huahuan_web/model/admin/role_model.dart';
 import 'package:huahuan_web/model/admin/user_info.dart';
+import 'package:huahuan_web/model/api/response_api.dart';
+import 'package:huahuan_web/util/store_util.dart';
 import 'package:huahuan_web/util/tro_util.dart';
 import 'package:huahuan_web/widget/button/icon_button.dart';
 import 'package:huahuan_web/widget/input/TroInput.dart';
@@ -20,7 +26,10 @@ class UserEdit extends StatefulWidget {
 class UserEditState extends State<UserEdit> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   UserInfo? _userInfo = UserInfo();
-  List<Role> roles = [];
+  List<Role> curRoles = [];
+  List<CustomerModel> curCustomers = [];
+  BrnPortraitRadioGroupOption? selectedValue;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -28,11 +37,52 @@ class UserEditState extends State<UserEdit> {
     if (widget.userInfo != null) {
       _userInfo = widget.userInfo;
     }
+    init();
+
+  }
+
+  void init()async{
+    await getAllRolesAccessible();
+    await getAllCustomersAccessible();
+    _userInfo?.creatorId = StoreUtil.getCurrentUserInfo().id;
+    _userInfo?.isEnable =1;
+    _userInfo?.isDel =0;
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   ///得到所有可用的角色权限
-  void getAllRolesAccessible() async {
-    // roles = await RoleApi.selectAllRole(widget.userInfo.id)
+  Future getAllRolesAccessible() async {
+    ResponseBodyApi responseBodyApi = await RoleApi.selectAllRole();
+    if (responseBodyApi.code == 200) {
+      curRoles = List.from(responseBodyApi.data)
+          .map((e) => Role.fromJson(e))
+          .toList()
+        ..removeWhere((element) => element.id == 1);
+      if (StoreUtil.getCurrentUserInfo().roleId != 1) {
+        curRoles.removeWhere((element) =>
+            element.id == StoreUtil.getCurrentUserInfo().role!.id!);
+        // if (widget.userInfo != null) {
+        //   ResponseBodyApi responseBodyApi = await RoleApi.selectOne('{"id":${_userInfo?.id}}');
+        //   selectedValue
+        // }
+        //
+        selectedValue?.title = _userInfo?.role?.name??'';
+      }
+    }
+  }
+
+  ///得到所有所属的公司
+  Future getAllCustomersAccessible() async {
+    ResponseBodyApi responseBodyApi =
+        await CustomerApi.list('{"id":${StoreUtil.getCurrentUserInfo().id}}');
+    if (responseBodyApi.code == 200) {
+      curCustomers = List.from(responseBodyApi.data)
+          .map((e) => CustomerModel.fromJson(e))
+          .toList();
+    }
   }
 
   @override
@@ -72,52 +122,53 @@ class UserEditState extends State<UserEdit> {
               _userInfo!.tel = v;
             },
           ),
+          // TroInput(
+          //   value: _userInfo!.customerModel?.name??'',
+          //   label: '所属公司',
+          //   onSaved: (v) {
+          //     _userInfo!.customerModel?.name = v;
+          //   },
+          // ),
+          BrnExpandableGroup(
+            title: '所属客户',
+            children: [
+              BrnPortraitRadioGroup.withSimpleList(
+                options: curCustomers.map((e) => e.name ?? '').toList(),
+                onChanged: (BrnPortraitRadioGroupOption? old,
+                    BrnPortraitRadioGroupOption? newList) {
+                  BrnToast.show(newList?.title??'', context);
+                  selectedValue = newList;
+                  print(newList?.title??'');
+                  _userInfo?.customerId= curCustomers.singleWhere((element) => element.name==newList?.title).id;
+                },
+              ),
+            ],
+            onExpansionChanged: (a) async {
+              await getAllCustomersAccessible();
+            },
+          ),
           // //todo：所属客户
-          // TroSelect(
-          //   label: '所属客户',
-          //   value: _userInfo!.customerModel!.name,
-          //   dataList:
-          //       DictUtil.getDictSelectOptionList(ConstantDict.CODE_GENDER),
-          //   onSaved: (v) {
-          //     _userInfo!.gender = v;
-          //   },
-          // ),
+          BrnExpandableGroup(
+            title: '所拥有权限',
+            children: [
+              BrnPortraitRadioGroup.withSimpleList(
+                selectedOption:selectedValue?.title??'',
+                options: curRoles.map((e) => e.name ?? '').toList(),
+                onChanged: (BrnPortraitRadioGroupOption? old,
+                    BrnPortraitRadioGroupOption? newList) {
+                  BrnToast.show(newList?.title??'', context);
+                  selectedValue = newList;
+                  print(newList?.title??'');
+                  _userInfo?.roleId= curRoles.singleWhere((element) => element.name==newList?.title).id;
+                },
+              ),
+            ],
+            // onExpansionChanged: (a) async {
+            //   await
+            // },
+
+          ),
           // //todo：所拥有权限
-          Container(
-            height: 130,
-            child: ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: 5,
-              itemBuilder: (BuildContext context, int index) {
-                return BrnCheckbox(
-                  radioIndex: index,
-                  disable: index == 2,
-                  childOnRight: false,
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 5),
-                    child: Text(
-                      "选项$index",
-                    ),
-                  ),
-                  onValueChangedAtIndex: (index, value) {
-                    if (value) {
-                      BrnToast.show("第$index项被选中", context);
-                    } else {
-                      BrnToast.show("第$index项取消选中", context);
-                    }
-                  },
-                );
-              },
-            ),
-          )
-          // TroSelect(
-          //   label: '用户角色',
-          //   value: _userInfo!.deptId,
-          //   dataList: DictUtil.getDictSelectOptionList(ConstantDict.CODE_DEPT),
-          //   onSaved: (v) {
-          //     _userInfo!.deptId = v;
-          //   },
-          // ),
         ],
       ),
     );
@@ -133,6 +184,8 @@ class UserEditState extends State<UserEdit> {
               return;
             }
             form.save();
+            print(_userInfo!.toJson());
+            UserApi.addUser(_userInfo!.toJson());
             // UserApi.saveOrUpdate(_userInfo!.toMap()).then((res) {
             //   Navigator.pop(context, true);
             //   TroUtils.message('saved');
@@ -162,7 +215,7 @@ class UserEditState extends State<UserEdit> {
       ),
       bottomNavigationBar: buttonBar,
     );
-    return SizedBox(
+    return isLoading?Container():SizedBox(
       width: 650,
       height: isDisplayDesktop(context) ? 350 : 500,
       child: result,

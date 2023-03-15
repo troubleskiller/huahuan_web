@@ -7,7 +7,7 @@
 import 'package:flutter/material.dart';
 import 'package:huahuan_web/model/admin/tabPage_model.dart';
 import 'package:huahuan_web/screen/event/event_auth/event_auth.dart';
-import 'package:huahuan_web/screen/event/event_manage/event_manager.dart';
+import 'package:huahuan_web/screen/event/event_manage/project_manager.dart';
 import 'package:huahuan_web/screen/layout/layout.dart';
 import 'package:huahuan_web/screen/role_manager/role_manager.dart';
 import 'package:huahuan_web/screen/user_manage/role_list.dart';

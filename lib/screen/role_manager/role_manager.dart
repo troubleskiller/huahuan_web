@@ -34,7 +34,7 @@ class _RoleManagerState extends State<RoleManager> {
   ///获取所有角色信息
   void selectAllRoles() async {
     ///只属于admin的页面
-    ResponseBodyApi responseBodyApi = await RoleApi.selectAllRole('{"id":"1"}');
+    ResponseBodyApi responseBodyApi = await RoleApi.selectAllRole();
     print(responseBodyApi.data);
     if (responseBodyApi.code == 200) {
       setState(() {

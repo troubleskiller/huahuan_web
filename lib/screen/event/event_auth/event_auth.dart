@@ -134,7 +134,7 @@ class _ProjectAuthState extends State<ProjectAuth> {
   void init() async {
     await selectAllUsers();
     await getAllProjects();
-    getCurProjects(1);
+    getCurProjects(curUser!.id!);
   }
 
   @override
@@ -158,7 +158,7 @@ class _ProjectAuthState extends State<ProjectAuth> {
                               onTap: () {
                                 setState(() {
                                   curUser = e;
-                                  getCurProjects(e.id ?? 1);
+                                  getCurProjects(e.id!);
                                 });
                               },
                               curUser: curUser!),

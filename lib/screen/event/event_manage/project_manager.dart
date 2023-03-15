@@ -1,19 +1,17 @@
-import 'dart:html';
-
 import 'package:card_swiper/card_swiper.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:huahuan_web/api/project_api.dart';
 import 'package:huahuan_web/constant/common_constant.dart';
-import 'package:huahuan_web/model/admin/Project_state_model.dart';
 import 'package:huahuan_web/model/admin/project_model.dart';
+import 'package:huahuan_web/model/admin/project_state_model.dart';
 import 'package:huahuan_web/model/admin/user_info.dart';
 import 'package:huahuan_web/model/api/response_api.dart';
 import 'package:huahuan_web/screen/event/event_manage/event_list.dart';
 import 'package:huahuan_web/screen/event/event_manage/project_edit.dart';
+import 'package:huahuan_web/screen/event/event_manage/state_edit.dart';
 import 'package:huahuan_web/util/store_util.dart';
 import 'package:huahuan_web/widget/button/icon_button.dart';
-import 'package:huahuan_web/widget/input/TroInput.dart';
 
 class ProjectManager extends StatefulWidget {
   const ProjectManager({Key? key}) : super(key: key);
@@ -84,7 +82,8 @@ class _ProjectManagerState extends State<ProjectManager> {
       });
     }
   }
-  void _editProject(ProjectModel curProject) {
+
+  void _editProject({ProjectModel? curProject, int? parentProjectId}) {
     showDialog(
       context: context,
       builder: (BuildContext context) => Dialog(
@@ -97,7 +96,20 @@ class _ProjectManagerState extends State<ProjectManager> {
         // _query();
       }
     });
-
+  }
+  void _editState({ProjectStateModel? curState}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => Dialog(
+        child: StateEdit(
+          curState: curState,
+        ),
+      ),
+    ).then((v) {
+      if (v != null) {
+        // _query();
+      }
+    });
   }
 
   @override
@@ -121,6 +133,7 @@ class _ProjectManagerState extends State<ProjectManager> {
                             style: TextStyle(fontSize: 30, color: Colors.black),
                           ),
                           Expanded(
+                            flex: 12,
                             child: Container(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 20, vertical: 20),
@@ -168,7 +181,15 @@ class _ProjectManagerState extends State<ProjectManager> {
                                     .toList(),
                               ),
                             ),
-                          )
+                          ),
+                          Expanded(
+                              flex: 1,
+                              child: ButtonWithIcon(
+                                iconData: Icons.add,
+                                onPressed: () {
+                                  _editProject();
+                                },
+                              ))
                         ],
                       )),
                   Expanded(
@@ -220,7 +241,8 @@ class _ProjectManagerState extends State<ProjectManager> {
                                             ButtonWithIcon(
                                               iconData: Icons.edit,
                                               onPressed: () {
-                                                _editProject(curProject);
+                                                _editProject(
+                                                    curProject: curProject);
                                               },
                                             ),
                                           ],
@@ -296,14 +318,16 @@ class _ProjectManagerState extends State<ProjectManager> {
                                     ///工况轮播图
                                     Spacer(),
                                     Expanded(
-                                        flex: 20,
+                                        flex: 8,
                                         child: Swiper(
                                           autoplay: false,
                                           itemBuilder: (BuildContext context,
                                               int index) {
                                             return StateOrDiseaseWidget(
                                               projectStateModel:
-                                                  curAllStates[index],
+                                                  curAllStates[index], edit: (){
+                                                _editState(curState:curAllStates[index]);
+                                            },
                                             );
                                           },
                                           itemCount: curAllStates.length,
@@ -317,20 +341,26 @@ class _ProjectManagerState extends State<ProjectManager> {
                                     ),
                                     Spacer(),
                                     Expanded(
-                                        flex: 20,
+                                        flex: 8,
                                         child: Swiper(
                                           autoplay: false,
                                           itemBuilder: (BuildContext context,
                                               int index) {
                                             return StateOrDiseaseWidget(
                                               projectStateModel:
-                                                  curAllDiseases[index],
+                                                  curAllDiseases[index], edit: (){
+                                                _editState(curState:curAllDiseases[index]);
+                                            },
                                             );
                                           },
                                           itemCount: curAllDiseases.length,
                                           pagination: SwiperPagination(),
                                           control: SwiperControl(),
                                         )),
+                                    Spacer(),
+                                    Expanded(flex:1,child: ButtonWithIcon(iconData: Icons.add,onPressed: (){
+                                      _editState();
+                                    },)),
                                     Spacer(),
                                   ],
                                 ),
@@ -343,10 +373,26 @@ class _ProjectManagerState extends State<ProjectManager> {
                                 flex: 1,
                               ),
                               Expanded(
-                                child: ListView(
-                                  children: eventsUnProject,
-                                ),
                                 flex: 6,
+                                child: Flex(
+                                  direction: Axis.vertical,
+                                  children: [
+                                    Expanded(
+                                      flex: 12,
+                                      child: ListView(
+                                        children: eventsUnProject,
+                                      ),
+                                    ),
+                                    Expanded(
+                                        flex: 1,
+                                        child: ButtonWithIcon(
+                                          iconData: Icons.add,
+                                          onPressed: () {
+                                            _editProject(parentProjectId:curProject.id);
+                                          },
+                                        ))
+                                  ],
+                                ),
                               )
                             ],
                           ),
@@ -360,13 +406,13 @@ class _ProjectManagerState extends State<ProjectManager> {
           );
   }
 
-
 }
 
 class StateOrDiseaseWidget extends StatelessWidget {
   final ProjectStateModel projectStateModel;
+  final Function edit;
 
-  const StateOrDiseaseWidget({Key? key, required this.projectStateModel})
+  const StateOrDiseaseWidget({Key? key, required this.projectStateModel, required this.edit})
       : super(key: key);
 
   @override
@@ -394,12 +440,20 @@ class StateOrDiseaseWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             direction: Axis.vertical,
             children: [
-              Expanded(
-                flex: 8,
-                child: Text(
-                  projectStateModel.name ?? '--',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
+              Flex(
+                direction: Axis.horizontal,
+                children: [
+                  Expanded(
+                    flex: 8,
+                    child: Text(
+                      projectStateModel.name ?? '--',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  ButtonWithIcon(iconData: Icons.edit,onPressed: (){
+                    edit();
+                  },)
+                ],
               ),
               Spacer(
                 flex: 1,

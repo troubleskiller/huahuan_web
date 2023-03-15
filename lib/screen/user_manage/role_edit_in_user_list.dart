@@ -28,7 +28,7 @@ class RoleEditInUserScreenState extends State<RoleEditInUserScreen> {
 
   ///得到所有可用的角色权限
   void getAllRolesAccessible() async {
-    ResponseBodyApi  responseBodyApi= await RoleApi.selectAllRole(widget.userInfo?.id);
+    ResponseBodyApi  responseBodyApi= await RoleApi.selectAllRole();
     roles = List.from(responseBodyApi.data).map((e) => Role.fromJson(e)).toList();
   }
 
