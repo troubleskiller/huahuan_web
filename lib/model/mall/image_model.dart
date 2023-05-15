@@ -3,7 +3,7 @@ import 'dart:convert';
 class ImageModel {
   String? title;
   String? url;
-  String? categoryId;
+  int? id;
   String? thumbs;
   String? memo;
   String? createTime;
@@ -11,7 +11,7 @@ class ImageModel {
   ImageModel({
     this.title,
     this.url,
-    this.categoryId,
+    this.id,
     this.thumbs,
     this.memo,
     this.createTime,
@@ -20,7 +20,7 @@ class ImageModel {
   ImageModel copyWith({
     String? title,
     String? url,
-    String? categoryId,
+    int? id,
     String? thumbs,
     String? memo,
     String? createTime,
@@ -28,7 +28,7 @@ class ImageModel {
     return ImageModel(
       title: title ?? this.title,
       url: url ?? this.url,
-      categoryId: categoryId ?? this.categoryId,
+      id: id ?? this.id,
       thumbs: thumbs ?? this.thumbs,
       memo: memo ?? this.memo,
       createTime: createTime ?? this.createTime,
@@ -39,7 +39,7 @@ class ImageModel {
     return {
       'title': title,
       'url': url,
-      'categoryId': categoryId,
+      'id': id,
       'thumbs': thumbs,
       'memo': memo,
       'createTime': createTime,
@@ -50,7 +50,7 @@ class ImageModel {
     return ImageModel(
       title: map['title'],
       url: map['url'],
-      categoryId: map['categoryId'],
+      id: map['id'],
       thumbs: map['thumbs'],
       memo: map['memo'],
       createTime: map['createTime'],
@@ -64,7 +64,7 @@ class ImageModel {
 
   @override
   String toString() {
-    return 'ImageModel(title: $title, url: $url, categoryId: $categoryId, thumbs: $thumbs, memo: $memo, createTime: $createTime)';
+    return 'ImageModel(title: $title, url: $url, id: $id, thumbs: $thumbs, memo: $memo, createTime: $createTime)';
   }
 
   @override
@@ -74,7 +74,7 @@ class ImageModel {
     return o is ImageModel &&
         o.title == title &&
         o.url == url &&
-        o.categoryId == categoryId &&
+        o.id == id &&
         o.thumbs == thumbs &&
         o.memo == memo &&
         o.createTime == createTime;
@@ -84,7 +84,7 @@ class ImageModel {
   int get hashCode {
     return title.hashCode ^
         url.hashCode ^
-        categoryId.hashCode ^
+        id.hashCode ^
         thumbs.hashCode ^
         memo.hashCode ^
         createTime.hashCode;

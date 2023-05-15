@@ -1,5 +1,6 @@
 import 'package:get_storage/get_storage.dart';
 import 'package:huahuan_web/constant/constant.dart';
+import 'package:huahuan_web/model/admin/customer_model.dart';
 import 'package:huahuan_web/model/admin/menu_model.dart';
 import 'package:huahuan_web/model/admin/tabPage_model.dart';
 
@@ -54,6 +55,11 @@ class StoreUtil {
   static UserInfo getCurrentUserInfo() {
     var data = GetStorage().read(Constant.KEY_CURRENT_USER_INFO);
     return data == null ? UserInfo() : UserInfo.fromJson(data);
+  }
+
+  static CustomerModel getCurrentCusInfo() {
+    var data = GetStorage().read(Constant.KEY_CURRENT_CUSTOMER_INFO);
+    return data == null ? CustomerModel() : CustomerModel.fromJson(data);
   }
 
   static List<MenuModel> getMenuList() {

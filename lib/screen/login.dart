@@ -6,6 +6,7 @@ import 'package:huahuan_web/model/admin/user_model.dart';
 import 'package:huahuan_web/model/api/response_api.dart';
 import 'package:huahuan_web/screen/layout/layout.dart';
 import 'package:huahuan_web/util/store_util.dart';
+import 'package:huahuan_web/widget/dialog/tro_dialog.dart';
 // import 'package:huahuan_web/util/store_util.dart';
 
 class Login extends StatefulWidget {
@@ -39,7 +40,7 @@ class _LoginState extends State<Login> {
 
   Widget _buildPageContent() {
     var appName = Text(
-      "FLUTTER_ADMIN",
+      "物联监测云平台",
       style: TextStyle(fontSize: 16, color: Colors.blue),
       textScaleFactor: 3.2,
     );
@@ -193,100 +194,15 @@ class _LoginState extends State<Login> {
         Constant.KEY_TOKEN, responseBodyApi.data[Constant.KEY_TOKEN]);
     StoreUtil.write(Constant.KEY_CURRENT_USER_INFO,
         responseBodyApi.data[Constant.KEY_CURRENT_USER_INFO]);
+    StoreUtil.write(Constant.KEY_CURRENT_CUSTOMER_INFO,
+        responseBodyApi.data[Constant.KEY_CURRENT_CUSTOMER_INFO]);
 
-    ///todo: 改为后端数据
-    // StoreUtil.write(
-    //     Constant.KEY_MENU_LIST, responseBodyApi.data[Constant.KEY_MENU_LIST]);
+    StoreUtil.write(
+        Constant.KEY_MENU_LIST, responseBodyApi.data[Constant.KEY_MENU_LIST]);
 
-    StoreUtil.write(Constant.KEY_MENU_LIST, [
-      {
-        "id": 1,
-        "name": "test",
-        "thisName": "TEST",
-        "type": 1,
-        "url": "/test",
-        "icon": null,
-        "parentId": null,
-        "isDel": 1
-      },
-      {
-        "id": 2,
-        "name": "test1",
-        "thisName": "TEST_1",
-        "type": 1,
-        "url": "/test/1",
-        "icon": null,
-        "parentId": 1,
-        "isDel": 1
-      },
-      {
-        "id": 3,
-        "name": "用户管理",
-        "thisName": "User Manage",
-        "type": 1,
-        "url": "",
-        "icon": "people",
-        "parentId": null,
-        "isDel": 1
-      },
-      {
-        "id": 4,
-        "name": "用户管理",
-        "thisName": "User Manage",
-        "type": 1,
-        "url": "/user",
-        "icon": "person",
-        "parentId": 3,
-        "isDel": 1
-      },    {
-        "id": 9,
-        "name": "项目授权",
-        "thisName": "User Manage",
-        "type": 1,
-        "url": "/eventAuth",
-        "icon": "dashboard",
-        "parentId": 3,
-        "isDel": 1
-      },   {
-        "id": 5,
-        "name": "角色授权",
-        "thisName": "Role Manage",
-        "type": 1,
-        "url": "/role",
-        "icon": "role",
-        "parentId": 3,
-        "isDel": 1
-      },      {
-        "id": 6,
-        "name": "项目管理",
-        "thisName": "Event Manage",
-        "type": 1,
-        "url": "",
-        "icon": "menu",
-        "parentId": null,
-        "isDel": 1
-      },      {
-        "id": 7,
-        "name": "项目管理",
-        "thisName": "Event Manage",
-        "type": 1,
-        "url": "/event",
-        "icon": "dashboard",
-        "parentId": 6,
-        "isDel": 1
-      },      {
-        "id": 8,
-        "name": "项目管理",
-        "thisName": "Event Manage",
-        "type": 1,
-        "url": "/event",
-        "icon": "dashboard",
-        "parentId": 6,
-        "isDel": 1
-      }
-    ]);
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => Layout()));
-    // await StoreUtil.loadDefaultTabs();
-    StoreUtil.init();
+    troConfirm(context, '进入公司', (context) async {
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => Layout()));
+      StoreUtil.init();
+    });
   }
 }

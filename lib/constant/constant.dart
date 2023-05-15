@@ -7,6 +7,7 @@ class Constant {
   static const String KEY_MENU_LIST = "list";
   //用户信息持久化
   static const String KEY_CURRENT_USER_INFO = "user";
+  static const String KEY_CURRENT_CUSTOMER_INFO = "customer";
   static const String KEY_OPENED_TAB_PAGE_LIST = "openedTabPageList";
   static const String KEY_CURRENT_OPENED_TAB_PAGE_ID = "currentOpenedTabPageId";
   static const String KEY_DEFAULT_TABS = "defaultTabs";

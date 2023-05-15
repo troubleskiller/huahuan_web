@@ -38,15 +38,14 @@ class UserEditState extends State<UserEdit> {
       _userInfo = widget.userInfo;
     }
     init();
-
   }
 
-  void init()async{
+  void init() async {
     await getAllRolesAccessible();
     await getAllCustomersAccessible();
     _userInfo?.creatorId = StoreUtil.getCurrentUserInfo().id;
-    _userInfo?.isEnable =1;
-    _userInfo?.isDel =0;
+    _userInfo?.isEnable = 1;
+    _userInfo?.isDel = 0;
 
     setState(() {
       isLoading = false;
@@ -64,12 +63,7 @@ class UserEditState extends State<UserEdit> {
       if (StoreUtil.getCurrentUserInfo().roleId != 1) {
         curRoles.removeWhere((element) =>
             element.id == StoreUtil.getCurrentUserInfo().role!.id!);
-        // if (widget.userInfo != null) {
-        //   ResponseBodyApi responseBodyApi = await RoleApi.selectOne('{"id":${_userInfo?.id}}');
-        //   selectedValue
-        // }
-        //
-        selectedValue?.title = _userInfo?.role?.name??'';
+        selectedValue?.title = _userInfo?.role?.name ?? '';
       }
     }
   }
@@ -89,87 +83,89 @@ class UserEditState extends State<UserEdit> {
   Widget build(BuildContext context) {
     var form = Form(
       key: formKey,
-      child: Wrap(
-        children: <Widget>[
-          TroInput(
-            value: _userInfo!.name,
-            label: '用户名',
-            onSaved: (v) {
-              _userInfo!.name = v;
-            },
-            validator: (v) {
-              return v!.isEmpty ? 'required' : null;
-            },
-          ),
-          TroInput(
-            value: _userInfo!.loginName,
-            label: '账号',
-            onSaved: (v) {
-              _userInfo!.loginName = v;
-            },
-          ),
-          TroInput(
-            value: '',
-            label: '密码',
-            onSaved: (v) {
-              _userInfo!.password = v;
-            },
-          ),
-          TroInput(
-            value: _userInfo!.tel,
-            label: '联系方式',
-            onSaved: (v) {
-              _userInfo!.tel = v;
-            },
-          ),
-          // TroInput(
-          //   value: _userInfo!.customerModel?.name??'',
-          //   label: '所属公司',
-          //   onSaved: (v) {
-          //     _userInfo!.customerModel?.name = v;
-          //   },
-          // ),
-          BrnExpandableGroup(
-            title: '所属客户',
-            children: [
-              BrnPortraitRadioGroup.withSimpleList(
-                options: curCustomers.map((e) => e.name ?? '').toList(),
-                onChanged: (BrnPortraitRadioGroupOption? old,
-                    BrnPortraitRadioGroupOption? newList) {
-                  BrnToast.show(newList?.title??'', context);
-                  selectedValue = newList;
-                  print(newList?.title??'');
-                  _userInfo?.customerId= curCustomers.singleWhere((element) => element.name==newList?.title).id;
-                },
-              ),
-            ],
-            onExpansionChanged: (a) async {
-              await getAllCustomersAccessible();
-            },
-          ),
-          // //todo：所属客户
-          BrnExpandableGroup(
-            title: '所拥有权限',
-            children: [
-              BrnPortraitRadioGroup.withSimpleList(
-                selectedOption:selectedValue?.title??'',
-                options: curRoles.map((e) => e.name ?? '').toList(),
-                onChanged: (BrnPortraitRadioGroupOption? old,
-                    BrnPortraitRadioGroupOption? newList) {
-                  BrnToast.show(newList?.title??'', context);
-                  selectedValue = newList;
-                  print(newList?.title??'');
-                  _userInfo?.roleId= curRoles.singleWhere((element) => element.name==newList?.title).id;
-                },
-              ),
-            ],
-            // onExpansionChanged: (a) async {
-            //   await
-            // },
-
-          ),
-          // //todo：所拥有权限
-        ],
+      child: Container(
+        color: Colors.white,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            TroInput(
+              value: _userInfo!.name,
+              label: '用户名',
+              onSaved: (v) {
+                _userInfo!.name = v;
+              },
+              validator: (v) {
+                return v!.isEmpty ? 'required' : null;
+              },
+            ),
+            TroInput(
+              value: _userInfo!.loginName,
+              label: '账号',
+              onSaved: (v) {
+                _userInfo!.loginName = v;
+              },
+            ),
+            TroInput(
+              value: '',
+              label: '密码',
+              onSaved: (v) {
+                _userInfo!.password = v;
+              },
+            ),
+            TroInput(
+              value: _userInfo!.tel,
+              label: '联系方式',
+              onSaved: (v) {
+                _userInfo!.tel = v;
+              },
+            ),
+            BrnExpandableGroup(
+              title: '所属客户',
+              themeData: BrnFormItemConfig(titleTextStyle: BrnTextStyle()),
+              children: [
+                BrnPortraitRadioGroup.withSimpleList(
+                  options: curCustomers.map((e) => e.name ?? '').toList(),
+                  onChanged: (BrnPortraitRadioGroupOption? old,
+                      BrnPortraitRadioGroupOption? newList) {
+                    BrnToast.show(newList?.title ?? '', context);
+                    selectedValue = newList;
+                    _userInfo?.customerId = curCustomers
+                        .singleWhere(
+                            (element) => element.name == newList?.title)
+                        .id;
+                  },
+                ),
+              ],
+              onExpansionChanged: (a) async {
+                await getAllCustomersAccessible();
+              },
+            ),
+            // //todo：所属客户
+            BrnExpandableGroup(
+              title: '所拥有权限',
+              children: [
+                BrnPortraitRadioGroup.withSimpleList(
+                  selectedOption: selectedValue?.title ?? '',
+                  options: curRoles.map((e) => e.name ?? '').toList(),
+                  onChanged: (BrnPortraitRadioGroupOption? old,
+                      BrnPortraitRadioGroupOption? newList) {
+                    BrnToast.show(newList?.title ?? '', context);
+                    selectedValue = newList;
+                    print(newList?.title ?? '');
+                    _userInfo?.roleId = curRoles
+                        .singleWhere(
+                            (element) => element.name == newList?.title)
+                        .id;
+                  },
+                ),
+              ],
+              // onExpansionChanged: (a) async {
+              //   await
+              // },
+            ),
+            // //todo：所拥有权限
+          ],
+        ),
       ),
     );
     var buttonBar = ButtonBar(
@@ -185,7 +181,11 @@ class UserEditState extends State<UserEdit> {
             }
             form.save();
             print(_userInfo!.toJson());
-            UserApi.addUser(_userInfo!.toJson());
+            widget.userInfo == null
+                ? UserApi.addUser(_userInfo!.toJson())
+                : UserApi.update(_userInfo!.toJson());
+            Navigator.pop(context, true);
+            TroUtils.message('保存成功');
             // UserApi.saveOrUpdate(_userInfo!.toMap()).then((res) {
             //   Navigator.pop(context, true);
             //   TroUtils.message('saved');
@@ -215,10 +215,12 @@ class UserEditState extends State<UserEdit> {
       ),
       bottomNavigationBar: buttonBar,
     );
-    return isLoading?Container():SizedBox(
-      width: 650,
-      height: isDisplayDesktop(context) ? 350 : 500,
-      child: result,
-    );
+    return isLoading
+        ? Container()
+        : SizedBox(
+            width: 650,
+            height: isDisplayDesktop(context) ? 350 : 500,
+            child: result,
+          );
   }
 }

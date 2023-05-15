@@ -11,16 +11,18 @@
 
 class ProjectModel {
   ProjectModel({
-      this.id, 
-      this.name, 
-      this.projectTypeId, 
-      this.created, 
-      this.userId, 
-      this.status, 
-      this.description, 
-      this.parentProjectId, 
-      this.location, 
-      this.warningId,});
+    this.id,
+    this.name,
+    this.projectTypeId,
+    this.created,
+    this.userId,
+    this.status,
+    this.description,
+    this.parentProjectId,
+    this.location,
+    this.warningId,
+    this.events,
+  });
 
   ProjectModel.fromJson(dynamic json) {
     id = json['id'];
@@ -33,6 +35,9 @@ class ProjectModel {
     parentProjectId = json['parentProjectId'];
     location = json['location'];
     warningId = json['warningId'];
+    events = json['list'] == null
+        ? []
+        : List.from(json['list']).map((e) => ProjectModel.fromJson(e)).toList();
   }
   int? id;
   String? name;
@@ -44,27 +49,31 @@ class ProjectModel {
   int? parentProjectId;
   String? location;
   dynamic warningId;
-ProjectModel copyWith({  int? id,
-  String? name,
-  int? projectTypeId,
-  String? created,
-  int? userId,
-  int? status,
-  String? description,
-  int? parentProjectId,
-  String? location,
-  dynamic warningId,
-}) => ProjectModel(  id: id ?? this.id,
-  name: name ?? this.name,
-  projectTypeId: projectTypeId ?? this.projectTypeId,
-  created: created ?? this.created,
-  userId: userId ?? this.userId,
-  status: status ?? this.status,
-  description: description ?? this.description,
-  parentProjectId: parentProjectId ?? this.parentProjectId,
-  location: location ?? this.location,
-  warningId: warningId ?? this.warningId,
-);
+  List<ProjectModel>? events;
+  ProjectModel copyWith({
+    int? id,
+    String? name,
+    int? projectTypeId,
+    String? created,
+    int? userId,
+    int? status,
+    String? description,
+    int? parentProjectId,
+    String? location,
+    dynamic warningId,
+  }) =>
+      ProjectModel(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        projectTypeId: projectTypeId ?? this.projectTypeId,
+        created: created ?? this.created,
+        userId: userId ?? this.userId,
+        status: status ?? this.status,
+        description: description ?? this.description,
+        parentProjectId: parentProjectId ?? this.parentProjectId,
+        location: location ?? this.location,
+        warningId: warningId ?? this.warningId,
+      );
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = id;
@@ -79,5 +88,4 @@ ProjectModel copyWith({  int? id,
     map['warningId'] = warningId;
     return map;
   }
-
 }

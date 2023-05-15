@@ -53,7 +53,7 @@ class TroUtils {
         ));
     loadingOE = OverlayEntry(builder: (c) => child);
 
-    Overlay.of(Tro.context)!.insert(loadingOE!);
+    Overlay.of(Tro.context).insert(loadingOE!);
   }
 
   static void loaded() {

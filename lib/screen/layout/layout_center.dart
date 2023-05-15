@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:huahuan_web/constant/enum.dart';
-import 'package:huahuan_web/extension/context_extension.dart';
 import 'package:huahuan_web/index_stack_lazy.dart';
 import 'package:huahuan_web/model/admin/tabPage_model.dart';
 import 'package:huahuan_web/route/routes.dart';
@@ -28,7 +27,7 @@ class LayoutCenterState extends State<LayoutCenter>
   Widget build(BuildContext context) {
     var isMaximize = context.watch<LayoutController>().isMaximize;
     var openedTabPageList = StoreUtil.readOpenedTabPageList();
-    if (openedTabPageList.length == 0) {
+    if (openedTabPageList.isEmpty) {
       return Container();
     }
     var currentOpenedTabPageId = StoreUtil.readCurrentOpenedTabPageId();
@@ -51,13 +50,25 @@ class LayoutCenterState extends State<LayoutCenter>
     TabBar tabBar = TabBar(
       controller: tabController,
       isScrollable: true,
+
       ///tabBar 自定义边框
-      indicator: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.only(topLeft: Radius.circular(12),topRight:  Radius.circular(12),),),
+      indicator: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(12),
+          topRight: Radius.circular(12),
+        ),
+      ),
       tabs: openedTabPageList.map<Tab>((TabPage? tabPage) {
         var tabContent = Row(
           children: <Widget>[
-            Text(tabPage!.name ?? '',style: TextStyle(color: Colors.black),),
-            SizedBox(width: 20,),
+            Text(
+              tabPage!.name ?? '',
+              style: TextStyle(color: Colors.black),
+            ),
+            SizedBox(
+              width: 20,
+            ),
             if (!defaultTabs.contains(tabPage))
               Material(
                 type: MaterialType.transparency,
@@ -70,7 +81,10 @@ class LayoutCenterState extends State<LayoutCenter>
                       Utils.closeTab(tabPage);
                       setState(() {});
                     },
-                    icon: const Icon(Icons.close,color: Colors.black,),
+                    icon: const Icon(
+                      Icons.close,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
               )
@@ -164,14 +178,14 @@ class LayoutCenterState extends State<LayoutCenter>
               children: <Widget>[
                 Expanded(child: tabBar),
                 IconButton(
-                  onPressed: () {
-                    context.read<LayoutController>().toggleMaximize();
-                  },
-                  icon: Icon(
-                      isMaximize ? Icons.close_fullscreen : Icons.open_in_full),
-                  iconSize: 20,
-                  color: Colors.black
-                )
+                    onPressed: () {
+                      context.read<LayoutController>().toggleMaximize();
+                    },
+                    icon: Icon(isMaximize
+                        ? Icons.close_fullscreen
+                        : Icons.open_in_full),
+                    iconSize: 20,
+                    color: Colors.black)
               ],
             ),
           ),

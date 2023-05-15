@@ -2,9 +2,6 @@ import 'dart:convert';
 
 import 'package:huahuan_web/model/api/page_model.dart';
 
-/// data : {"id":1}
-/// pageVO : {"currentPage":1,"pageSize":2}
-
 RequestBodyApi RequestBodyApiFromJson(String str) =>
     RequestBodyApi.fromJson(json.decode(str));
 String RequestBodyApiToJson(RequestBodyApi data) => json.encode(data.toJson());

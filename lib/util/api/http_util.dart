@@ -46,10 +46,6 @@ class HttpUtil {
     var apiProperties = troProperties.apiProperties;
     late BaseOptions options;
     if (requestToken) {
-      print('1111');
-      print(
-        StoreUtil.read(Constant.KEY_TOKEN),
-      );
       options = BaseOptions(
           baseUrl: apiProperties.baseUrl!,
           connectTimeout: apiProperties.connectTimeout,
@@ -59,6 +55,7 @@ class HttpUtil {
             "User-Agent": "Mozilla 5.10", // 这里的设置是必须的必
             "USERNAME": "SANDBOX",
             "token": StoreUtil.read(Constant.KEY_TOKEN),
+
             ///永久token
             // "token": 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxIiwiZXhwIjoxNjc2Nzg2MTAyfQ.lqr_GlfOHGS6_9YMDBkOK8gcKZRZi51bticdq9CJBO0',
           });

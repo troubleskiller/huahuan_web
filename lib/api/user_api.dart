@@ -8,6 +8,12 @@ class UserApi {
     return responseBodyApi;
   }
 
+  static Future<ResponseBodyApi> update(data) async {
+    ResponseBodyApi responseBodyApi =
+        await HttpUtil.post('/user/updateUser', data: data, requestToken: true);
+    return responseBodyApi;
+  }
+
   static Future<ResponseBodyApi> login(data) async {
     ResponseBodyApi responseBodyApi =
         await HttpUtil.post('/login', data: data, requestToken: false);

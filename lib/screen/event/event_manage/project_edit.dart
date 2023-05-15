@@ -1,4 +1,5 @@
-import 'package:bruno/bruno.dart';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:huahuan_web/api/project_api.dart';
 import 'package:huahuan_web/model/admin/project_model.dart';
@@ -6,12 +7,13 @@ import 'package:huahuan_web/model/admin/role_model.dart';
 import 'package:huahuan_web/util/store_util.dart';
 import 'package:huahuan_web/util/tro_util.dart';
 import 'package:huahuan_web/widget/button/icon_button.dart';
+import 'package:huahuan_web/widget/common/image_upload.dart';
 import 'package:huahuan_web/widget/input/TroInput.dart';
 
 class ProjectEdit extends StatefulWidget {
   final ProjectModel? curProject;
-
-  const ProjectEdit({Key? key, this.curProject}) : super(key: key);
+  final Uint8List? bytes;
+  const ProjectEdit({Key? key, this.curProject, this.bytes}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -32,16 +34,24 @@ class ProjectEditState extends State<ProjectEdit> {
     }
   }
 
-  ///得到所有可用的角色权限
-  void getAllRolesAccessible() async {
-    // roles = await RoleApi.selectAllRole(widget.userInfo.id)
+  _upload({ProjectModel? projectModel}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => Dialog(
+        child: ImageUpload(
+          id: projectModel?.id,
+          type: 5,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     var form = Form(
       key: formKey,
-      child: Wrap(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           TroInput(
             value: _curProject!.name,
@@ -67,8 +77,17 @@ class ProjectEditState extends State<ProjectEdit> {
               _curProject!.description = v;
             },
           ),
-
-          ///todo：上传图片
+          GestureDetector(
+            child: widget.bytes != null
+                ? Image.memory(widget.bytes!)
+                : Image.network(
+                    'https://t7.baidu.com/it/u=1595072465,3644073269&fm=193&f=GIF',
+                    fit: BoxFit.cover,
+                  ),
+            onTap: () {
+              _upload(projectModel: widget.curProject);
+            },
+          ),
         ],
       ),
     );
@@ -84,10 +103,6 @@ class ProjectEditState extends State<ProjectEdit> {
               return;
             }
             form.save();
-            // UserApi.saveOrUpdate(_curProject!.toMap()).then((res) {
-            //   Navigator.pop(context, true);
-            //   TroUtils.message('saved');
-            // });
             widget.curProject == null
                 ? {
                     _curProject!.userId = StoreUtil.getCurrentUserInfo().id,
@@ -127,7 +142,7 @@ class ProjectEditState extends State<ProjectEdit> {
     );
     return SizedBox(
       width: 650,
-      height: isDisplayDesktop(context) ? 350 : 500,
+      height: 400,
       child: result,
     );
   }

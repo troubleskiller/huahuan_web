@@ -129,12 +129,11 @@ class _LayoutMenuState extends State<LayoutMenu> {
       String name = treeVO.data!.name ?? '';
       Text title = Text(
         expandMenu! ? name : '',
+
         ///如果选中当前的标题，则该标题字段颜色变为蓝色
         style: TextStyle(
-            color: currentOpenedTabPageId == treeVO.data!.id
-                ? Colors.blue
-                : null,
-            fontSize: 14,
+          color: currentOpenedTabPageId == treeVO.data!.id ? Colors.blue : null,
+          fontSize: 14,
         ),
       );
       if (treeVO.children.length > 0) {

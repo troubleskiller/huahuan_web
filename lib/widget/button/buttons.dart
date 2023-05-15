@@ -15,6 +15,14 @@ class ButtonWithIcons {
       label: showLabel ? 'add' : null,
       iconData: Icons.add,
       onPressed: onPressed);
+  static collect(context, onPressed, {showLabel = true}) => ButtonWithIcon(
+      label: showLabel ? '采集仪' : null,
+      iconData: Icons.sensors,
+      onPressed: onPressed);
+  static detect(context, onPressed, {showLabel = true}) => ButtonWithIcon(
+      label: showLabel ? '测点' : null,
+      iconData: Icons.watch,
+      onPressed: onPressed);
 
   static delete(context, onPressed, {showLabel = true}) => ButtonWithIcon(
       label: showLabel ? 'delete' : null,
@@ -49,5 +57,15 @@ class ButtonWithIcons {
   static commit(context, onPressed, {showLabel = true}) => ButtonWithIcon(
       label: showLabel ? 'commit' : null,
       iconData: Icons.done,
+      onPressed: onPressed);
+
+  static sensor(context, onPressed, {showLabel = true}) => ButtonWithIcon(
+      label: showLabel ? 'sensor' : null,
+      iconData: Icons.sensors,
+      onPressed: onPressed);
+
+  static data(context, onPressed, {showLabel = true}) => ButtonWithIcon(
+      label: showLabel ? 'data' : null,
+      iconData: Icons.data_exploration_outlined,
       onPressed: onPressed);
 }

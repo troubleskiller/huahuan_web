@@ -1,6 +1,7 @@
 import 'package:bruno/bruno.dart';
 import 'package:flutter/material.dart';
 import 'package:huahuan_web/api/role_api.dart';
+import 'package:huahuan_web/api/user_api.dart';
 import 'package:huahuan_web/model/admin/role_model.dart';
 import 'package:huahuan_web/model/admin/user_info.dart';
 import 'package:huahuan_web/model/api/response_api.dart';
@@ -20,16 +21,28 @@ class RoleEditInUserScreen extends StatefulWidget {
 
 class RoleEditInUserScreenState extends State<RoleEditInUserScreen> {
   List<Role> roles = [];
+  BrnPortraitRadioGroupOption? selectedValue;
+  String? initValue;
+  UserInfo? _userInfo;
 
   @override
   void initState() {
+    getAllRolesAccessible();
+    if (widget.userInfo != null) {
+      print(widget.userInfo?.toJson());
+      print(widget.userInfo?.role?.toJson());
+      print(widget.userInfo?.role?.name);
+      _userInfo = widget.userInfo;
+      initValue = _userInfo?.role?.name;
+    }
     super.initState();
   }
 
   ///得到所有可用的角色权限
-  void getAllRolesAccessible() async {
-    ResponseBodyApi  responseBodyApi= await RoleApi.selectAllRole();
-    roles = List.from(responseBodyApi.data).map((e) => Role.fromJson(e)).toList();
+  Future getAllRolesAccessible() async {
+    ResponseBodyApi responseBodyApi = await RoleApi.selectAllRole();
+    roles =
+        List.from(responseBodyApi.data).map((e) => Role.fromJson(e)).toList();
   }
 
   @override
@@ -41,10 +54,10 @@ class RoleEditInUserScreenState extends State<RoleEditInUserScreen> {
           label: '保存',
           iconData: Icons.save,
           onPressed: () {
-            // UserApi.saveOrUpdate(_userInfo!.toMap()).then((res) {
-            //   Navigator.pop(context, true);
-            //   TroUtils.message('saved');
-            // });
+            UserApi.update(_userInfo!.toJson()).then((res) {
+              Navigator.pop(context, true);
+              TroUtils.message('saved');
+            });
           },
         ),
         ButtonWithIcon(
@@ -58,38 +71,34 @@ class RoleEditInUserScreenState extends State<RoleEditInUserScreen> {
     );
     var result = Scaffold(
       appBar: AppBar(
-        title: Text(widget.userInfo == null ? '添加新用户' : '修改用户信息'),
+        title: Text(widget.userInfo == null ? '添加新用户' : '修改用户权限'),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 20),
-            Container(
-              height: 130,
-              child: ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: 5,
-                itemBuilder: (BuildContext context, int index) {
-                  return BrnCheckbox(
-                    radioIndex: index,
-                    disable: index == 2,
-                    childOnRight: false,
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 5),
-                      child: Text(
-                        "选项$index",
-                      ),
+            const SizedBox(height: 20),
+            FutureBuilder(
+              future: getAllRolesAccessible(),
+              builder: (context, sy) {
+                return BrnExpandableGroup(
+                  title: '所拥有权限',
+                  children: [
+                    BrnPortraitRadioGroup.withSimpleList(
+                      selectedOption: initValue ?? '',
+                      options: roles.map((e) => e.name ?? '').toList(),
+                      onChanged: (BrnPortraitRadioGroupOption? old,
+                          BrnPortraitRadioGroupOption? newList) {
+                        BrnToast.show(newList?.title ?? '', context);
+                        selectedValue = newList;
+                        _userInfo?.roleId = roles
+                            .singleWhere(
+                                (element) => element.name == newList?.title)
+                            .id;
+                      },
                     ),
-                    onValueChangedAtIndex: (index, value) {
-                      if (value) {
-                        BrnToast.show("第$index项被选中", context);
-                      } else {
-                        BrnToast.show("第$index项取消选中", context);
-                      }
-                    },
-                  );
-                },
-              ),
+                  ],
+                );
+              },
             ),
           ],
         ),

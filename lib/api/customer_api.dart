@@ -4,23 +4,23 @@ import 'package:huahuan_web/util/api/http_util.dart';
 class CustomerApi {
   static Future<ResponseBodyApi> list(data) async {
     ResponseBodyApi responseBodyApi =
-    await HttpUtil.post('/customer/findByUserId', data: data);
+        await HttpUtil.post('/customer/findByUserId', data: data);
     return responseBodyApi;
   }
 
-  static Future<ResponseBodyApi> save(data) async {
+  static Future<ResponseBodyApi> add(data) async {
     ResponseBodyApi responseBodyApi =
-    await HttpUtil.post('/product/brand/save', data: data);
+        await HttpUtil.post('/customer/add', data: data);
     return responseBodyApi;
   }
 
   static Future<ResponseBodyApi> update(data) async {
     ResponseBodyApi responseBodyApi =
-    await HttpUtil.post('/product/brand/update', data: data);
+        await HttpUtil.post('/customer/update', data: data);
     return responseBodyApi;
   }
 
   static removeByIds(data) {
-    return HttpUtil.post('/product/brand/delete', data: data);
+    return HttpUtil.post('/customer/del', data: data);
   }
 }

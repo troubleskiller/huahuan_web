@@ -1,26 +1,38 @@
+import 'dart:typed_data';
+
 import 'package:card_swiper/card_swiper.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:huahuan_web/api/image_api.dart';
 import 'package:huahuan_web/api/project_api.dart';
 import 'package:huahuan_web/constant/common_constant.dart';
+import 'package:huahuan_web/constant/constant.dart';
 import 'package:huahuan_web/model/admin/project_model.dart';
 import 'package:huahuan_web/model/admin/project_state_model.dart';
 import 'package:huahuan_web/model/admin/user_info.dart';
 import 'package:huahuan_web/model/api/response_api.dart';
+import 'package:huahuan_web/model/application/event_model.dart';
+import 'package:huahuan_web/model/mall/Image.dart';
 import 'package:huahuan_web/screen/event/event_manage/event_list.dart';
-import 'package:huahuan_web/screen/event/event_manage/project_edit.dart';
 import 'package:huahuan_web/screen/event/event_manage/state_edit.dart';
+import 'package:huahuan_web/screen/layout/layout.dart';
+import 'package:huahuan_web/screen/layout/layout_controller.dart';
 import 'package:huahuan_web/util/store_util.dart';
+import 'package:huahuan_web/util/utils.dart';
 import 'package:huahuan_web/widget/button/icon_button.dart';
+import 'package:provider/provider.dart';
 
-class ProjectManager extends StatefulWidget {
-  const ProjectManager({Key? key}) : super(key: key);
+class ProjectView extends StatefulWidget {
+  const ProjectView({Key? key}) : super(key: key);
 
   @override
-  State<ProjectManager> createState() => _ProjectManagerState();
+  State<ProjectView> createState() => _ProjectViewState();
 }
 
-class _ProjectManagerState extends State<ProjectManager> {
+class _ProjectViewState extends State<ProjectView> {
+  SwiperController swiperController = SwiperController();
+  late EventModel controller;
+  LayoutController layoutController = LayoutController();
   bool loadData = true;
   List<ProjectModel> projects = [];
   late ProjectModel curProject;
@@ -29,14 +41,19 @@ class _ProjectManagerState extends State<ProjectManager> {
 
   List<EventLine> eventsUnProject = [];
 
+  List<ImageDataModel> images = [];
+  Uint8List? projectBytes;
+  List<Uint8List> stateBytes = [];
+  List<Uint8List> diseaseBytes = [];
+
   ///todo: 用当前用户的id
   UserInfo curUser = StoreUtil.getCurrentUserInfo();
 
   @override
   void initState() {
-    // TODO: implement initState
-    super.initState();
+    controller = context.read<EventModel>();
     getAllProjects();
+    super.initState();
   }
 
   ///得到现有的所有项目
@@ -50,6 +67,10 @@ class _ProjectManagerState extends State<ProjectManager> {
     ///默认访问第一个
     curProject = projects[0];
     await getCurEvents(curProject.id!);
+    controller.updateEventModel(
+      nP: projects[0],
+      nPs: projects,
+    );
     await getAllStates(curProject.id!);
     setState(() {
       loadData = false;
@@ -57,15 +78,67 @@ class _ProjectManagerState extends State<ProjectManager> {
   }
 
   Future getCurEvents(int i) async {
-    print('--------------这是当前的项目id：$i');
     ResponseBodyApi responseBodyApi = await ProjectApi.getCurEvents({"id": i});
     if (responseBodyApi.code == 200) {
       setState(() {
         eventsUnProject = List.from(responseBodyApi.data)
-            .map((e) => EventLine(event: ProjectModel.fromJson(e)))
+            .map((e) => EventLine(
+                  event: ProjectModel.fromJson(e),
+                  curProject: curProject.id ?? 0,
+                  onClick: () async {
+                    Utils.openTab(14);
+                    controller.updateEventModel(
+                      nE: ProjectModel.fromJson(e),
+                      nP: curProject,
+                      nEs: List.from(responseBodyApi.data)
+                          .map((e) => ProjectModel.fromJson(e))
+                          .toList(),
+                      nPs: projects,
+                    );
+                    layoutState.setState(() {});
+                    // layoutController.update(9);
+                  },
+                ))
             .toList();
+        getCurImage();
       });
     }
+  }
+
+  ///得到当前的图片
+  void getCurImage() async {
+    ResponseBodyApi responseBodyApi = await ImageApi.getImageByIdAndType(
+        '{"thisId":${curProject.id},"type": 5}');
+    if (responseBodyApi.code == 200) {
+      images = List.from(responseBodyApi.data)
+          .map((e) => ImageDataModel.fromJson(e))
+          .toList();
+    }
+    BaseOptions options = BaseOptions(
+      baseUrl: 'http://huahuan.f3322.net:14500',
+      connectTimeout: 20000,
+      receiveTimeout: 20000,
+      sendTimeout: 20000,
+      headers: {
+        'User-Agent': 'Mozilla 5.10',
+        'USERNAME': 'SANDBOX',
+        'token': StoreUtil.read(Constant.KEY_TOKEN),
+      },
+    );
+
+    Dio dio = Dio(options);
+    dio.options.responseType = ResponseType.bytes;
+    if (images.isEmpty) {
+      projectBytes = null;
+    } else {
+      final response2 =
+          await dio.get('/config/findImageById', queryParameters: {
+        'name': images.last.url,
+      });
+
+      projectBytes = response2.data;
+    }
+    setState(() {});
   }
 
   Future getAllStates(int i) async {
@@ -83,26 +156,14 @@ class _ProjectManagerState extends State<ProjectManager> {
     }
   }
 
-  void _editProject({ProjectModel? curProject, int? parentProjectId}) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => Dialog(
-        child: ProjectEdit(
-          curProject: curProject,
-        ),
-      ),
-    ).then((v) {
-      if (v != null) {
-        // _query();
-      }
-    });
-  }
-  void _editState({ProjectStateModel? curState}) {
+  void _editState({ProjectStateModel? curState, Uint8List? bytes}) {
     showDialog(
       context: context,
       builder: (BuildContext context) => Dialog(
         child: StateEdit(
           curState: curState,
+          pid: curProject.id,
+          bytes: bytes,
         ),
       ),
     ).then((v) {
@@ -129,7 +190,7 @@ class _ProjectManagerState extends State<ProjectManager> {
                       child: Column(
                         children: [
                           Text(
-                            tr('Project Name'),
+                            '项目名称',
                             style: TextStyle(fontSize: 30, color: Colors.black),
                           ),
                           Expanded(
@@ -182,14 +243,6 @@ class _ProjectManagerState extends State<ProjectManager> {
                               ),
                             ),
                           ),
-                          Expanded(
-                              flex: 1,
-                              child: ButtonWithIcon(
-                                iconData: Icons.add,
-                                onPressed: () {
-                                  _editProject();
-                                },
-                              ))
                         ],
                       )),
                   Expanded(
@@ -209,10 +262,15 @@ class _ProjectManagerState extends State<ProjectManager> {
                               ///项目图片
                               Expanded(
                                 flex: 6,
-                                child: Image.network(
-                                  'https://t7.baidu.com/it/u=1595072465,3644073269&fm=193&f=GIF',
-                                  fit: BoxFit.cover,
-                                ),
+                                child: projectBytes != null
+                                    ? Image.memory(
+                                        projectBytes!,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Image.network(
+                                        'https://t7.baidu.com/it/u=1595072465,3644073269&fm=193&f=GIF',
+                                        fit: BoxFit.cover,
+                                      ),
                               ),
                               Spacer(
                                 flex: 1,
@@ -238,13 +296,6 @@ class _ProjectManagerState extends State<ProjectManager> {
                                                   fontWeight: FontWeight.bold),
                                             )),
                                             Spacer(),
-                                            ButtonWithIcon(
-                                              iconData: Icons.edit,
-                                              onPressed: () {
-                                                _editProject(
-                                                    curProject: curProject);
-                                              },
-                                            ),
                                           ],
                                         )),
                                     Spacer(
@@ -325,9 +376,13 @@ class _ProjectManagerState extends State<ProjectManager> {
                                               int index) {
                                             return StateOrDiseaseWidget(
                                               projectStateModel:
-                                                  curAllStates[index], edit: (){
-                                                _editState(curState:curAllStates[index]);
-                                            },
+                                                  curAllStates[index],
+                                              edit: (Uint8List? bytes) {
+                                                _editState(
+                                                    curState:
+                                                        curAllStates[index],
+                                                    bytes: bytes);
+                                              },
                                             );
                                           },
                                           itemCount: curAllStates.length,
@@ -348,9 +403,13 @@ class _ProjectManagerState extends State<ProjectManager> {
                                               int index) {
                                             return StateOrDiseaseWidget(
                                               projectStateModel:
-                                                  curAllDiseases[index], edit: (){
-                                                _editState(curState:curAllDiseases[index]);
-                                            },
+                                                  curAllDiseases[index],
+                                              edit: (Uint8List? bytes) {
+                                                _editState(
+                                                    curState:
+                                                        curAllDiseases[index],
+                                                    bytes: bytes);
+                                              },
                                             );
                                           },
                                           itemCount: curAllDiseases.length,
@@ -358,9 +417,14 @@ class _ProjectManagerState extends State<ProjectManager> {
                                           control: SwiperControl(),
                                         )),
                                     Spacer(),
-                                    Expanded(flex:1,child: ButtonWithIcon(iconData: Icons.add,onPressed: (){
-                                      _editState();
-                                    },)),
+                                    Expanded(
+                                        flex: 1,
+                                        child: ButtonWithIcon(
+                                          iconData: Icons.add,
+                                          onPressed: () {
+                                            _editState();
+                                          },
+                                        )),
                                     Spacer(),
                                   ],
                                 ),
@@ -383,14 +447,6 @@ class _ProjectManagerState extends State<ProjectManager> {
                                         children: eventsUnProject,
                                       ),
                                     ),
-                                    Expanded(
-                                        flex: 1,
-                                        child: ButtonWithIcon(
-                                          iconData: Icons.add,
-                                          onPressed: () {
-                                            _editProject(parentProjectId:curProject.id);
-                                          },
-                                        ))
                                   ],
                                 ),
                               )
@@ -405,15 +461,60 @@ class _ProjectManagerState extends State<ProjectManager> {
             ),
           );
   }
-
 }
 
-class StateOrDiseaseWidget extends StatelessWidget {
+class StateOrDiseaseWidget extends StatefulWidget {
   final ProjectStateModel projectStateModel;
   final Function edit;
 
-  const StateOrDiseaseWidget({Key? key, required this.projectStateModel, required this.edit})
-      : super(key: key);
+  const StateOrDiseaseWidget({
+    Key? key,
+    required this.projectStateModel,
+    required this.edit,
+  }) : super(key: key);
+
+  @override
+  State<StateOrDiseaseWidget> createState() => _StateOrDiseaseWidgetState();
+}
+
+class _StateOrDiseaseWidgetState extends State<StateOrDiseaseWidget> {
+  List<ImageDataModel> images = [];
+  Uint8List? bytes;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  Future getCurImage() async {
+    ResponseBodyApi responseBodyApi = await ImageApi.getImageByIdAndType(
+        '{"thisId":${widget.projectStateModel.id},"type": ${widget.projectStateModel.type}}');
+    if (responseBodyApi.code == 200) {
+      images = List.from(responseBodyApi.data)
+          .map((e) => ImageDataModel.fromJson(e))
+          .toList();
+    }
+    BaseOptions options = BaseOptions(
+      baseUrl: 'http://huahuan.f3322.net:14500',
+      connectTimeout: 20000,
+      receiveTimeout: 20000,
+      sendTimeout: 20000,
+      headers: {
+        'User-Agent': 'Mozilla 5.10',
+        'USERNAME': 'SANDBOX',
+        'token': StoreUtil.read(Constant.KEY_TOKEN),
+      },
+    );
+
+    Dio dio = Dio(options);
+    dio.options.responseType = ResponseType.bytes;
+    final response2 = await dio.get('/config/findImageById', queryParameters: {
+      'name': images.first.url,
+    });
+
+    bytes = response2.data;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -424,10 +525,19 @@ class StateOrDiseaseWidget extends StatelessWidget {
         ///项目图片
         Expanded(
           flex: 6,
-          child: Image.network(
-            'https://t7.baidu.com/it/u=1595072465,3644073269&fm=193&f=GIF',
-            fit: BoxFit.cover,
-          ),
+          child: FutureBuilder(
+              future: getCurImage(),
+              initialData: null,
+              builder: (_, as) {
+                return bytes != null
+                    ? Image.memory(
+                        bytes!,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.network(
+                        'https://t7.baidu.com/it/u=1595072465,3644073269&fm=193&f=GIF',
+                      );
+              }),
         ),
         Spacer(
           flex: 1,
@@ -446,13 +556,17 @@ class StateOrDiseaseWidget extends StatelessWidget {
                   Expanded(
                     flex: 8,
                     child: Text(
-                      projectStateModel.name ?? '--',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      widget.projectStateModel.name ?? '--',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  ButtonWithIcon(iconData: Icons.edit,onPressed: (){
-                    edit();
-                  },)
+                  ButtonWithIcon(
+                    iconData: Icons.edit,
+                    onPressed: () {
+                      widget.edit(bytes);
+                    },
+                  )
                 ],
               ),
               Spacer(
@@ -465,10 +579,10 @@ class StateOrDiseaseWidget extends StatelessWidget {
                     children: [
                       Expanded(
                         flex: 20,
-                        child: Text(
-                            DateTime.parse(projectStateModel.startTime ?? '')
-                                .toString()
-                                .split('.')[0]),
+                        child: Text(DateTime.parse(
+                                widget.projectStateModel.startTime ?? '')
+                            .toString()
+                            .split('.')[0]),
                       ),
                       Spacer(
                         flex: 2,
@@ -482,10 +596,10 @@ class StateOrDiseaseWidget extends StatelessWidget {
                       ),
                       Expanded(
                         flex: 18,
-                        child: Text(
-                            DateTime.parse(projectStateModel.endTime ?? '')
-                                .toString()
-                                .split('.')[0]),
+                        child: Text(DateTime.parse(
+                                widget.projectStateModel.endTime ?? '')
+                            .toString()
+                            .split('.')[0]),
                       ),
                     ],
                   )),
@@ -494,7 +608,7 @@ class StateOrDiseaseWidget extends StatelessWidget {
               ),
               Expanded(
                 flex: 20,
-                child: Text(projectStateModel.description ?? '--'),
+                child: Text(widget.projectStateModel.description ?? '--'),
               ),
               Spacer(
                 flex: 1,

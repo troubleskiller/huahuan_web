@@ -7,7 +7,6 @@ import 'package:huahuan_web/model/admin/role_model.dart';
 import 'package:huahuan_web/model/admin/treeVo.dart';
 import 'package:huahuan_web/model/api/response_api.dart';
 import 'package:huahuan_web/widget/dialog/rename_dialog.dart';
-import 'package:huahuan_web/widget/dialog/tro_dialog.dart';
 import 'package:huahuan_web/widget/input/TroInput.dart';
 
 import '../../util/utils.dart';
@@ -81,7 +80,47 @@ class _RoleManagerState extends State<RoleManager> {
         return ExpansionTile(
           key: Key(treeVO.data!.id!.toString()),
           initiallyExpanded: false,
-          title: title,
+          title: BrnCheckbox(
+            isSelected: curMenus
+                .where((element) => element.id == treeVO.data!.id)
+                .isNotEmpty,
+            radioIndex: treeVO.data?.id ?? 0,
+
+            ///限制有部分是无法选择查看的
+            // disable: index == 2,
+            childOnRight: false,
+            child: Expanded(
+              child: ListTile(
+                leading: Icon(Utils.toIconData(treeVO.data!.icon)),
+                title: title,
+              ),
+            ),
+            onValueChangedAtIndex: (index, value) async {
+              if (value) {
+                ResponseBodyApi responseBodyApi = await RoleApi.addMenu(
+                    '{"roleId":${curRole!.id},"titleId":${treeVO.data!.id}}');
+                if (responseBodyApi.code == 200) {
+                  getCurTitles(curRole!.id!);
+                  BrnToast.show(
+                      "成功为角色${curRole!.name}添加${treeVO.data!.name}页面的权限",
+                      context);
+                } else {
+                  BrnToast.show("未添加成功，请检查网络或稍后重试", context);
+                }
+              } else {
+                ResponseBodyApi responseBodyApi = await RoleApi.deleteMenu(
+                    '{"roleId":${curRole!.id},"titleId":${treeVO.data!.id}}');
+                if (responseBodyApi.code == 200) {
+                  getCurTitles(curRole!.id!);
+                  BrnToast.show(
+                      "成功为角色${curRole!.name}删除${treeVO.data!.name}页面的权限",
+                      context);
+                } else {
+                  BrnToast.show("未删除成功，请检查网络或稍后重试", context);
+                }
+              }
+            },
+          ),
           childrenPadding: const EdgeInsets.only(left: 10),
           children: _getMenuListTile(
             treeVO.children,
@@ -313,40 +352,35 @@ class _RoleLineState extends State<RoleLine> {
               flex: 1,
             ),
             Expanded(
-              flex: 10,
-              child: widget.role.isDel == 1
-                  ? GestureDetector(
-                      onTap: () async {
-                        ResponseBodyApi responseBodyApi =
-                            await RoleApi.deleteRole(
-                                '{"id":${widget.role.id}}');
-                        if (responseBodyApi.code == 200) {
-                          BrnToast.show("删除当前角色${widget.role.name}", context);
-                          setState(() {
-                            widget.role.isDel=0;
-                          });
-                        } else {
-                          BrnToast.show("未成功删除角色，请检查网络或稍后重试", context);
-                        }
-                      },
-                      child: Text('删除当前角色'),
-                    )
-                  : GestureDetector(
-                      onTap: () async {
-                        ResponseBodyApi responseBodyApi =
-                            await RoleApi.recoveryRole(
-                                '{"id":${widget.role.id}}');
-                        if (responseBodyApi.code == 200) {
-                          BrnToast.show("重新使用当前角色${widget.role.name}", context);
-                          setState(() {
-                            widget.role.isDel=1;
-                          });
-                        } else {
-                          BrnToast.show("未成功恢复角色，请检查网络或稍后重试", context);
-                        }
-                      },
-                      child: Text('重新使用当前角色'),
-                    ),
+              child: BrnSwitchButton(
+                value: widget.role.isDel == 1,
+                onChanged: (value) async {
+                  if (!value) {
+                    ResponseBodyApi responseBodyApi =
+                        await RoleApi.deleteRole('{"id":${widget.role.id}}');
+                    if (responseBodyApi.code == 200) {
+                      BrnToast.show("删除当前角色${widget.role.name}", context);
+                      setState(() {
+                        widget.role.isDel = 0;
+                      });
+                    } else {
+                      BrnToast.show("未成功删除角色，请检查网络或稍后重试", context);
+                    }
+                  } else {
+                    ResponseBodyApi responseBodyApi =
+                        await RoleApi.recoveryRole('{"id":${widget.role.id}}');
+                    if (responseBodyApi.code == 200) {
+                      BrnToast.show("重新使用当前角色${widget.role.name}", context);
+                      setState(() {
+                        widget.role.isDel = 1;
+                      });
+                    } else {
+                      BrnToast.show("未成功恢复角色，请检查网络或稍后重试", context);
+                    }
+                  }
+                  ;
+                },
+              ),
             ),
           ],
         ),

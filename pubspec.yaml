@@ -36,11 +36,22 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  bruno: ^3.2.0
+  bruno: ^3.3.0
   fluttertoast: ^8.1.2
   map: ^1.3.5+1
   easy_localization: ^3.0.1
   card_swiper: ^2.0.4
+  fl_chart: ^0.61.0
+  syncfusion_flutter_charts: ^20.4.54
+  excel: ^2.0.4
+  image_picker: ^0.8.7
+  file_picker: ^5.2.6
+  http_parser: ^4.0.2
+  html: ^0.15.2
+  universal_html: ^2.2.1
+  path_provider: ^2.0.14
+  image: ^4.0.15
+  provider: 6.0.2
 
 dev_dependencies:
   flutter_test:
@@ -58,9 +69,7 @@ dev_dependencies:
   provider: 6.0.2
   flutter_colorpicker: ^1.0.3
   url_launcher: ^6.1.7
-  image_picker: ^0.8.6
   path: ^1.8.2
-  http_parser: ^4.0.2
   flutter_2d_amap:
     git:
       url: https://github.com/simplezhli/flutter_2d_amap.git
@@ -79,7 +88,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - config/
-    - assets/translations/
+#    - assets/translations/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

@@ -5,24 +5,38 @@
 /// @version: 1.0
 /// @description:
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:huahuan_web/model/admin/tabPage_model.dart';
+import 'package:huahuan_web/screen/big_screen/system_screen.dart';
+import 'package:huahuan_web/screen/company_manager/company_manager.dart';
 import 'package:huahuan_web/screen/event/event_auth/event_auth.dart';
 import 'package:huahuan_web/screen/event/event_manage/project_manager.dart';
+import 'package:huahuan_web/screen/item/item_manager.dart';
 import 'package:huahuan_web/screen/layout/layout.dart';
+import 'package:huahuan_web/screen/login.dart';
+import 'package:huahuan_web/screen/manager/event/data_manager_list.dart';
+import 'package:huahuan_web/screen/manager/project/project_manager_list.dart';
 import 'package:huahuan_web/screen/role_manager/role_manager.dart';
-import 'package:huahuan_web/screen/user_manage/role_list.dart';
 import 'package:huahuan_web/screen/user_manage/user_list.dart';
+import 'package:huahuan_web/util/utils.dart';
+
+import '../screen/sensor_manager/main_sensor.dart';
 
 class Routes {
-  // static List<GetPage>? pages;
+  static List<GetPage>? pages;
 
   static Map<String, Widget> layoutPagesMap = {
     '/': Layout(),
-    '/user': UserList(),
-    '/role': RoleManager(),
-    '/event':ProjectManager(),
-    '/eventAuth':ProjectAuth(),
-    // '/addRole': AddRole(),
+    '/user/person': UserList(),
+    '/user/role': RoleManager(),
+    '/event/manager': ProjectManagerList(),
+    '/user/title': ProjectAuth(),
+    '/event/item': DataManagerList(),
+    '/event/sensor': MainSensor(),
+    '/company/manage': CompanyManager(),
+    '/screen/system': SystemScreen(),
+    '/data/project': ProjectView(),
+    '/data/item': ItemManager(),
     // '/dashboard': Dashboard(),
     // '/sAreaAgeGenderMain': SAreaAgeGenderMain(),
     // '/roleList': RoleList(),
@@ -59,33 +73,33 @@ class Routes {
     ),
   ];
 
-  // static init() {
-  //   List<GetPage> layoutPages = layoutPagesMap.entries
-  //       .map((e) => GetPage(name: e.key, page: () => e.value))
-  //       .toList();
-  //   pages = [
-  //     GetPage(
-  //       name: '/login',
-  //       page: () => Login(),
-  //     ),
-  //     GetPage(
-  //       name: '/',
-  //       page: () => Layout(),
-  //       middlewares: [AuthMiddleware()],
-  //     ),
-  //     GetPage(
-  //       name: '/layout',
-  //       page: () => Layout(),
-  //       middlewares: [AuthMiddleware()],
-  //       children: layoutPages,
-  //     ),
-  //   ];
-  // }
+  static init() {
+    List<GetPage> layoutPages = layoutPagesMap.entries
+        .map((e) => GetPage(name: e.key, page: () => e.value))
+        .toList();
+    pages = [
+      GetPage(
+        name: '/login',
+        page: () => Login(),
+      ),
+      GetPage(
+        name: '/',
+        page: () => Layout(),
+        middlewares: [AuthMiddleware()],
+      ),
+      GetPage(
+        name: '/layout',
+        page: () => Layout(),
+        middlewares: [AuthMiddleware()],
+        children: layoutPages,
+      ),
+    ];
+  }
 }
 
-// class AuthMiddleware extends GetMiddleware {
-//   @override
-//   RouteSettings? redirect(String? route) {
-//     return Utils.isLogin() ? null : RouteSettings(name: '/login');
-//   }
-// }
+class AuthMiddleware extends GetMiddleware {
+  @override
+  RouteSettings? redirect(String? route) {
+    return Utils.isLogin() ? null : RouteSettings(name: '/login');
+  }
+}

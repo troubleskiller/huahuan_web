@@ -32,7 +32,7 @@ class UserListState extends State {
 
   _query() {
     myDS.page.currentPage = 0;
-    myDS.page.pageSize = rowsPerPage;
+    myDS.page.pageSize = 9990;
     myDS.loadData();
   }
 
@@ -87,9 +87,9 @@ class UserListState extends State {
     var buttonBar = ButtonBar(
       children: <Widget>[
         ButtonWithIcon(
-            label: 'reset', iconData: Icons.refresh, onPressed: () => _query()),
+            label: '刷新', iconData: Icons.refresh, onPressed: () => _query()),
         ButtonWithIcon(
-            label: 'add', iconData: Icons.add, onPressed: () => _edit()),
+            label: '添加', iconData: Icons.add, onPressed: () => _edit()),
       ],
     );
 
@@ -186,6 +186,7 @@ class MyDS extends DataTableSource {
     ResponseBodyApi responseBodyApi =
         await UserApi.findByCreatedId(requestBodyApi);
     page = PageModel.fromJson(responseBodyApi.data);
+    page.pageSize = page.sum;
 
     dataList = page.data!.map<UserInfo>((v) {
       UserInfo userInfo = UserInfo.fromJson(v);
@@ -195,7 +196,7 @@ class MyDS extends DataTableSource {
   }
 
   onPageChanged(firstRowIndex) {
-    page.currentPage = firstRowIndex / page.pageSize + 1;
+    page.currentPage = (firstRowIndex / page.pageSize + 1).toInt();
     loadData();
   }
 
@@ -219,8 +220,6 @@ class MyDS extends DataTableSource {
         DataCell(Text(userInfo.loginName ?? '--')),
         //用户电话
         DataCell(Text(userInfo.tel ?? '--')),
-        //todo： 创建者
-        // DataCell(Text(userInfo.creator ?? '--')),
         //用户所属客户
         DataCell(Text(userInfo.customerModel?.name.toString() ?? '--')),
         //创建时间
@@ -228,13 +227,15 @@ class MyDS extends DataTableSource {
         DataCell(Text(
             DateTime.parse(userInfo.created ?? '').toString().split('.')[0])),
         //是否启用，状态
-        DataCell(BrnSwitchButton(
-            value: userInfo.isEnable == 1,
-            onChanged: (value) {
-              userInfo.isEnable = value ? 1 : 0;
-              notifyListeners();
-              //todo: 设置更改用户启用状态api
-            })),
+        DataCell(
+          BrnSwitchButton(
+              value: userInfo.isEnable == 1,
+              onChanged: (value) {
+                userInfo.isEnable = value ? 1 : 0;
+                notifyListeners();
+                //todo: 设置更改用户启用状态api
+              }),
+        ),
         // //用户权限等级 todo:add 权限
         DataCell(
           IconButton(
@@ -280,7 +281,4 @@ class MyDS extends DataTableSource {
 
   @override
   int get selectedRowCount => 0;
-
-// @override
-// int get selectedRowCount => selectedCount;
 }

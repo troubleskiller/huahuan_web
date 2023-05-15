@@ -36,8 +36,11 @@ class TroFormFieldState extends State<TroFormField> {
               child: Padding(
                 padding: EdgeInsets.only(right: 20),
                 child: Align(
-                  child: Text(widget.label!),
-                  alignment: Alignment.centerRight,
+                  child: Text(
+                    widget.label!,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  alignment: Alignment.centerLeft,
                 ),
               ),
             ),
@@ -59,7 +62,11 @@ class TroFormFieldState extends State<TroFormField> {
                 child: Padding(
                   padding: EdgeInsets.only(right: 20),
                   child: Align(
-                    child: Text(widget.label!),
+                    child: Text(
+                      widget.label!,
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
                     alignment: Alignment.centerRight,
                   ),
                 ),

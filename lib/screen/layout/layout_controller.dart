@@ -4,6 +4,7 @@ import 'package:huahuan_web/constant/enum.dart';
 class LayoutController extends ChangeNotifier {
   MenuDisplayType? menuDisplayType = MenuDisplayType.side;
   bool isMaximize = false;
+  late int curIdx;
 
   toggleMaximize() {
     isMaximize = !isMaximize;
@@ -15,7 +16,8 @@ class LayoutController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void update() {
+  void update(int idx) {
+    curIdx = idx;
     notifyListeners();
   }
 }

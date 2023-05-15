@@ -1,21 +1,14 @@
 import 'package:bruno/bruno.dart';
 import 'package:flutter/material.dart';
-import 'package:huahuan_web/api/menu_api.dart';
 import 'package:huahuan_web/api/project_api.dart';
-import 'package:huahuan_web/api/role_api.dart';
 import 'package:huahuan_web/api/user_api.dart';
-import 'package:huahuan_web/model/admin/menu_model.dart';
 import 'package:huahuan_web/model/admin/project_model.dart';
-import 'package:huahuan_web/model/admin/role_model.dart';
-import 'package:huahuan_web/model/admin/treeVo.dart';
 import 'package:huahuan_web/model/admin/user_info.dart';
-import 'package:huahuan_web/model/admin/user_model.dart';
 import 'package:huahuan_web/model/api/page_model.dart';
 import 'package:huahuan_web/model/api/response_api.dart';
+import 'package:huahuan_web/screen/user_manage/role_edit_in_user_list.dart';
+import 'package:huahuan_web/screen/user_manage/user_edit.dart';
 import 'package:huahuan_web/util/store_util.dart';
-import 'package:huahuan_web/util/utils.dart';
-import 'package:huahuan_web/widget/dialog/rename_dialog.dart';
-import 'package:huahuan_web/widget/input/TroInput.dart';
 
 class ProjectAuth extends StatefulWidget {
   const ProjectAuth({Key? key}) : super(key: key);
@@ -101,8 +94,7 @@ class _ProjectAuthState extends State<ProjectAuth> {
             if (responseBodyApi.code == 200) {
               getCurProjects(curUser!.id!);
               BrnToast.show(
-                  "成功为用户${curUser!.name}添加${project.name}页面的权限",
-                  context);
+                  "成功为用户${curUser!.name}添加${project.name}页面的权限", context);
             } else {
               BrnToast.show("未添加成功，请检查网络或稍后重试", context);
             }
@@ -112,8 +104,7 @@ class _ProjectAuthState extends State<ProjectAuth> {
             if (responseBodyApi.code == 200) {
               getCurProjects(curUser!.id!);
               BrnToast.show(
-                  "成功为用户${curUser!.name}删除${project.name}页面的权限",
-                  context);
+                  "成功为用户${curUser!.name}删除${project.name}页面的权限", context);
             } else {
               BrnToast.show("未删除成功，请检查网络或稍后重试", context);
             }
@@ -150,72 +141,37 @@ class _ProjectAuthState extends State<ProjectAuth> {
             flex: 16,
             child: Column(
               children: [
-                Column(
-                    children: users
-                        .map(
-                          (e) => UserLine(
-                              user: e,
-                              onTap: () {
-                                setState(() {
-                                  curUser = e;
-                                  getCurProjects(e.id!);
-                                });
-                              },
-                              curUser: curUser!),
-                        )
-                        .toList()),
+                Expanded(
+                  flex: 7,
+                  child: ListView(
+                      children: users
+                          .map(
+                            (e) => UserLine(
+                                user: e,
+                                onTap: () {
+                                  setState(() {
+                                    curUser = e;
+                                    getCurProjects(e.id!);
+                                  });
+                                },
+                                curUser: curUser!),
+                          )
+                          .toList()),
+                ),
                 Spacer(),
                 BrnNormalButton(
                   text: '添加新的用户',
                   onTap: () {
                     showDialog(
-                        context: context,
-                        builder: (_) {
-                          String newName = '';
-                          return RenameDialog(
-                            contentWidget: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                TroInput(
-                                  label: '添加新用户',
-                                  value: '',
-                                  onChange: (value) {
-                                    newName = value;
-                                  },
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    TextButton(
-                                      child: Text('关闭'),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                    TextButton(
-                                      child: Text('确定'),
-                                      onPressed: () async {
-                                        ResponseBodyApi responseBodyApi =
-                                            await RoleApi.addRole(
-                                                '{"isDel":1,"name":"$newName"}');
-                                        if (responseBodyApi.code == 200) {
-                                          selectAllUsers();
-                                          BrnToast.show(
-                                              "成功添加新用户$newName", context);
-                                        } else {
-                                          BrnToast.show(
-                                              "未成功添加用户，请检查网络或稍后重试", context);
-                                        }
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          );
-                        });
+                      context: context,
+                      builder: (BuildContext context) => Dialog(
+                        child: UserEdit(),
+                      ),
+                    ).then((v) {
+                      if (v != null) {
+                        setState(() {});
+                      }
+                    });
                   },
                 ),
                 Spacer(),
@@ -266,6 +222,35 @@ class UserLine extends StatefulWidget {
 }
 
 class _UserLineState extends State<UserLine> {
+  _roles({UserInfo? userInfo}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => Dialog(
+        child: RoleEditInUserScreen(
+          userInfo: userInfo,
+        ),
+      ),
+    ).then((v) {
+      setState(() {});
+    });
+  }
+
+  //todo: 编辑页面
+  _edit({UserInfo? userInfo}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => Dialog(
+        child: UserEdit(
+          userInfo: userInfo,
+        ),
+      ),
+    ).then((v) {
+      if (v != null) {
+        setState(() {});
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -337,7 +322,7 @@ class _UserLineState extends State<UserLine> {
               child: IconButton(
                 icon: const Icon(Icons.person),
                 onPressed: () {
-                  // _editroles(userInfo: userInfo);
+                  _roles(userInfo: widget.user);
                 },
               ),
             ),
@@ -349,7 +334,7 @@ class _UserLineState extends State<UserLine> {
               child: IconButton(
                 icon: const Icon(Icons.edit),
                 onPressed: () {
-                  // state._edit(userInfo: userInfo);
+                  _edit(userInfo: widget.user);
                 },
               ),
             ),
