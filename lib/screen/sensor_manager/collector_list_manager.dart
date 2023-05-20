@@ -82,50 +82,47 @@ class CollectorListManagerState extends State<CollectorListManager> {
       ],
     );
 
-    Scrollbar table = Scrollbar(
+    ListView table = ListView(
       controller: scrollController,
-      child: ListView(
-        controller: scrollController,
-        padding: const EdgeInsets.all(10.0),
-        children: <Widget>[
-          PaginatedDataTable(
-            header: const Text('采集仪查看'),
-            rowsPerPage: rowsPerPage,
-            onRowsPerPageChanged: (int? value) {
-              setState(() {
-                if (value != null) {
-                  rowsPerPage = value;
-                  myDS.page.pageSize = rowsPerPage;
-                  myDS.loadData();
-                }
-              });
-            },
-            availableRowsPerPage: const <int>[2, 5, 10, 20],
-            onPageChanged: myDS.onPageChanged,
-            columns: const <DataColumn>[
-              DataColumn(
-                label: Text('设备名称'),
-              ),
-              DataColumn(
-                label: Text('设备编号'),
-              ),
-              DataColumn(
-                label: Text('设备类型'),
-              ),
-              DataColumn(
-                label: Text('设备周期'),
-              ),
-              DataColumn(
-                label: Text('设备端口'),
-              ),
-              DataColumn(
-                label: Text('操作'),
-              ),
-            ],
-            source: myDS,
-          ),
-        ],
-      ),
+      padding: const EdgeInsets.all(10.0),
+      children: <Widget>[
+        PaginatedDataTable(
+          header: const Text('采集仪查看'),
+          rowsPerPage: rowsPerPage,
+          onRowsPerPageChanged: (int? value) {
+            setState(() {
+              if (value != null) {
+                rowsPerPage = value;
+                myDS.page.pageSize = rowsPerPage;
+                myDS.loadData();
+              }
+            });
+          },
+          availableRowsPerPage: const <int>[2, 5, 10, 20],
+          onPageChanged: myDS.onPageChanged,
+          columns: const <DataColumn>[
+            DataColumn(
+              label: Text('设备名称'),
+            ),
+            DataColumn(
+              label: Text('设备编号'),
+            ),
+            DataColumn(
+              label: Text('设备类型'),
+            ),
+            DataColumn(
+              label: Text('设备周期'),
+            ),
+            DataColumn(
+              label: Text('设备端口'),
+            ),
+            DataColumn(
+              label: Text('操作'),
+            ),
+          ],
+          source: myDS,
+        ),
+      ],
     );
     return Container(
       color: Colors.white,
@@ -142,7 +139,7 @@ class CollectorListManagerState extends State<CollectorListManager> {
                 child: SingleChildScrollView(
                   controller: aController,
                   scrollDirection: Axis.horizontal,
-                  child: SizedBox(height: 800, width: 1100, child: table),
+                  child: SizedBox(height: 800, width: 1280, child: table),
                 )),
           ),
         ],

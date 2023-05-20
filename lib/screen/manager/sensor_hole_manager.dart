@@ -86,59 +86,56 @@ class SensorHoleManagerState extends State<SensorHoleManager> {
       ],
     );
 
-    Scrollbar table = Scrollbar(
+    ListView table = ListView(
       controller: scrollController,
-      child: ListView(
-        controller: scrollController,
-        padding: const EdgeInsets.all(10.0),
-        children: <Widget>[
-          PaginatedDataTable(
-            header: const Text('测点管理'),
-            rowsPerPage: rowsPerPage,
-            onRowsPerPageChanged: (int? value) {
-              setState(() {
-                if (value != null) {
-                  rowsPerPage = value;
-                  myDS.page.pageSize = rowsPerPage;
-                  myDS.loadData();
-                }
-              });
-            },
-            availableRowsPerPage: const <int>[2, 5, 10, 20],
-            onPageChanged: myDS.onPageChanged,
-            columns: const <DataColumn>[
-              DataColumn(
-                label: Text('测点名'),
-              ),
-              DataColumn(
-                label: Text('位置'),
-              ),
-              DataColumn(
-                label: Text('设备编号'),
-              ),
-              DataColumn(
-                label: Text('设备类型'),
-              ),
-              DataColumn(
-                label: Text('参考点'),
-              ),
-              DataColumn(
-                label: Text('初始值'),
-              ),
-              DataColumn(
-                label: Text('单位'),
-              ),
-              DataColumn(
-                label: Text('创建时间'),
-              ),
-              DataColumn(
-                label: Text('操作'),
-              ),
-            ],
-            source: myDS,
-          ),
-        ],
-      ),
+      padding: const EdgeInsets.all(10.0),
+      children: <Widget>[
+        PaginatedDataTable(
+          header: const Text('测点管理'),
+          rowsPerPage: rowsPerPage,
+          onRowsPerPageChanged: (int? value) {
+            setState(() {
+              if (value != null) {
+                rowsPerPage = value;
+                myDS.page.pageSize = rowsPerPage;
+                myDS.loadData();
+              }
+            });
+          },
+          availableRowsPerPage: const <int>[2, 5, 10, 20],
+          onPageChanged: myDS.onPageChanged,
+          columns: const <DataColumn>[
+            DataColumn(
+              label: Text('测点名'),
+            ),
+            DataColumn(
+              label: Text('位置'),
+            ),
+            DataColumn(
+              label: Text('设备编号'),
+            ),
+            DataColumn(
+              label: Text('设备类型'),
+            ),
+            DataColumn(
+              label: Text('参考点'),
+            ),
+            DataColumn(
+              label: Text('初始值'),
+            ),
+            DataColumn(
+              label: Text('单位'),
+            ),
+            DataColumn(
+              label: Text('创建时间'),
+            ),
+            DataColumn(
+              label: Text('操作'),
+            ),
+          ],
+          source: myDS,
+        ),
+      ],
     );
     return Container(
       color: Colors.white,
@@ -151,12 +148,17 @@ class SensorHoleManagerState extends State<SensorHoleManager> {
           buttonBar,
           Expanded(
             child: Scrollbar(
+              controller: aController,
+              child: CustomScrollView(
+                scrollDirection: Axis.horizontal,
                 controller: aController,
-                child: SingleChildScrollView(
-                  controller: aController,
-                  scrollDirection: Axis.horizontal,
-                  child: Container(height: 800, width: 1000, child: table),
-                )),
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Container(height: 800, width: 1920, child: table),
+                  )
+                ],
+              ),
+            ),
           ),
         ],
       ),

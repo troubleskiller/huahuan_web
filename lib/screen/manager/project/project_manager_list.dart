@@ -70,26 +70,86 @@ class _ProjectManagerListState extends State<ProjectManagerList> {
                         children: [
                           TableRow(
                             children: [
-                              Center(child: Text('项目名称')),
-                              Center(child: Text('用户id')),
-                              Center(child: Text('经纬度')),
-                              Center(child: Text('描述')),
-                              Center(child: Text('创建时间')),
-                              Center(child: Text('操作')),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 10),
+                                child: Center(child: Text('项目名称')),
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 10),
+                                child: Center(child: Text('用户id')),
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 10),
+                                child: Center(child: Text('经纬度')),
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 10),
+                                child: Center(child: Text('描述')),
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 10),
+                                child: Center(child: Text('创建时间')),
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 10),
+                                child: Center(child: Text('操作')),
+                              )
                             ],
                           ),
                           ...projects
                               .map(
                                 (e) => TableRow(
                                   children: [
-                                    Center(child: Text(e.name ?? '-')),
-                                    Center(child: Text(e.userId.toString())),
-                                    Center(child: Text(e.location ?? '-')),
-                                    Center(child: Text(e.description ?? '-')),
-                                    Center(
-                                      child: Text(
-                                        DateTime.tryParse(e.created ?? '-')
-                                            .toString(),
+                                    Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 15, vertical: 10),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [Text(e.name ?? '-')],
+                                        )),
+                                    Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 15, vertical: 10),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Text(e.userId.toString() ?? '-')
+                                          ],
+                                        )),
+                                    Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 15, vertical: 10),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [Text(e.location ?? '-')],
+                                        )),
+                                    Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 15, vertical: 10),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Text(e.description ?? '-')
+                                          ],
+                                        )),
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 15, vertical: 10),
+                                      child: Center(
+                                        child: Text(
+                                          DateTime.tryParse(e.created ?? '-')
+                                              .toString(),
+                                        ),
                                       ),
                                     ),
                                     Container(

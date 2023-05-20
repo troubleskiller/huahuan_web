@@ -132,30 +132,67 @@ class _DataManagerListState extends State<DataManagerList> {
                                 children: [
                                   TableRow(
                                     children: [
-                                      Center(child: Text('项目名称')),
-                                      Center(child: Text('用户id')),
-                                      Center(child: Text('测项类型')),
-                                      Center(child: Text('创建时间')),
-                                      Center(child: Text('操作')),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 15, vertical: 5),
+                                        child: Center(child: Text('项目名称')),
+                                      ),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 15, vertical: 5),
+                                        child: Center(child: Text('用户id')),
+                                      ),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 15, vertical: 5),
+                                        child: Center(child: Text('测项类型')),
+                                      ),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 15, vertical: 5),
+                                        child: Center(child: Text('创建时间')),
+                                      ),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 15, vertical: 5),
+                                        child: Center(child: Text('操作')),
+                                      ),
                                     ],
                                   ),
                                   ...e.events!
                                       .map(
                                         (e) => TableRow(
                                           children: [
-                                            Center(child: Text(e.name ?? '-')),
-                                            Center(
-                                                child:
-                                                    Text(e.userId.toString())),
-                                            Center(
-                                                child: Text(eventType[
-                                                        e.projectTypeId] ??
-                                                    '-')),
-                                            Center(
-                                              child: Text(
-                                                DateTime.tryParse(
-                                                        e.created ?? '-')
-                                                    .toString(),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 15, vertical: 5),
+                                              child: Center(
+                                                  child: Text(e.name ?? '-')),
+                                            ),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 15, vertical: 5),
+                                              child: Center(
+                                                  child: Text(
+                                                      e.userId.toString())),
+                                            ),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 15, vertical: 5),
+                                              child: Center(
+                                                  child: Text(eventType[
+                                                          e.projectTypeId] ??
+                                                      '-')),
+                                            ),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 15, vertical: 5),
+                                              child: Center(
+                                                child: Text(
+                                                  DateTime.tryParse(
+                                                          e.created ?? '-')
+                                                      .toString(),
+                                                ),
                                               ),
                                             ),
                                             Container(

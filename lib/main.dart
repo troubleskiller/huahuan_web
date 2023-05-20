@@ -21,7 +21,6 @@ void main() async {
   await init();
   Flutter2dAMap.updatePrivacy(true);
   Flutter2dAMap.setApiKey(
-    // iOSKey: '1a8f6a489483534a9f2ca96e4eeeb9b3',
     webKey: '6a6e238f54d5ce96ed6691ea3880caac',
   ).then((_) => runApp(MultiProvider(
           providers: [

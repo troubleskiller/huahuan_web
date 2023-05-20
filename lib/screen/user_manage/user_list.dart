@@ -93,56 +93,53 @@ class UserListState extends State {
       ],
     );
 
-    Scrollbar table = Scrollbar(
+    ListView table = ListView(
       controller: scrollController,
-      child: ListView(
-        controller: scrollController,
-        padding: const EdgeInsets.all(10.0),
-        children: <Widget>[
-          PaginatedDataTable(
-            header: const Text('用户管理'),
-            rowsPerPage: rowsPerPage,
-            onRowsPerPageChanged: (int? value) {
-              setState(() {
-                if (value != null) {
-                  rowsPerPage = value;
-                  myDS.page.pageSize = rowsPerPage;
-                  myDS.loadData();
-                }
-              });
-            },
-            availableRowsPerPage: const <int>[2, 5, 10, 20],
-            onPageChanged: myDS.onPageChanged,
-            columns: const <DataColumn>[
-              DataColumn(
-                label: Text('用户名'),
-              ),
-              DataColumn(
-                label: Text('用户账号'),
-              ),
-              DataColumn(
-                label: Text('用户电话'),
-              ),
-              DataColumn(
-                label: Text('用户所属客户'),
-              ),
-              DataColumn(
-                label: Text('用户创建时间'),
-              ),
-              DataColumn(
-                label: Text('用户是否启用'),
-              ),
-              DataColumn(
-                label: Text('用户角色'),
-              ),
-              DataColumn(
-                label: Text('操作'),
-              ),
-            ],
-            source: myDS,
-          ),
-        ],
-      ),
+      padding: const EdgeInsets.all(10.0),
+      children: <Widget>[
+        PaginatedDataTable(
+          header: const Text('用户管理'),
+          rowsPerPage: rowsPerPage,
+          onRowsPerPageChanged: (int? value) {
+            setState(() {
+              if (value != null) {
+                rowsPerPage = value;
+                myDS.page.pageSize = rowsPerPage;
+                myDS.loadData();
+              }
+            });
+          },
+          availableRowsPerPage: const <int>[2, 5, 10, 20],
+          onPageChanged: myDS.onPageChanged,
+          columns: const <DataColumn>[
+            DataColumn(
+              label: Text('用户名'),
+            ),
+            DataColumn(
+              label: Text('用户账号'),
+            ),
+            DataColumn(
+              label: Text('用户电话'),
+            ),
+            DataColumn(
+              label: Text('用户所属客户'),
+            ),
+            DataColumn(
+              label: Text('用户创建时间'),
+            ),
+            DataColumn(
+              label: Text('用户是否启用'),
+            ),
+            DataColumn(
+              label: Text('用户角色'),
+            ),
+            DataColumn(
+              label: Text('操作'),
+            ),
+          ],
+          source: myDS,
+        ),
+      ],
     );
     return Scaffold(
       backgroundColor: Colors.white,
@@ -154,12 +151,17 @@ class UserListState extends State {
           buttonBar,
           Expanded(
             child: Scrollbar(
+              controller: aController,
+              child: CustomScrollView(
+                scrollDirection: Axis.horizontal,
                 controller: aController,
-                child: SingleChildScrollView(
-                  controller: aController,
-                  scrollDirection: Axis.horizontal,
-                  child: Container(height: 800, width: 1920, child: table),
-                )),
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Container(height: 800, width: 1920, child: table),
+                  )
+                ],
+              ),
+            ),
           ),
         ],
       ),

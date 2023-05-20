@@ -375,297 +375,345 @@ class _ItemManagerState extends State<ItemManager> {
                       ),
                       Spacer(),
                       Expanded(
-                          flex: 8,
-                          child: Flex(
-                            direction: Axis.vertical,
-                            children: [
-                              Expanded(
-                                child: StatefulBuilder(builder: (context, set) {
-                                  return Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      InkWell(
-                                        child: Container(
-                                          height: 50,
-                                          width: 150,
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: const [
-                                                  Text(
-                                                    '本期数据时间',
-                                                    style:
-                                                        TextStyle(fontSize: 16),
-                                                  ),
-                                                  Icon(
-                                                    Icons.calendar_month,
-                                                    size: 16,
-                                                    color: Colors.blueAccent,
-                                                  ),
-                                                ],
-                                              ),
-                                              Text(statDate),
-                                            ],
-                                          ),
+                        flex: 8,
+                        child: Flex(
+                          direction: Axis.vertical,
+                          children: [
+                            Expanded(
+                              child: StatefulBuilder(builder: (context, set) {
+                                return Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    InkWell(
+                                      child: Container(
+                                        height: 50,
+                                        width: 150,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: const [
+                                                Text(
+                                                  '本期数据时间',
+                                                  style:
+                                                      TextStyle(fontSize: 16),
+                                                ),
+                                                Icon(
+                                                  Icons.calendar_month,
+                                                  size: 16,
+                                                  color: Colors.blueAccent,
+                                                ),
+                                              ],
+                                            ),
+                                            Text(statDate),
+                                          ],
                                         ),
-                                        onTap: () {
-                                          BrnDatePicker.showDatePicker(context,
-                                              maxDateTime: DateTime.parse(
-                                                  '2024-01-01 00:00:00'),
-                                              minDateTime: DateTime.parse(
-                                                  '2019-01-01 00:00:00'),
-                                              initialDateTime: DateTime.parse(
-                                                  '2023-03-14 15:43:48'),
-                                              // 支持DateTimePickerMode.date、DateTimePickerMode.datetime、DateTimePickerMode.time
-                                              pickerMode: BrnDateTimePickerMode
-                                                  .datetime,
-                                              minuteDivider: 1,
-                                              pickerTitleConfig:
-                                                  BrnPickerTitleConfig.Default,
-                                              dateFormat:
-                                                  'yyyy年,MM月,dd日,HH时:mm分:ss秒',
-                                              onConfirm: (dateTime, list) {
-                                            set(
-                                              () {
-                                                statDate = dateTime
-                                                    .toString()
-                                                    .split('.')[0];
-                                                BrnToast.show(
-                                                    "onConfirm:  $dateTime ",
-                                                    context);
-                                              },
-                                            );
-                                          }, onClose: () {
-                                            print("onClose");
-                                          }, onCancel: () {
-                                            print("onCancel");
-                                          }, onChange: (dateTime, list) {
-                                            print(
-                                                "onChange:  $dateTime    $list");
-                                          });
-                                        },
                                       ),
-                                      Container(
-                                        width: 20,
-                                      ),
-                                      InkWell(
-                                        child: Container(
-                                          height: 50,
-                                          width: 150,
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: const [
-                                                  Text(
-                                                    '参考数据时间',
-                                                    style:
-                                                        TextStyle(fontSize: 16),
-                                                  ),
-                                                  Icon(
-                                                    Icons.calendar_month,
-                                                    size: 16,
-                                                    color: Colors.blueAccent,
-                                                  ),
-                                                ],
-                                              ),
-                                              Text(endData),
-                                            ],
-                                          ),
-                                        ),
-                                        onTap: () {
-                                          BrnDatePicker.showDatePicker(context,
-                                              maxDateTime: DateTime.parse(
-                                                  '2024-01-01 00:00:00'),
-                                              minDateTime: DateTime.parse(
-                                                  '2019-01-01 00:00:00'),
-                                              initialDateTime: DateTime.parse(
-                                                  '2023-03-14 09:43:48'),
-                                              // 支持DateTimePickerMode.date、DateTimePickerMode.datetime、DateTimePickerMode.time
-                                              pickerMode: BrnDateTimePickerMode
-                                                  .datetime,
-                                              minuteDivider: 1,
-                                              pickerTitleConfig:
-                                                  BrnPickerTitleConfig.Default,
-                                              dateFormat: 'yyyy,MM,dd,HH:mm:ss',
-                                              onConfirm: (dateTime, list) {
-                                            set(() {
-                                              endData = dateTime
+                                      onTap: () {
+                                        BrnDatePicker.showDatePicker(context,
+                                            maxDateTime: DateTime.parse(
+                                                '2024-01-01 00:00:00'),
+                                            minDateTime: DateTime.parse(
+                                                '2019-01-01 00:00:00'),
+                                            initialDateTime: DateTime.parse(
+                                                '2023-03-14 15:43:48'),
+                                            // 支持DateTimePickerMode.date、DateTimePickerMode.datetime、DateTimePickerMode.time
+                                            pickerMode:
+                                                BrnDateTimePickerMode.datetime,
+                                            minuteDivider: 1,
+                                            pickerTitleConfig:
+                                                BrnPickerTitleConfig.Default,
+                                            dateFormat:
+                                                'yyyy年,MM月,dd日,HH时:mm分:ss秒',
+                                            onConfirm: (dateTime, list) {
+                                          set(
+                                            () {
+                                              statDate = dateTime
                                                   .toString()
                                                   .split('.')[0];
                                               BrnToast.show(
-                                                  "onConfirm:  $dateTime",
+                                                  "onConfirm:  $dateTime ",
                                                   context);
-                                            });
-                                          }, onClose: () {
-                                            print("onClose");
-                                          }, onCancel: () {
-                                            print("onCancel");
-                                          }, onChange: (dateTime, list) {
-                                            print(
-                                                "onChange:  $dateTime    $list");
+                                            },
+                                          );
+                                        }, onClose: () {
+                                          print("onClose");
+                                        }, onCancel: () {
+                                          print("onCancel");
+                                        }, onChange: (dateTime, list) {
+                                          print(
+                                              "onChange:  $dateTime    $list");
+                                        });
+                                      },
+                                    ),
+                                    Container(
+                                      width: 20,
+                                    ),
+                                    InkWell(
+                                      child: Container(
+                                        height: 50,
+                                        width: 150,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: const [
+                                                Text(
+                                                  '参考数据时间',
+                                                  style:
+                                                      TextStyle(fontSize: 16),
+                                                ),
+                                                Icon(
+                                                  Icons.calendar_month,
+                                                  size: 16,
+                                                  color: Colors.blueAccent,
+                                                ),
+                                              ],
+                                            ),
+                                            Text(endData),
+                                          ],
+                                        ),
+                                      ),
+                                      onTap: () {
+                                        BrnDatePicker.showDatePicker(context,
+                                            maxDateTime: DateTime.parse(
+                                                '2024-01-01 00:00:00'),
+                                            minDateTime: DateTime.parse(
+                                                '2019-01-01 00:00:00'),
+                                            initialDateTime: DateTime.parse(
+                                                '2023-03-14 09:43:48'),
+                                            // 支持DateTimePickerMode.date、DateTimePickerMode.datetime、DateTimePickerMode.time
+                                            pickerMode:
+                                                BrnDateTimePickerMode.datetime,
+                                            minuteDivider: 1,
+                                            pickerTitleConfig:
+                                                BrnPickerTitleConfig.Default,
+                                            dateFormat: 'yyyy,MM,dd,HH:mm:ss',
+                                            onConfirm: (dateTime, list) {
+                                          set(() {
+                                            endData = dateTime
+                                                .toString()
+                                                .split('.')[0];
+                                            BrnToast.show(
+                                                "onConfirm:  $dateTime",
+                                                context);
                                           });
-                                        },
+                                        }, onClose: () {
+                                          print("onClose");
+                                        }, onCancel: () {
+                                          print("onCancel");
+                                        }, onChange: (dateTime, list) {
+                                          print(
+                                              "onChange:  $dateTime    $list");
+                                        });
+                                      },
+                                    ),
+                                    Container(
+                                      width: 20,
+                                    ),
+                                    //时间间隔选择
+                                    InkWell(
+                                      child: Row(
+                                        children: [
+                                          Text('时间间隔'),
+                                          Icon(Icons.arrow_drop_down),
+                                        ],
                                       ),
-                                      Container(
-                                        width: 20,
-                                      ),
-                                      //时间间隔选择
-                                      InkWell(
-                                        child: Text('时间间隔'),
-                                        onTap: () {
-                                          showDialog(
-                                              context: context,
-                                              builder: (_) => StatefulBuilder(
-                                                    builder: (context, state) {
-                                                      return BrnSingleSelectDialog(
-                                                          isClose: true,
-                                                          title: '请选择测量间隔时间',
-                                                          conditions:
-                                                              conditions,
-                                                          checkedItem:
-                                                              conditions[
-                                                                  selectedIndex],
-                                                          submitText: '提交',
-                                                          isCustomFollowScroll:
-                                                              true,
-                                                          onItemClick:
-                                                              (BuildContext
-                                                                      context,
-                                                                  int index) {
-                                                            selectedIndex =
-                                                                index;
-                                                            state(() {});
-                                                          },
-                                                          onSubmitClick:
-                                                              (data) {
-                                                            timestamp = timeMap[
-                                                                    selectedIndex] ??
-                                                                60;
-                                                            BrnToast.show(
-                                                                data!, context);
-                                                          });
-                                                    },
-                                                  ));
-                                        },
-                                      ),
-                                      Container(
-                                        width: 20,
-                                      ),
-                                      //检测方向选择
-                                      [4, 8, 9].contains(controller
-                                              .nowEvent?.projectTypeId)
-                                          ? InkWell(
-                                              child: Text('测量方向'),
-                                              onTap: () {
-                                                showDialog(
-                                                    context: context,
-                                                    builder: (_) =>
-                                                        StatefulBuilder(
-                                                          builder:
-                                                              (context, state) {
-                                                            return BrnSingleSelectDialog(
-                                                                isClose: true,
-                                                                title:
-                                                                    '请选择测量方向',
-                                                                conditions:
-                                                                    ceConditions,
-                                                                checkedItem:
-                                                                    ceConditions[
-                                                                        ceSelectedIndex],
-                                                                submitText:
-                                                                    '提交',
-                                                                isCustomFollowScroll:
-                                                                    true,
-                                                                onItemClick:
-                                                                    (BuildContext
-                                                                            context,
-                                                                        int
-                                                                            index) {
-                                                                  ceSelectedIndex =
-                                                                      index;
-                                                                  state(() {});
-                                                                },
-                                                                onSubmitClick:
-                                                                    (data) {
-                                                                  direction =
-                                                                      ceSelectedIndex;
-                                                                  BrnToast.show(
-                                                                      data!,
-                                                                      context);
-                                                                });
-                                                          },
-                                                        ));
-                                              },
-                                            )
-                                          : Container(),
-                                      Container(
-                                        width: 20,
-                                      ),
-                                      ButtonWithIcon(
-                                        iconData: Icons.search,
-                                        onPressed: () {
-                                          [4, 8, 9].contains(controller
-                                                  .nowEvent?.projectTypeId)
-                                              ? getCurCeXie(DataRequest(
-                                                  id: controller.nowEvent?.id,
-                                                  direction: direction,
-                                                  sampMinutes: timestamp,
-                                                  type: controller
-                                                      .nowEvent?.projectTypeId,
-                                                  statDate: statDate,
-                                                  endDate: endData))
-                                              : getCurData(DataRequest(
-                                                  id: controller.nowEvent?.id,
-                                                  direction: direction,
-                                                  sampMinutes: timestamp,
-                                                  type: controller
-                                                      .nowEvent?.projectTypeId,
-                                                  statDate: statDate,
-                                                  endDate: endData));
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                }),
-                              ),
-                              Expanded(
-                                flex: 7,
-                                child: PageView(
-                                  controller: pageController,
-                                  children: [
+                                      onTap: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (_) => StatefulBuilder(
+                                                  builder: (context, state) {
+                                                    return BrnSingleSelectDialog(
+                                                        isClose: true,
+                                                        title: '请选择测量间隔时间',
+                                                        conditions: conditions,
+                                                        checkedItem: conditions[
+                                                            selectedIndex],
+                                                        submitText: '提交',
+                                                        isCustomFollowScroll:
+                                                            true,
+                                                        onItemClick:
+                                                            (BuildContext
+                                                                    context,
+                                                                int index) {
+                                                          selectedIndex = index;
+                                                          state(() {});
+                                                        },
+                                                        onSubmitClick: (data) {
+                                                          timestamp = timeMap[
+                                                                  selectedIndex] ??
+                                                              60;
+                                                          BrnToast.show(
+                                                              data!, context);
+                                                        });
+                                                  },
+                                                ));
+                                      },
+                                    ),
+                                    Container(
+                                      width: 20,
+                                    ),
+                                    //检测方向选择
                                     [4, 8, 9].contains(
                                             controller.nowEvent?.projectTypeId)
-                                        ? _buildCeXieCells()
-                                        : _buildDataCells(),
-                                    [4, 8, 9].contains(
-                                            controller.nowEvent?.projectTypeId)
-                                        ? _buildCeXieChart()
-                                        : _buildLineChart(),
+                                        ? InkWell(
+                                            child: Row(
+                                              children: [
+                                                Text('测量方向'),
+                                                Icon(Icons.arrow_drop_down),
+                                              ],
+                                            ),
+                                            onTap: () {
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (_) =>
+                                                      StatefulBuilder(
+                                                        builder:
+                                                            (context, state) {
+                                                          return BrnSingleSelectDialog(
+                                                              isClose: true,
+                                                              title: '请选择测量方向',
+                                                              conditions:
+                                                                  ceConditions,
+                                                              checkedItem:
+                                                                  ceConditions[
+                                                                      ceSelectedIndex],
+                                                              submitText: '提交',
+                                                              isCustomFollowScroll:
+                                                                  true,
+                                                              onItemClick:
+                                                                  (BuildContext
+                                                                          context,
+                                                                      int
+                                                                          index) {
+                                                                ceSelectedIndex =
+                                                                    index;
+                                                                state(() {});
+                                                              },
+                                                              onSubmitClick:
+                                                                  (data) {
+                                                                direction =
+                                                                    ceSelectedIndex;
+                                                                BrnToast.show(
+                                                                    data!,
+                                                                    context);
+                                                              });
+                                                        },
+                                                      ));
+                                            },
+                                          )
+                                        : Container(),
+                                    Container(
+                                      width: 20,
+                                    ),
+                                    ButtonWithIcon(
+                                      iconData: Icons.search,
+                                      onPressed: () {
+                                        [4, 8, 9].contains(controller
+                                                .nowEvent?.projectTypeId)
+                                            ? getCurCeXie(DataRequest(
+                                                id: controller.nowEvent?.id,
+                                                direction: direction,
+                                                sampMinutes: timestamp,
+                                                type: controller
+                                                    .nowEvent?.projectTypeId,
+                                                statDate: statDate,
+                                                endDate: endData))
+                                            : getCurData(DataRequest(
+                                                id: controller.nowEvent?.id,
+                                                direction: direction,
+                                                sampMinutes: timestamp,
+                                                type: controller
+                                                    .nowEvent?.projectTypeId,
+                                                statDate: statDate,
+                                                endDate: endData));
+                                      },
+                                    ),
                                   ],
-                                ),
-                              ),
-                              PageIndicator(
-                                count: 2,
+                                );
+                              }),
+                            ),
+                            Expanded(
+                              flex: 7,
+                              child: PageView(
                                 controller: pageController,
-                                color: Colors.black,
+                                children: [
+                                  [
+                                    4,
+                                    8,
+                                    9
+                                  ].contains(controller.nowEvent?.projectTypeId)
+                                      ? _buildCeXieCells()
+                                      : _buildDataCells(),
+                                  [
+                                    4,
+                                    8,
+                                    9
+                                  ].contains(controller.nowEvent?.projectTypeId)
+                                      ? _buildCeXieChart()
+                                      : _buildLineChart(),
+                                ],
                               ),
-                            ],
-                          )),
+                            ),
+                            StatefulBuilder(builder: (context, set) {
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        color: pageController.page != 1
+                                            ? Colors.lightBlue
+                                            : Colors.white),
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 10, horizontal: 20),
+                                    child: GestureDetector(
+                                      child: Text('数据表'),
+                                      onTap: () {
+                                        pageController.jumpToPage(0);
+                                        set(() {});
+                                      },
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 80,
+                                  ),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        color: pageController.page == 1
+                                            ? Colors.lightBlue
+                                            : Colors.white),
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 10, horizontal: 20),
+                                    child: GestureDetector(
+                                      child: Text('数据图'),
+                                      onTap: () {
+                                        pageController.jumpToPage(1);
+                                        set(() {});
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -818,15 +866,39 @@ class _ItemManagerState extends State<ItemManager> {
                   direction: Axis.horizontal,
                   children: [
                     Expanded(
-                        child: Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.blueAccent)),
-                      child: const Center(
+                      child: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.blueAccent)),
+                        child: const Center(
                           child: Text(
-                        '测点名',
-                        style: TextStyle(fontSize: 15),
-                      )),
-                    )),
+                            '测点名',
+                            style: TextStyle(fontSize: 15),
+                          ),
+                        ),
+                      ),
+                    ),          Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.blueAccent)),
+                        child: const Center(
+                          child: Text(
+                            '参考时间',
+                            style: TextStyle(fontSize: 15),
+                          ),
+                        ),
+                      ),
+                    ),          Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.blueAccent)),
+                        child: const Center(
+                          child: Text(
+                            '本期时间',
+                            style: TextStyle(fontSize: 15),
+                          ),
+                        ),
+                      ),
+                    ),
                     Expanded(
                         child: Container(
                       decoration: BoxDecoration(

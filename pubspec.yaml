@@ -39,7 +39,6 @@ dependencies:
   bruno: ^3.3.0
   fluttertoast: ^8.1.2
   map: ^1.3.5+1
-  easy_localization: ^3.0.1
   card_swiper: ^2.0.4
   fl_chart: ^0.61.0
   syncfusion_flutter_charts: ^20.4.54
@@ -52,6 +51,7 @@ dependencies:
   path_provider: ^2.0.14
   image: ^4.0.15
   provider: 6.0.2
+  get: ^4.6.5
 
 dev_dependencies:
   flutter_test:

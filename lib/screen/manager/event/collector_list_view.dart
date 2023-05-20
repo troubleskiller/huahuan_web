@@ -65,56 +65,53 @@ class CollectorListViewState extends State<CollectorListView> {
       ],
     );
 
-    Scrollbar table = Scrollbar(
+    ListView table = ListView(
       controller: scrollController,
-      child: ListView(
-        controller: scrollController,
-        padding: const EdgeInsets.all(10.0),
-        children: <Widget>[
-          PaginatedDataTable(
-            header: const Text('采集仪查看'),
-            rowsPerPage: rowsPerPage,
-            onRowsPerPageChanged: (int? value) {
-              setState(() {
-                if (value != null) {
-                  rowsPerPage = value;
-                  myDS.page.pageSize = rowsPerPage;
-                  myDS.loadData();
-                }
-              });
-            },
-            availableRowsPerPage: const <int>[2, 5, 10, 20],
-            onPageChanged: myDS.onPageChanged,
-            columns: const <DataColumn>[
-              DataColumn(
-                label: Text('设备名称'),
-              ),
-              DataColumn(
-                label: Text('设备编号'),
-              ),
-              DataColumn(
-                label: Text('信号'),
-              ),
-              DataColumn(
-                label: Text('经度'),
-              ),
-              DataColumn(
-                label: Text('纬度'),
-              ),
-              DataColumn(
-                label: Text('电量'),
-              ),
-              DataColumn(
-                label: Text('状态'),
-              ),
-              DataColumn(
-                label: Text('操作'),
-              ),
-            ],
-            source: myDS,
-          ),
-        ],
-      ),
+      padding: const EdgeInsets.all(10.0),
+      children: <Widget>[
+        PaginatedDataTable(
+          header: const Text('采集仪查看'),
+          rowsPerPage: rowsPerPage,
+          onRowsPerPageChanged: (int? value) {
+            setState(() {
+              if (value != null) {
+                rowsPerPage = value;
+                myDS.page.pageSize = rowsPerPage;
+                myDS.loadData();
+              }
+            });
+          },
+          availableRowsPerPage: const <int>[2, 5, 10, 20],
+          onPageChanged: myDS.onPageChanged,
+          columns: const <DataColumn>[
+            DataColumn(
+              label: Text('设备名称'),
+            ),
+            DataColumn(
+              label: Text('设备编号'),
+            ),
+            DataColumn(
+              label: Text('信号'),
+            ),
+            DataColumn(
+              label: Text('经度'),
+            ),
+            DataColumn(
+              label: Text('纬度'),
+            ),
+            DataColumn(
+              label: Text('电量'),
+            ),
+            DataColumn(
+              label: Text('状态'),
+            ),
+            DataColumn(
+              label: Text('操作'),
+            ),
+          ],
+          source: myDS,
+        ),
+      ],
     );
     return Container(
       color: Colors.white,

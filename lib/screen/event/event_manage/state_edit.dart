@@ -91,104 +91,128 @@ class StateEditState extends State<StateEdit> {
               _dTo.description = v;
             },
           ),
-          StatefulBuilder(builder: (context, a) {
-            return Column(
+          Container(
+            margin:EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
               children: [
-                InkWell(
-                  child: Container(
-                    height: 50,
-                    width: 150,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: const [
-                            Text(
-                              '开始时间',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            Icon(
-                              Icons.calendar_month,
-                              size: 16,
-                              color: Colors.blueAccent,
-                            ),
-                          ],
-                        ),
-                        Text(statDate.toString().split('.')[0]),
-                      ],
-                    ),
-                  ),
-                  onTap: () {
-                    BrnDatePicker.showDatePicker(context,
-                        maxDateTime: DateTime.parse('2024-01-01 00:00:00'),
-                        minDateTime: DateTime.parse('2019-01-01 00:00:00'),
-                        initialDateTime: DateTime.parse('2023-03-14 15:43:48'),
-                        // 支持DateTimePickerMode.date、DateTimePickerMode.datetime、DateTimePickerMode.time
-                        pickerMode: BrnDateTimePickerMode.datetime,
-                        minuteDivider: 1,
-                        pickerTitleConfig: BrnPickerTitleConfig.Default,
-                        dateFormat: 'yyyy年,MM月,dd日,HH时:mm分:ss秒',
-                        onConfirm: (dateTime, list) {
-                      a(() {
-                        statDate = dateTime.toString();
-                        BrnToast.show("onConfirm:  $dateTime ", context);
-                        _dTo.startTime = dateTime.millisecondsSinceEpoch;
-                      });
-                    });
-                  },
+                Text(
+                  '开始时间',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
-                InkWell(
-                  child: Container(
-                    height: 50,
-                    width: 150,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: const [
-                            Text(
-                              '结束时间',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            Icon(
-                              Icons.calendar_month,
-                              size: 16,
-                              color: Colors.blueAccent,
-                            ),
-                          ],
+                SizedBox(width: 20,),
+                StatefulBuilder(builder: (context, a) {
+                  return Column(
+                    children: [
+                      InkWell(
+                        child: Container(
+                          height: 50,
+                          width: 150,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: const [
+                                  Icon(
+                                    Icons.calendar_month,
+                                    size: 16,
+                                    color: Colors.blueAccent,
+                                  ),
+                                ],
+                              ),
+                              Text(statDate.toString().split('.')[0]),
+                            ],
+                          ),
                         ),
-                        Text(endDate.toString().split('.')[0]),
-                      ],
-                    ),
-                  ),
-                  onTap: () {
-                    BrnDatePicker.showDatePicker(
-                      context,
-                      maxDateTime: DateTime.parse('2024-01-01 00:00:00'),
-                      minDateTime: DateTime.parse('2019-01-01 00:00:00'),
-                      initialDateTime: DateTime.parse('2023-03-14 15:43:48'),
-                      // 支持DateTimePickerMode.date、DateTimePickerMode.datetime、DateTimePickerMode.time
-                      pickerMode: BrnDateTimePickerMode.datetime,
-                      minuteDivider: 1,
-                      pickerTitleConfig: BrnPickerTitleConfig.Default,
-                      dateFormat: 'yyyy年,MM月,dd日,HH时:mm分:ss秒',
-                      onConfirm: (dateTime, list) {
-                        a(() {
-                          endDate = dateTime.toString();
-                          BrnToast.show("onConfirm:  $dateTime ", context);
-                          _dTo.endTime = dateTime.millisecondsSinceEpoch;
-                        });
-                      },
-                    );
-                  },
-                ),
+                        onTap: () {
+                          BrnDatePicker.showDatePicker(context,
+                              maxDateTime: DateTime.parse('2024-01-01 00:00:00'),
+                              minDateTime: DateTime.parse('2019-01-01 00:00:00'),
+                              initialDateTime:
+                                  DateTime.parse('2023-03-14 15:43:48'),
+                              // 支持DateTimePickerMode.date、DateTimePickerMode.datetime、DateTimePickerMode.time
+                              pickerMode: BrnDateTimePickerMode.datetime,
+                              minuteDivider: 1,
+                              pickerTitleConfig: BrnPickerTitleConfig.Default,
+                              dateFormat: 'yyyy年,MM月,dd日,HH时:mm分:ss秒',
+                              onConfirm: (dateTime, list) {
+                            a(() {
+                              statDate = dateTime.toString();
+                              BrnToast.show("onConfirm:  $dateTime ", context);
+                              _dTo.startTime = dateTime.millisecondsSinceEpoch;
+                            });
+                          });
+                        },
+                      ),
+                    ],
+                  );
+                }),
               ],
-            );
-          }),
+            ),
+          ),
+          Container(
+            margin:EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              children: [
+                Text(
+                  '结束时间',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                SizedBox(width: 20,),
+                StatefulBuilder(builder: (context, a) {
+                  return Column(
+                    children: [
+                      InkWell(
+                        child: Container(
+                          height: 50,
+                          width: 150,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: const [
+                                  Icon(
+                                    Icons.calendar_month,
+                                    size: 16,
+                                    color: Colors.blueAccent,
+                                  ),
+                                ],
+                              ),
+                              Text(endDate.toString().split('.')[0]),
+                            ],
+                          ),
+                        ),
+                        onTap: () {
+                          BrnDatePicker.showDatePicker(
+                            context,
+                            maxDateTime: DateTime.parse('2024-01-01 00:00:00'),
+                            minDateTime: DateTime.parse('2019-01-01 00:00:00'),
+                            initialDateTime:
+                                DateTime.parse('2023-03-14 15:43:48'),
+                            // 支持DateTimePickerMode.date、DateTimePickerMode.datetime、DateTimePickerMode.time
+                            pickerMode: BrnDateTimePickerMode.datetime,
+                            minuteDivider: 1,
+                            pickerTitleConfig: BrnPickerTitleConfig.Default,
+                            dateFormat: 'yyyy年,MM月,dd日,HH时:mm分:ss秒',
+                            onConfirm: (dateTime, list) {
+                              a(() {
+                                endDate = dateTime.toString();
+                                BrnToast.show("onConfirm:  $dateTime ", context);
+                                _dTo.endTime = dateTime.millisecondsSinceEpoch;
+                              });
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                }),
+              ],
+            ),
+          ),
           StatefulBuilder(builder: (context, set) {
             return Column(
               children: [

@@ -20,6 +20,8 @@ class DateModel {
     this.location,
     this.curValue,
     this.refValue,
+    this.refTime,
+    this.curTime,
     this.curOffset,
     this.totalOffset,
   });
@@ -31,12 +33,16 @@ class DateModel {
     location = json['location'];
     curValue = json['curValue'];
     refValue = json['refValue'];
+    refTime = json['refTime'];
+    curTime = json['curTime'];
     curOffset = json['curOffset'];
     totalOffset = json['totalOffset'];
   }
   int? id;
   String? sn;
   String? name;
+  String? refTime;
+  String? curTime;
   String? location;
   double? curValue;
   double? refValue;
