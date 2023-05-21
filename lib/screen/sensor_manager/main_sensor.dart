@@ -108,7 +108,131 @@ class _SensorDataState extends State<SensorData> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(widget.sensorP.name ?? '-'),
-          ...(widget.sensorP.collectors ?? []).map((e) => SensorLine(data: e)),
+          (widget.sensorP.collectors ?? []).isNotEmpty
+              ? Table(
+                  border: TableBorder.all(width: 0.5, color: Colors.black),
+                  children: [
+                      TableRow(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 10),
+                            child: Center(child: Text('采集仪名称')),
+                          ),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 10),
+                            child: Center(child: Text('采集仪编号')),
+                          ),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 10),
+                            child: Center(child: Text('采集仪类型')),
+                          ),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 10),
+                            child: Center(child: Text('采集周期')),
+                          ),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 10),
+                            child: Center(child: Text('采集端口')),
+                          ),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 10),
+                            child: Center(child: Text('用户id')),
+                          ),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 10),
+                            child: Center(child: Text('操作')),
+                          )
+                        ],
+                      )
+                    ])
+              : Container(),
+          Table(
+            border: TableBorder.all(width: 0.5, color: Colors.black),
+            children: [
+              ...(widget.sensorP.collectors ?? []).map((e) =>
+                  TableRow(children: [
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      child: Center(
+                        child: Text(e.name ?? '--'),
+                      ),
+                    ),
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      child: Center(
+                        child: Text(e.sn ?? '--'),
+                      ),
+                    ),
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      child: Center(
+                        child: Text(collectorType[e.collectorTypeId] ?? '--'),
+                      ),
+                    ),
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      child: Center(
+                        child: Text(e.cycle.toString() ?? '--'),
+                      ),
+                    ),
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      child: Center(
+                        child: Text(e.port.toString() ?? '--'),
+                      ),
+                    ),
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      child: Center(
+                        child: Text(e.userId ?? '--'),
+                      ),
+                    ),
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      child: Center(
+                        child: ButtonBar(
+                          alignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () {
+                                _edit(sensorModel: e);
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () {
+                                troConfirm(context, 'confirmDelete',
+                                    (context) async {
+                                  var result = await CollectorApi.delete(
+                                      '{"id": ${e.id}}');
+                                  if (result.code == 200) {
+                                    TroUtils.message('success');
+                                  }
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  ])),
+            ],
+          ),
           GestureDetector(
             child: Container(
               child: Text('添加'),

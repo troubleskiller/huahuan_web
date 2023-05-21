@@ -27,4 +27,12 @@ class SensorApi {
         await HttpUtil.post('/sensor/delete', data: data, requestToken: true);
     return responseBodyApi;
   }
+
+  static Future<ResponseBodyApi> historyCurve(data) async {
+    ResponseBodyApi responseBodyApi = await HttpUtil.post(
+        '/sensor/historyCurve',
+        data: data,
+        requestToken: true);
+    return responseBodyApi;
+  }
 }

@@ -1,16 +1,17 @@
 import 'package:bruno/bruno.dart';
-import 'package:card_swiper/card_swiper.dart';
 import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:huahuan_web/api/collector_api.dart';
 import 'package:huahuan_web/api/event_api.dart';
 import 'package:huahuan_web/api/project_api.dart';
+import 'package:huahuan_web/api/sensor_api.dart';
 import 'package:huahuan_web/constant/common_constant.dart';
 import 'package:huahuan_web/model/admin/CollectorModel.dart';
 import 'package:huahuan_web/model/admin/project_model.dart';
 import 'package:huahuan_web/model/api/response_api.dart';
 import 'package:huahuan_web/model/application/event_model.dart';
 import 'package:huahuan_web/screen/item/date_model.dart';
+import 'package:huahuan_web/screen/item/sensor_single/sensor_single.dart';
 import 'package:huahuan_web/screen/manager/event/collector_list_view.dart';
 import 'package:huahuan_web/util/store_util.dart';
 import 'package:huahuan_web/widget/button/icon_button.dart';
@@ -876,7 +877,8 @@ class _ItemManagerState extends State<ItemManager> {
                           ),
                         ),
                       ),
-                    ),          Expanded(
+                    ),
+                    Expanded(
                       child: Container(
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.blueAccent)),
@@ -887,7 +889,8 @@ class _ItemManagerState extends State<ItemManager> {
                           ),
                         ),
                       ),
-                    ),          Expanded(
+                    ),
+                    Expanded(
                       child: Container(
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.blueAccent)),
@@ -967,7 +970,28 @@ class _ItemManagerState extends State<ItemManager> {
                       flex: 1,
                     ),
                   ]),
-                ...ans.map((e) => ItemLine(dateModel: e)).toList(),
+                ...ans
+                    .map((e) => ItemLine(
+                          dateModel: e,
+                          onTap: (String sn) async {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) => Dialog(
+                                child: SensorSingle(
+                                  curSensor: e,
+                                ),
+                              ),
+                            ).then((v) {
+                              if (v != null) {
+                                setState(() {});
+                              }
+                            });
+                            ResponseBodyApi response =
+                                await SensorApi.historyCurve('{"sn":$sn}');
+                            print(response.data);
+                          },
+                        ))
+                    .toList(),
                 BrnIconButton(
                   name: '下载报表',
                   iconWidget: Icon(Icons.download),
