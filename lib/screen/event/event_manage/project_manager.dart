@@ -15,6 +15,7 @@ import 'package:huahuan_web/model/application/event_model.dart';
 import 'package:huahuan_web/model/mall/Image.dart';
 import 'package:huahuan_web/screen/event/event_manage/event_list.dart';
 import 'package:huahuan_web/screen/event/event_manage/state_edit.dart';
+import 'package:huahuan_web/screen/item/item_manager.dart';
 import 'package:huahuan_web/screen/layout/layout.dart';
 import 'package:huahuan_web/screen/layout/layout_controller.dart';
 import 'package:huahuan_web/util/store_util.dart';
@@ -86,8 +87,7 @@ class _ProjectViewState extends State<ProjectView> {
                   event: ProjectModel.fromJson(e),
                   curProject: curProject.id ?? 0,
                   onClick: () async {
-                    Utils.openTab(14);
-                    controller.updateEventModel(
+                    await controller.updateEventModel(
                       nE: ProjectModel.fromJson(e),
                       nP: curProject,
                       nEs: List.from(responseBodyApi.data)
@@ -95,7 +95,13 @@ class _ProjectViewState extends State<ProjectView> {
                           .toList(),
                       nPs: projects,
                     );
+                    Utils.openTab(14);
                     layoutState.setState(() {});
+                    if (itemManagerState != null) {
+                      itemManagerState!.setState(() {
+
+                      });
+                    }
                     // layoutController.update(9);
                   },
                 ))

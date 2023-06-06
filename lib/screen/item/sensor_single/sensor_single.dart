@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:huahuan_web/api/sensor_api.dart';
+import 'package:huahuan_web/model/api/response_api.dart';
 import 'package:huahuan_web/screen/item/date_model.dart';
 import 'package:huahuan_web/util/tro_util.dart';
 import 'package:huahuan_web/widget/button/icon_button.dart';
 
-class SensorSingle extends StatefulWidget {
+class SensorSingle extends StatelessWidget {
   const SensorSingle({Key? key, required this.curSensor}) : super(key: key);
   final DateModel curSensor;
 
-  @override
-  State<SensorSingle> createState() => _SensorSingleState();
-}
-
-class _SensorSingleState extends State<SensorSingle> {
   @override
   Widget build(BuildContext context) {
     var table = Column(
@@ -58,6 +55,17 @@ class _SensorSingleState extends State<SensorSingle> {
           label: '历史数据',
           iconData: Icons.history,
           onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) => Dialog(
+                child: SensorSingle(
+                  curSensor: curSensor,
+                ),
+              ),
+            ).then((v) {
+              if (v != null) {
+              }
+            });
             Navigator.pop(context);
           },
         )

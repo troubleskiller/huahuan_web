@@ -1,4 +1,5 @@
 import 'package:bruno/bruno.dart';
+import 'package:flutter/material.dart';
 import 'package:huahuan_web/model/admin/project_model.dart';
 
 class Brn1RowDelegate implements BrnMultiDataPickerDelegate {
@@ -51,5 +52,11 @@ class Brn1RowDelegate implements BrnMultiDataPickerDelegate {
       return firstSelectedIndex;
     }
     return 0;
+  }
+}
+///默认的选择轮盘滚动行为，Android去除默认的水波纹动画效果
+class _ScrollBehavior extends ScrollBehavior {
+  Widget buildViewportChrome(BuildContext context, Widget child, AxisDirection axisDirection) {
+    return child;
   }
 }

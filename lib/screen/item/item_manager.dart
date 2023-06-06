@@ -1,10 +1,10 @@
+import 'package:bottom_picker/bottom_picker.dart';
 import 'package:bruno/bruno.dart';
 import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:huahuan_web/api/collector_api.dart';
 import 'package:huahuan_web/api/event_api.dart';
 import 'package:huahuan_web/api/project_api.dart';
-import 'package:huahuan_web/api/sensor_api.dart';
 import 'package:huahuan_web/constant/common_constant.dart';
 import 'package:huahuan_web/model/admin/CollectorModel.dart';
 import 'package:huahuan_web/model/admin/project_model.dart';
@@ -22,6 +22,8 @@ import 'DataRequest.dart';
 import 'DateModel2.dart';
 import 'delegate.dart';
 import 'item_line.dart';
+ItemManagerState? itemManagerState;
+
 
 class ItemManager extends StatefulWidget {
   const ItemManager({
@@ -31,10 +33,13 @@ class ItemManager extends StatefulWidget {
   // final int curProject;
 
   @override
-  State<ItemManager> createState() => _ItemManagerState();
+  State<ItemManager> createState() {
+    itemManagerState = ItemManagerState();
+    return itemManagerState!;
+  }
 }
 
-class _ItemManagerState extends State<ItemManager> {
+class ItemManagerState extends State<ItemManager> {
   PageController pageController = PageController(initialPage: 0);
   int timestamp = 60;
   int selectedIndex = 0;
@@ -62,7 +67,6 @@ class _ItemManagerState extends State<ItemManager> {
 
   @override
   void initState() {
-    controller = context.read<EventModel>();
     init();
     super.initState();
   }
@@ -164,6 +168,7 @@ class _ItemManagerState extends State<ItemManager> {
   }
 
   void init() async {
+    controller = context.read<EventModel>();
     if (controller.nowProject == null) {
       ResponseBodyApi responseBodyApi = await ProjectApi.findAllById(
           '{"id":${StoreUtil.getCurrentUserInfo().id}}');
@@ -173,7 +178,7 @@ class _ItemManagerState extends State<ItemManager> {
             .toList()[0]
             .id
       });
-      controller.updateEventModel(
+      await controller.updateEventModel(
           nPs: List.from(responseBodyApi.data)
               .map((e) => ProjectModel.fromJson(e))
               .toList(),
@@ -185,14 +190,15 @@ class _ItemManagerState extends State<ItemManager> {
           nE: List.from(res.data)
               .map((e) => ProjectModel.fromJson(e))
               .toList()[0]);
-    } else if (controller.nowEvent == null) {
-      ResponseBodyApi res =
-          await ProjectApi.getCurEvents({"id": controller.nowProject?.id});
-      controller.updateEventModel(
-        nEs: List.from(res.data).map((e) => ProjectModel.fromJson(e)).toList(),
-        nE: controller.nowEvents?[0],
-      );
     }
+
+    ResponseBodyApi res =
+        await ProjectApi.getCurEvents({"id": controller.nowProject?.id});
+    controller.updateEventModel(
+      nEs: List.from(res.data).map((e) => ProjectModel.fromJson(e)).toList(),
+      nE: controller.nowEvents?[0],
+    );
+
     [4, 8, 9].contains(controller.nowEvent?.projectTypeId)
         ? getCurCeXie(DataRequest(
             id: controller.nowEvent?.id,
@@ -986,9 +992,6 @@ class _ItemManagerState extends State<ItemManager> {
                                 setState(() {});
                               }
                             });
-                            ResponseBodyApi response =
-                                await SensorApi.historyCurve('{"sn":$sn}');
-                            print(response.data);
                           },
                         ))
                     .toList(),
