@@ -101,6 +101,7 @@ class _ProjectViewState extends State<ProjectView> {
                       itemManagerState!.setState(() {
 
                       });
+                      itemManagerState!.init();
                     }
                     // layoutController.update(9);
                   },

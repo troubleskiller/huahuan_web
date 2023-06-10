@@ -13,6 +13,7 @@ import 'package:huahuan_web/model/application/event_model.dart';
 import 'package:huahuan_web/screen/item/date_model.dart';
 import 'package:huahuan_web/screen/item/sensor_single/sensor_single.dart';
 import 'package:huahuan_web/screen/manager/event/collector_list_view.dart';
+import 'package:huahuan_web/util/data_table.dart';
 import 'package:huahuan_web/util/store_util.dart';
 import 'package:huahuan_web/widget/button/icon_button.dart';
 import 'package:provider/provider.dart';
@@ -22,8 +23,8 @@ import 'DataRequest.dart';
 import 'DateModel2.dart';
 import 'delegate.dart';
 import 'item_line.dart';
-ItemManagerState? itemManagerState;
 
+ItemManagerState? itemManagerState;
 
 class ItemManager extends StatefulWidget {
   const ItemManager({
@@ -680,6 +681,18 @@ class ItemManagerState extends State<ItemManager> {
                               return Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
+                                      BrnIconButton(
+                                        name: '下载报表',
+                                        iconWidget: Icon(Icons.download),
+                                        onTap: () {
+                                          [
+                                            4,
+                                            8,
+                                            9
+                                          ].contains(controller.nowEvent?.projectTypeId)
+                                              ? downLoadCeXie():downLoad();
+                                        },
+                                      ),
                                   Container(
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(12),
@@ -734,6 +747,8 @@ class ItemManagerState extends State<ItemManager> {
         height: 300,
         padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
         child: SfCartesianChart(
+            zoomPanBehavior: ZoomPanBehavior(
+                enableMouseWheelZooming: true, zoomMode: ZoomMode.x),
             primaryXAxis: CategoryAxis(
               isVisible: true,
               //显示时间轴置顶
@@ -861,130 +876,92 @@ class ItemManagerState extends State<ItemManager> {
   }
 
   Widget _buildDataCells() {
+    DateModel select = DateModel();
     return Flex(
       direction: Axis.horizontal,
       children: [
         Expanded(
           flex: 9,
           child: SingleChildScrollView(
-            child: Column(
+              child: StatefulBuilder(builder: (context, sse) {
+            return Table(
+              defaultColumnWidth: IntrinsicColumnWidth(),
+              border: TableBorder.all(color: Colors.black, width: 1),
               children: [
-                Flex(
-                  direction: Axis.horizontal,
+                TableRow(
                   children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.blueAccent)),
-                        child: const Center(
-                          child: Text(
-                            '测点名',
-                            style: TextStyle(fontSize: 15),
-                          ),
-                        ),
+                    const Center(
+                      child: Text(
+                        '测点名',
+                        style: TextStyle(fontSize: 15),
                       ),
                     ),
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.blueAccent)),
-                        child: const Center(
-                          child: Text(
-                            '参考时间',
-                            style: TextStyle(fontSize: 15),
-                          ),
-                        ),
+                    const Center(
+                      child: Text(
+                        '参考时间',
+                        style: TextStyle(fontSize: 15),
                       ),
                     ),
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.blueAccent)),
-                        child: const Center(
-                          child: Text(
-                            '本期时间',
-                            style: TextStyle(fontSize: 15),
-                          ),
-                        ),
+                    const Center(
+                      child: Text(
+                        '本期时间',
+                        style: TextStyle(fontSize: 15),
                       ),
                     ),
-                    Expanded(
-                        child: Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.blueAccent)),
-                      child: const Center(
-                          child: Text(
-                        '本期数据',
-                        style: TextStyle(fontSize: 15),
-                      )),
+                    const Center(
+                        child: Text(
+                      '本期数据',
+                      style: TextStyle(fontSize: 15),
                     )),
-                    Expanded(
-                        child: Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.blueAccent)),
-                      child: const Center(
-                          child: Text(
-                        '参考数据',
-                        style: TextStyle(fontSize: 15),
-                      )),
+                    const Center(
+                        child: Text(
+                      '参考数据',
+                      style: TextStyle(fontSize: 15),
                     )),
-                    Expanded(
-                        child: Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.blueAccent)),
-                      child: const Center(
-                          child: Text(
-                        '本期变化',
-                        style: TextStyle(fontSize: 15),
-                      )),
+                    const Center(
+                        child: Text(
+                      '本期变化',
+                      style: TextStyle(fontSize: 15),
                     )),
-                    Expanded(
-                        child: Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.blueAccent)),
-                      child: const Center(
-                          child: Text(
-                        '累计变化',
-                        style: TextStyle(fontSize: 15),
-                      )),
+                    const Center(
+                        child: Text(
+                      '累计变化',
+                      style: TextStyle(fontSize: 15),
                     )),
-                    const Spacer(),
                   ],
                 ),
-                if (ans.isEmpty)
-                  Flex(direction: Axis.horizontal, children: [
-                    Spacer(
-                      flex: 2,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                ...ans.map((dateModel) {
+                  DateTime? refTime =
+                      DateTime.tryParse(dateModel.refTime ?? '');
+                  DateTime? curTime =
+                      DateTime.tryParse(dateModel.curTime ?? '');
+                  String ref =
+                      '${refTime?.year ?? '/'}年${refTime?.month ?? '/'}月${refTime?.day ?? '/'}日${refTime?.hour ?? '/'}时${refTime?.minute ?? '/'}分${refTime?.second ?? '/'}秒';
+                  String cur =
+                      '${curTime?.year ?? '/'}年${curTime?.month ?? '/'}月${curTime?.day ?? '/'}日${curTime?.hour ?? '/'}时${curTime?.minute ?? '/'}分${curTime?.second ?? '/'}秒';
+                  return TableRow(
+                      decoration: BoxDecoration(
+                          color:
+                              select == dateModel ? Colors.blue : Colors.white),
                       children: [
-                        Container(
-                          height: 200,
-                        ),
-                        Text(
-                          '当前似乎没有数据哦～',
-                          style: TextStyle(fontSize: 30),
-                        ),
-                        Text(
-                          '请选择正确的监测时间～',
-                          style: TextStyle(fontSize: 30),
-                        ),
-                      ],
-                    ),
-                    Spacer(
-                      flex: 1,
-                    ),
-                  ]),
-                ...ans
-                    .map((e) => ItemLine(
-                          dateModel: e,
-                          onTap: (String sn) async {
+                        GestureDetector(
+                          child: Center(
+                            child: Text(
+                              dateModel.name ?? '-',
+                              style: TextStyle(fontSize: 15),
+                            ),
+                          ),
+                          onTap: () {
+                            sse(() {
+                              select = dateModel;
+                            });
+                          },
+                          onDoubleTap: () async {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) => Dialog(
                                 child: SensorSingle(
-                                  curSensor: e,
+                                  sn: dateModel.sn ?? '-',
                                 ),
                               ),
                             ).then((v) {
@@ -993,148 +970,643 @@ class ItemManagerState extends State<ItemManager> {
                               }
                             });
                           },
-                        ))
-                    .toList(),
-                BrnIconButton(
-                  name: '下载报表',
-                  iconWidget: Icon(Icons.download),
-                  onTap: () {
-                    downLoad();
-                  },
-                )
+                        ),
+                        GestureDetector(
+                          child: Center(
+                            child: Text(
+                              ref ?? '-',
+                              style: TextStyle(fontSize: 15),
+                            ),
+                          ),
+                          onTap: () {
+                            sse(() {
+                              select = dateModel;
+                            });
+                          },
+                          onDoubleTap: () async {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) => Dialog(
+                                child: SensorSingle(
+                                  sn: dateModel.sn ?? '-',
+                                ),
+                              ),
+                            ).then((v) {
+                              if (v != null) {
+                                setState(() {});
+                              }
+                            });
+                          },
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            sse(() {
+                              select = dateModel;
+                            });
+                          },
+                          onDoubleTap: () async {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) => Dialog(
+                                child: SensorSingle(
+                                  sn: dateModel.sn ?? '-',
+                                ),
+                              ),
+                            ).then((v) {
+                              if (v != null) {
+                                setState(() {});
+                              }
+                            });
+                          },
+                          child: Center(
+                            child: Text(
+                              cur ?? '',
+                              style: TextStyle(fontSize: 15),
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            sse(() {
+                              select = dateModel;
+                            });
+                          },
+                          child: Center(
+                              child: Text(
+                            dateModel.curValue?.toStringAsFixed(2) ?? '-',
+                            style: TextStyle(fontSize: 15),
+                          )),
+                          onDoubleTap: () async {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) => Dialog(
+                                child: SensorSingle(
+                                  sn: dateModel.sn ?? '-',
+                                ),
+                              ),
+                            ).then((v) {
+                              if (v != null) {
+                                setState(() {});
+                              }
+                            });
+                          },
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            sse(() {
+                              select = dateModel;
+                            });
+                          },
+                          onDoubleTap: () async {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) => Dialog(
+                                child: SensorSingle(
+                                  sn: dateModel.sn ?? '-',
+                                ),
+                              ),
+                            ).then((v) {
+                              if (v != null) {
+                                setState(() {});
+                              }
+                            });
+                          },
+                          child: Center(
+                              child: Text(
+                            dateModel.refValue?.toStringAsFixed(2) ?? '-',
+                            style: TextStyle(fontSize: 15),
+                          )),
+                        ),
+                        GestureDetector(
+                          onDoubleTap: () async {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) => Dialog(
+                                child: SensorSingle(
+                                  sn: dateModel.sn ?? '-',
+                                ),
+                              ),
+                            ).then((v) {
+                              if (v != null) {
+                                setState(() {});
+                              }
+                            });
+                          },
+                          onTap: () {
+                            sse(() {
+                              select = dateModel;
+                            });
+                          },
+                          child: Center(
+                              child: Text(
+                            dateModel.curOffset?.toStringAsFixed(2) ?? '-',
+                            style: TextStyle(fontSize: 15),
+                          )),
+                        ),
+                        GestureDetector(
+                          onDoubleTap: () async {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) => Dialog(
+                                child: SensorSingle(
+                                  sn: dateModel.sn ?? '-',
+                                ),
+                              ),
+                            ).then((v) {
+                              if (v != null) {
+                                setState(() {});
+                              }
+                            });
+                          },
+                          onTap: () {
+                            sse(() {
+                              select = dateModel;
+                            });
+                          },
+                          child: Center(
+                              child: Text(
+                            dateModel.totalOffset?.toStringAsFixed(2) ?? '-',
+                            style: TextStyle(fontSize: 15),
+                          )),
+                        )
+                      ]);
+                }).toList(),
               ],
-            ),
-          ),
+            );
+          })),
         ),
       ],
     );
   }
 
   Widget _buildCeXieCells() {
+    DateModel2 select = DateModel2();
     return Flex(
       direction: Axis.horizontal,
       children: [
         Expanded(
-          flex: 9,
-          child: ListView(
-            children: [
-              Flex(
-                direction: Axis.horizontal,
-                children: [
-                  Expanded(
-                      child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.blueAccent)),
-                    child: const Center(
-                        child: Text(
-                      '测点名',
-                      style: TextStyle(fontSize: 10),
-                    )),
-                  )),
-                  Expanded(
-                      child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.blueAccent)),
-                    child: const Center(
-                        child: Text(
-                      '位置',
-                      style: TextStyle(fontSize: 10),
-                    )),
-                  )),
-                  Expanded(
-                      child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.blueAccent)),
-                    child: const Center(
-                        child: Text(
-                      '本期管形X',
-                      style: TextStyle(fontSize: 10),
-                    )),
-                  )),
-                  Expanded(
-                      child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.blueAccent)),
-                    child: const Center(
-                        child: Text(
-                      '本期管形Y',
-                      style: TextStyle(fontSize: 10),
-                    )),
-                  )),
-                  Expanded(
-                      child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.blueAccent)),
-                    child: const Center(
-                        child: Text(
-                      '参考管形X',
-                      style: TextStyle(fontSize: 10),
-                    )),
-                  )),
-                  Expanded(
-                      child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.blueAccent)),
-                    child: const Center(
-                        child: Text(
-                      '参考管形Y',
-                      style: TextStyle(fontSize: 10),
-                    )),
-                  )),
-                  Expanded(
-                      child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.blueAccent)),
-                    child: const Center(
-                        child: Text(
-                      '本期变化X',
-                      style: TextStyle(fontSize: 10),
-                    )),
-                  )),
-                  Expanded(
-                      child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.blueAccent)),
-                    child: const Center(
-                        child: Text(
-                      '本期变化Y',
-                      style: TextStyle(fontSize: 10),
-                    )),
-                  )),
-                  Expanded(
-                      child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.blueAccent)),
-                    child: const Center(
-                        child: Text(
-                      '累计变化X',
-                      style: TextStyle(fontSize: 10),
-                    )),
-                  )),
-                  Expanded(
-                      child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.blueAccent)),
-                    child: const Center(
-                        child: Text(
-                      '累计变化Y',
-                      style: TextStyle(fontSize: 10),
-                    )),
-                  )),
-                  const Spacer(),
-                ],
-              ),
-              ...ceXies.map((e) => CeXieLine(dateModel: e)).toList(),
-              BrnIconButton(
-                name: '下载报表',
-                iconWidget: Icon(Icons.download),
-                onTap: () {
-                  downLoadCeXie();
-                },
-              )
-            ],
-          ),
-        ),
+            flex: 9,
+            child: SingleChildScrollView(
+              child: StatefulBuilder(builder: (context, sse) {
+                return Table(
+                  defaultColumnWidth: IntrinsicColumnWidth(),
+                  border: TableBorder.all(color: Colors.black, width: 1),
+                  children: [
+                    TableRow(
+                      children: [
+                        const Center(
+                          child: Text(
+                            '测点名',
+                            style: TextStyle(fontSize: 15),
+                          ),
+                        ),
+                        const Center(
+                          child: Text(
+                            '位置',
+                            style: TextStyle(fontSize: 15),
+                          ),
+                        ),
+                        const Center(
+                          child: Text(
+                            '本期管型X',
+                            style: TextStyle(fontSize: 15),
+                          ),
+                        ),
+                        const Center(
+                            child: Text(
+                          '本期管型Y',
+                          style: TextStyle(fontSize: 15),
+                        )),
+                        const Center(
+                            child: Text(
+                          '参考管型X',
+                          style: TextStyle(fontSize: 15),
+                        )),
+                        const Center(
+                            child: Text(
+                          '参考管型Y',
+                          style: TextStyle(fontSize: 15),
+                        )),
+                        const Center(
+                            child: Text(
+                          '本期变化X',
+                          style: TextStyle(fontSize: 15),
+                        )),
+                        const Center(
+                            child: Text(
+                          '本期变化Y',
+                          style: TextStyle(fontSize: 15),
+                        )),
+                        const Center(
+                            child: Text(
+                          '累计变化X',
+                          style: TextStyle(fontSize: 15),
+                        )),
+                        const Center(
+                            child: Text(
+                          '累计变化Y',
+                          style: TextStyle(fontSize: 15),
+                        )),
+                      ],
+                    ),
+                    ...ceXies.map((dateModel) {
+                      return TableRow(
+                          decoration: BoxDecoration(
+                              color: select == dateModel
+                                  ? Colors.blue
+                                  : Colors.white),
+                          children: [
+                            GestureDetector(
+                              child: Center(
+                                child: Text(
+                                  dateModel.name ?? '-',
+                                  style: TextStyle(fontSize: 15),
+                                ),
+                              ),
+                              onTap: () {
+                                sse(() {
+                                  select = dateModel;
+                                });
+                              },
+                              onDoubleTap: () async {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) => Dialog(
+                                    child: SensorSingle(
+                                      sn: dateModel.sn ?? '-',
+                                    ),
+                                  ),
+                                ).then((v) {
+                                  if (v != null) {
+                                    setState(() {});
+                                  }
+                                });
+                              },
+                            ),
+                            GestureDetector(
+                              child: Center(
+                                child: Text(
+                                  dateModel.location.toString(),
+                                  style: TextStyle(fontSize: 15),
+                                ),
+                              ),
+                              onTap: () {
+                                sse(() {
+                                  select = dateModel;
+                                });
+                              },
+                              onDoubleTap: () async {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) => Dialog(
+                                    child: SensorSingle(
+                                      sn: dateModel.sn ?? '-',
+                                    ),
+                                  ),
+                                ).then((v) {
+                                  if (v != null) {
+                                    setState(() {});
+                                  }
+                                });
+                              },
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                sse(() {
+                                  select = dateModel;
+                                });
+                              },
+                              onDoubleTap: () async {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) => Dialog(
+                                    child: SensorSingle(
+                                      sn: dateModel.sn ?? '-',
+                                    ),
+                                  ),
+                                ).then((v) {
+                                  if (v != null) {
+                                    setState(() {});
+                                  }
+                                });
+                              },
+                              child: Center(
+                                child: Text(
+                                  dateModel.curShapeX?.toStringAsFixed(2) ??
+                                      '-',
+                                  style: TextStyle(fontSize: 15),
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                sse(() {
+                                  select = dateModel;
+                                });
+                              },
+                              child: Center(
+                                  child: Text(
+                                dateModel.curShapeY?.toStringAsFixed(2) ?? '-',
+                                style: TextStyle(fontSize: 15),
+                              )),
+                              onDoubleTap: () async {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) => Dialog(
+                                    child: SensorSingle(
+                                      sn: dateModel.sn ?? '-',
+                                    ),
+                                  ),
+                                ).then((v) {
+                                  if (v != null) {
+                                    setState(() {});
+                                  }
+                                });
+                              },
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                sse(() {
+                                  select = dateModel;
+                                });
+                              },
+                              onDoubleTap: () async {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) => Dialog(
+                                    child: SensorSingle(
+                                      sn: dateModel.sn ?? '-',
+                                    ),
+                                  ),
+                                ).then((v) {
+                                  if (v != null) {
+                                    setState(() {});
+                                  }
+                                });
+                              },
+                              child: Center(
+                                  child: Text(
+                                dateModel.refShapeX?.toStringAsFixed(2) ?? '-',
+                                style: TextStyle(fontSize: 15),
+                              )),
+                            ),
+                            GestureDetector(
+                              onDoubleTap: () async {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) => Dialog(
+                                    child: SensorSingle(
+                                      sn: dateModel.sn ?? '-',
+                                    ),
+                                  ),
+                                ).then((v) {
+                                  if (v != null) {
+                                    setState(() {});
+                                  }
+                                });
+                              },
+                              onTap: () {
+                                sse(() {
+                                  select = dateModel;
+                                });
+                              },
+                              child: Center(
+                                  child: Text(
+                                dateModel.refShapeY?.toStringAsFixed(2) ?? '-',
+                                style: TextStyle(fontSize: 15),
+                              )),
+                            ),
+                            GestureDetector(
+                              onDoubleTap: () async {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) => Dialog(
+                                    child: SensorSingle(
+                                      sn: dateModel.sn ?? '-',
+                                    ),
+                                  ),
+                                ).then((v) {
+                                  if (v != null) {
+                                    setState(() {});
+                                  }
+                                });
+                              },
+                              onTap: () {
+                                sse(() {
+                                  select = dateModel;
+                                });
+                              },
+                              child: Center(
+                                  child: Text(
+                                dateModel.curShapeOffsetX?.toStringAsFixed(2) ??
+                                    '-',
+                                style: TextStyle(fontSize: 15),
+                              )),
+                            ),
+                            GestureDetector(
+                              onDoubleTap: () async {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) => Dialog(
+                                    child: SensorSingle(
+                                      sn: dateModel.sn ?? '-',
+                                    ),
+                                  ),
+                                ).then((v) {
+                                  if (v != null) {
+                                    setState(() {});
+                                  }
+                                });
+                              },
+                              onTap: () {
+                                sse(() {
+                                  select = dateModel;
+                                });
+                              },
+                              child: Center(
+                                  child: Text(
+                                dateModel.curShapeOffsetY?.toStringAsFixed(2) ??
+                                    '-',
+                                style: TextStyle(fontSize: 15),
+                              )),
+                            ),
+                            GestureDetector(
+                              onDoubleTap: () async {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) => Dialog(
+                                    child: SensorSingle(
+                                      sn: dateModel.sn ?? '-',
+                                    ),
+                                  ),
+                                ).then((v) {
+                                  if (v != null) {
+                                    setState(() {});
+                                  }
+                                });
+                              },
+                              onTap: () {
+                                sse(() {
+                                  select = dateModel;
+                                });
+                              },
+                              child: Center(
+                                  child: Text(
+                                dateModel.curValueX?.toStringAsFixed(2) ?? '-',
+                                style: TextStyle(fontSize: 15),
+                              )),
+                            ),
+                            GestureDetector(
+                              onDoubleTap: () async {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) => Dialog(
+                                    child: SensorSingle(
+                                      sn: dateModel.sn ?? '-',
+                                    ),
+                                  ),
+                                ).then((v) {
+                                  if (v != null) {
+                                    setState(() {});
+                                  }
+                                });
+                              },
+                              onTap: () {
+                                sse(() {
+                                  select = dateModel;
+                                });
+                              },
+                              child: Center(
+                                  child: Text(
+                                dateModel.curValueY?.toStringAsFixed(2) ?? '-',
+                                style: TextStyle(fontSize: 15),
+                              )),
+                            ),
+                          ]);
+                    }).toList(),
+                  ],
+                );
+              }),
+            )
+            // ListView(
+            //   children: [
+            //     Flex(
+            //       direction: Axis.horizontal,
+            //       children: [
+            //         Expanded(
+            //             child: Container(
+            //           decoration: BoxDecoration(
+            //               border: Border.all(color: Colors.blueAccent)),
+            //           child: const Center(
+            //               child: Text(
+            //             '测点名',
+            //             style: TextStyle(fontSize: 10),
+            //           )),
+            //         )),
+            //         Expanded(
+            //             child: Container(
+            //           decoration: BoxDecoration(
+            //               border: Border.all(color: Colors.blueAccent)),
+            //           child: const Center(
+            //               child: Text(
+            //             '位置',
+            //             style: TextStyle(fontSize: 10),
+            //           )),
+            //         )),
+            //         Expanded(
+            //             child: Container(
+            //           decoration: BoxDecoration(
+            //               border: Border.all(color: Colors.blueAccent)),
+            //           child: const Center(
+            //               child: Text(
+            //             '本期管形X',
+            //             style: TextStyle(fontSize: 10),
+            //           )),
+            //         )),
+            //         Expanded(
+            //             child: Container(
+            //           decoration: BoxDecoration(
+            //               border: Border.all(color: Colors.blueAccent)),
+            //           child: const Center(
+            //               child: Text(
+            //             '本期管形Y',
+            //             style: TextStyle(fontSize: 10),
+            //           )),
+            //         )),
+            //         Expanded(
+            //             child: Container(
+            //           decoration: BoxDecoration(
+            //               border: Border.all(color: Colors.blueAccent)),
+            //           child: const Center(
+            //               child: Text(
+            //             '参考管形X',
+            //             style: TextStyle(fontSize: 10),
+            //           )),
+            //         )),
+            //         Expanded(
+            //             child: Container(
+            //           decoration: BoxDecoration(
+            //               border: Border.all(color: Colors.blueAccent)),
+            //           child: const Center(
+            //               child: Text(
+            //             '参考管形Y',
+            //             style: TextStyle(fontSize: 10),
+            //           )),
+            //         )),
+            //         Expanded(
+            //             child: Container(
+            //           decoration: BoxDecoration(
+            //               border: Border.all(color: Colors.blueAccent)),
+            //           child: const Center(
+            //               child: Text(
+            //             '本期变化X',
+            //             style: TextStyle(fontSize: 10),
+            //           )),
+            //         )),
+            //         Expanded(
+            //             child: Container(
+            //           decoration: BoxDecoration(
+            //               border: Border.all(color: Colors.blueAccent)),
+            //           child: const Center(
+            //               child: Text(
+            //             '本期变化Y',
+            //             style: TextStyle(fontSize: 10),
+            //           )),
+            //         )),
+            //         Expanded(
+            //             child: Container(
+            //           decoration: BoxDecoration(
+            //               border: Border.all(color: Colors.blueAccent)),
+            //           child: const Center(
+            //               child: Text(
+            //             '累计变化X',
+            //             style: TextStyle(fontSize: 10),
+            //           )),
+            //         )),
+            //         Expanded(
+            //             child: Container(
+            //           decoration: BoxDecoration(
+            //               border: Border.all(color: Colors.blueAccent)),
+            //           child: const Center(
+            //               child: Text(
+            //             '累计变化Y',
+            //             style: TextStyle(fontSize: 10),
+            //           )),
+            //         )),
+            //         const Spacer(),
+            //       ],
+            //     ),
+            //     ...ceXies.map((e) => CeXieLine(dateModel: e)).toList(),
+            //     BrnIconButton(
+            //       name: '下载报表',
+            //       iconWidget: Icon(Icons.download),
+            //       onTap: () {
+            //         downLoadCeXie();
+            //       },
+            //     )
+            //   ],
+            // ),
+            ),
       ],
     );
   }
@@ -1144,6 +1616,10 @@ class ItemManagerState extends State<ItemManager> {
         height: 300,
         padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
         child: SfCartesianChart(
+            zoomPanBehavior: ZoomPanBehavior(
+              enableMouseWheelZooming: true,
+              zoomMode: ZoomMode.x,
+            ),
             primaryXAxis: CategoryAxis(
                 isVisible: true,
                 //显示时间轴置顶
@@ -1203,7 +1679,8 @@ class ItemManagerState extends State<ItemManager> {
                 name: '本期管形X',
                 dataSource: ceXies,
                 yValueMapper: (DateModel2 data, num _) => data.curShapeX,
-                xValueMapper: (DateModel2 data, num _) => data.location,
+                xValueMapper: (DateModel2 data, num _) =>
+                    int.tryParse(data.location ?? ''),
                 //显示数据标签
                 dataLabelSettings: DataLabelSettings(
                   isVisible: false,
@@ -1220,7 +1697,8 @@ class ItemManagerState extends State<ItemManager> {
                 name: '本期管形Y',
                 dataSource: ceXies,
                 yValueMapper: (DateModel2 data, num _) => data.curShapeY,
-                xValueMapper: (DateModel2 data, num _) => data.location,
+                xValueMapper: (DateModel2 data, num _) =>
+                    int.tryParse(data.location ?? ''),
                 //显示数据标签
                 dataLabelSettings: DataLabelSettings(
                   isVisible: false,
@@ -1237,7 +1715,8 @@ class ItemManagerState extends State<ItemManager> {
                 name: '参考管形X',
                 dataSource: ceXies,
                 yValueMapper: (DateModel2 data, num _) => data.refShapeX,
-                xValueMapper: (DateModel2 data, num _) => data.location,
+                xValueMapper: (DateModel2 data, num _) =>
+                    int.tryParse(data.location ?? ''),
                 //显示数据标签
                 dataLabelSettings: DataLabelSettings(
                   isVisible: false,
@@ -1254,7 +1733,8 @@ class ItemManagerState extends State<ItemManager> {
                 name: '参考管形Y',
                 dataSource: ceXies,
                 yValueMapper: (DateModel2 data, num _) => data.refShapeY,
-                xValueMapper: (DateModel2 data, num _) => data.location,
+                xValueMapper: (DateModel2 data, num _) =>
+                    int.tryParse(data.location ?? ''),
                 //显示数据标签
                 dataLabelSettings: DataLabelSettings(
                   isVisible: false,
@@ -1271,7 +1751,8 @@ class ItemManagerState extends State<ItemManager> {
                 name: '本期变化X',
                 dataSource: ceXies,
                 yValueMapper: (DateModel2 data, num _) => data.curShapeOffsetX,
-                xValueMapper: (DateModel2 data, num _) => data.location,
+                xValueMapper: (DateModel2 data, num _) =>
+                    int.tryParse(data.location ?? ''),
                 //显示数据标签
                 dataLabelSettings: DataLabelSettings(
                   isVisible: false,
@@ -1288,7 +1769,8 @@ class ItemManagerState extends State<ItemManager> {
                 name: '本期变化Y',
                 dataSource: ceXies,
                 yValueMapper: (DateModel2 data, num _) => data.curShapeOffsetY,
-                xValueMapper: (DateModel2 data, num _) => data.location,
+                xValueMapper: (DateModel2 data, num _) =>
+                    int.tryParse(data.location ?? ''),
                 //显示数据标签
                 dataLabelSettings: DataLabelSettings(
                   isVisible: false,
@@ -1305,7 +1787,8 @@ class ItemManagerState extends State<ItemManager> {
                 name: '累计变化X',
                 dataSource: ceXies,
                 yValueMapper: (DateModel2 data, num _) => data.curValueX,
-                xValueMapper: (DateModel2 data, num _) => data.location,
+                xValueMapper: (DateModel2 data, num _) =>
+                    int.tryParse(data.location ?? ''),
                 //显示数据标签
                 dataLabelSettings: DataLabelSettings(
                   isVisible: false,
@@ -1322,7 +1805,8 @@ class ItemManagerState extends State<ItemManager> {
                 name: '累计变化Y',
                 dataSource: ceXies,
                 yValueMapper: (DateModel2 data, num _) => data.curValueY,
-                xValueMapper: (DateModel2 data, num _) => data.location,
+                xValueMapper: (DateModel2 data, num _) =>
+                    int.tryParse(data.location ?? ''),
                 //显示数据标签
                 dataLabelSettings: DataLabelSettings(
                   isVisible: false,

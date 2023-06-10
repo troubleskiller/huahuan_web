@@ -39,7 +39,7 @@ class DateModel2 {
   num? id;
   String? sn;
   String? name;
-  num? location;
+  String? location;
   num? curValueX;
   num? curValueY;
   num? refValueX;
