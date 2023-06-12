@@ -8,6 +8,7 @@ import 'package:huahuan_web/util/store_util.dart';
 import 'package:huahuan_web/util/tro_util.dart';
 import 'package:huahuan_web/widget/button/icon_button.dart';
 import 'package:huahuan_web/widget/input/TroInput.dart';
+import 'package:huahuan_web/widget/input/TroSelect.dart';
 
 class EventEdit extends StatefulWidget {
   final ProjectModel? curProject;
@@ -28,7 +29,7 @@ class EventEditState extends State<EventEdit> {
 
   String? initValue;
 
-  BrnPortraitRadioGroupOption? selectedValue;
+  String? selectedValue;
 
   @override
   void initState() {
@@ -63,24 +64,18 @@ class EventEditState extends State<EventEdit> {
               _curProject!.description = v;
             },
           ),
-          BrnExpandableGroup(
-            title: '测项类型',
-            children: [
-              BrnPortraitRadioGroup.withSimpleList(
-                selectedOption: initValue ?? '',
-                options: eventType.values.toList(),
-                onChanged: (BrnPortraitRadioGroupOption? old,
-                    BrnPortraitRadioGroupOption? newList) {
-                  BrnToast.show(newList?.title ?? '', context);
-                  selectedValue = newList;
-                  _curProject?.projectTypeId = eventTypeF[selectedValue?.title];
-                },
-              ),
-            ],
-            onExpansionChanged: (a) async {
-              // await getAllCustomersAccessible();
+          TroSelect(
+            value: initValue ?? '其它',
+            dataList: eventType.values
+                .map((e) => SelectOptionVO(value: e, label: e))
+                .toList(),
+            label: '测项类型',
+            onChange: (newList) {
+              selectedValue = newList;
+              _curProject?.projectTypeId = eventTypeF[selectedValue];
             },
           ),
+
         ],
       ),
     );

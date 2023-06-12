@@ -11,6 +11,7 @@ import 'package:huahuan_web/util/store_util.dart';
 import 'package:huahuan_web/util/tro_util.dart';
 import 'package:huahuan_web/widget/button/icon_button.dart';
 import 'package:huahuan_web/widget/input/TroInput.dart';
+import 'package:huahuan_web/widget/input/TroSelect.dart';
 
 class UserEdit extends StatefulWidget {
   final UserInfo? userInfo;
@@ -28,7 +29,8 @@ class UserEditState extends State<UserEdit> {
   UserInfo? _userInfo = UserInfo();
   List<Role> curRoles = [];
   List<CustomerModel> curCustomers = [];
-  BrnPortraitRadioGroupOption? selectedValue;
+  String? selectedValue;
+  String? selectedValue2;
   bool isLoading = true;
 
   @override
@@ -47,6 +49,8 @@ class UserEditState extends State<UserEdit> {
     _userInfo?.isEnable = 1;
     _userInfo?.isDel = 0;
 
+    selectedValue= _userInfo?.customerModel?.name;
+
     setState(() {
       isLoading = false;
     });
@@ -58,13 +62,13 @@ class UserEditState extends State<UserEdit> {
     if (responseBodyApi.code == 200) {
       curRoles = List.from(responseBodyApi.data)
           .map((e) => Role.fromJson(e))
-          .toList()
-        ..removeWhere((element) => element.id == 1);
-      if (StoreUtil.getCurrentUserInfo().roleId != 1) {
-        curRoles.removeWhere((element) =>
-            element.id == StoreUtil.getCurrentUserInfo().role!.id!);
-        selectedValue?.title = _userInfo?.role?.name ?? '';
-      }
+          .toList();
+      selectedValue2 = _userInfo?.role?.name;
+      // if (StoreUtil.getCurrentUserInfo().roleId != 1) {
+      //   curRoles.removeWhere((element) =>
+      //       element.id == StoreUtil.getCurrentUserInfo().role!.id!);
+      //
+      // }
     }
   }
 
@@ -119,49 +123,33 @@ class UserEditState extends State<UserEdit> {
                 _userInfo!.tel = v;
               },
             ),
-            BrnExpandableGroup(
-              title: '所属客户',
-              themeData: BrnFormItemConfig(titleTextStyle: BrnTextStyle()),
-              children: [
-                BrnPortraitRadioGroup.withSimpleList(
-                  options: curCustomers.map((e) => e.name ?? '').toList(),
-                  onChanged: (BrnPortraitRadioGroupOption? old,
-                      BrnPortraitRadioGroupOption? newList) {
-                    BrnToast.show(newList?.title ?? '', context);
-                    selectedValue = newList;
-                    _userInfo?.customerId = curCustomers
-                        .singleWhere(
-                            (element) => element.name == newList?.title)
-                        .id;
-                  },
-                ),
-              ],
-              onExpansionChanged: (a) async {
-                await getAllCustomersAccessible();
+            TroSelect(
+              value:selectedValue ,
+              dataList: curCustomers
+                  .map((e) => SelectOptionVO(value: e.name, label: e.name))
+                  .toList(),
+              label: '所属客户',
+              onChange: (newList) {
+                selectedValue = newList;
+                _userInfo?.customerId = curCustomers
+                    .singleWhere(
+                        (element) => element.name == newList)
+                    .id;
               },
             ),
-            // //todo：所属客户
-            BrnExpandableGroup(
-              title: '所拥有权限',
-              children: [
-                BrnPortraitRadioGroup.withSimpleList(
-                  selectedOption: selectedValue?.title ?? '',
-                  options: curRoles.map((e) => e.name ?? '').toList(),
-                  onChanged: (BrnPortraitRadioGroupOption? old,
-                      BrnPortraitRadioGroupOption? newList) {
-                    BrnToast.show(newList?.title ?? '', context);
-                    selectedValue = newList;
-                    print(newList?.title ?? '');
-                    _userInfo?.roleId = curRoles
-                        .singleWhere(
-                            (element) => element.name == newList?.title)
-                        .id;
-                  },
-                ),
-              ],
-              // onExpansionChanged: (a) async {
-              //   await
-              // },
+            TroSelect(
+              value:selectedValue2 ,
+              dataList: curRoles
+                  .map((e) => SelectOptionVO(value: e.name, label: e.name))
+                  .toList(),
+              label: '所拥有权限',
+              onChange: (newList) {
+                selectedValue2 = newList;
+                _userInfo?.roleId = curRoles
+                    .singleWhere(
+                        (element) => element.name == newList?.title)
+                    .id;
+              },
             ),
             // //todo：所拥有权限
           ],

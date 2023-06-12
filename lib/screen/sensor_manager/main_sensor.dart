@@ -36,21 +36,47 @@ class _MainSensorState extends State<MainSensor> {
         .map((e) => SensorTest.fromJson(e))
         .toList();
   }
+  _edit({CollectorModel? sensorModel}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => Dialog(
+        child: CollectorEdit(
+          collectorModel: sensorModel,
+        ),
+      ),
+    ).then((v) {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder(
-        future: init(),
-        builder: (_, s) => ListView(
-          children: projects
-              .map(
-                (e) => SensorContent(
-                  sensorTest: e,
-                ),
-              )
-              .toList(),
-        ),
+      body: Column(
+        children: [
+          Expanded(
+            child: FutureBuilder(
+              future: init(),
+              builder: (_, s) => ListView(
+                children: projects
+                    .map(
+                      (e) => SensorContent(
+                        sensorTest: e,
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+          ),
+          GestureDetector(
+            child: Container(
+              child: Text('添加'),
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20,),
+              decoration: BoxDecoration(border: Border.all(color: Colors.black,width: 1)),
+            ),
+            onTap: () {
+              _edit();
+            },
+          )
+        ],
       ),
     );
   }
@@ -72,6 +98,7 @@ class SensorContent extends StatelessWidget {
           border: Border.all(color: Colors.black)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(sensorTest.name ?? '-'),
           ...(sensorTest.list ?? [])
@@ -103,11 +130,30 @@ class _SensorDataState extends State<SensorData> {
       width: double.infinity,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.blue)),
+          border: Border.all(color: Colors.black)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(widget.sensorP.name ?? '-'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(widget.sensorP.name ?? '-'),
+              GestureDetector(
+                child: Container(
+                  child: Text('添加'),
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20,),
+                  decoration: BoxDecoration(border: Border.all(color: Colors.black,width: 1)),
+                ),
+                onTap: () {
+                  _edit(
+                      sensorModel: CollectorModel(
+                        projectId: widget.sensorP.id,
+                      ));
+                },
+              )
+            ],
+          ),
           (widget.sensorP.collectors ?? []).isNotEmpty
               ? Table(
                   border: TableBorder.all(width: 0.5, color: Colors.black),
@@ -233,19 +279,7 @@ class _SensorDataState extends State<SensorData> {
                   ])),
             ],
           ),
-          GestureDetector(
-            child: Container(
-              child: Text('添加'),
-              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-              color: Colors.blue,
-            ),
-            onTap: () {
-              _edit(
-                  sensorModel: CollectorModel(
-                projectId: widget.sensorP.id,
-              ));
-            },
-          )
+
         ],
       ),
     );

@@ -748,7 +748,7 @@ class ItemManagerState extends State<ItemManager> {
         padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
         child: SfCartesianChart(
             zoomPanBehavior: ZoomPanBehavior(
-                enableMouseWheelZooming: true, zoomMode: ZoomMode.x),
+                enableMouseWheelZooming: true, zoomMode: ZoomMode.y),
             primaryXAxis: CategoryAxis(
               isVisible: true,
               //显示时间轴置顶
@@ -962,6 +962,9 @@ class ItemManagerState extends State<ItemManager> {
                               builder: (BuildContext context) => Dialog(
                                 child: SensorSingle(
                                   sn: dateModel.sn ?? '-',
+                                  curData:dateModel.curValue.toString() ,
+                                  curTime: dateModel.curTime??'-',
+                                  refData: dateModel.refValue.toString(),
                                 ),
                               ),
                             ).then((v) {
@@ -989,6 +992,9 @@ class ItemManagerState extends State<ItemManager> {
                               builder: (BuildContext context) => Dialog(
                                 child: SensorSingle(
                                   sn: dateModel.sn ?? '-',
+                                  curData:dateModel.curValue.toString() ,
+                                  curTime: dateModel.curTime??'-',
+                                  refData: dateModel.refValue.toString(),
                                 ),
                               ),
                             ).then((v) {
@@ -1009,7 +1015,11 @@ class ItemManagerState extends State<ItemManager> {
                               context: context,
                               builder: (BuildContext context) => Dialog(
                                 child: SensorSingle(
-                                  sn: dateModel.sn ?? '-',
+                                                    sn: dateModel.sn ?? '-',
+                                  curData:dateModel.curValue.toString() ,
+                                  curTime: dateModel.curTime??'-',
+                                  refData: dateModel.refValue.toString(),
+
                                 ),
                               ),
                             ).then((v) {
@@ -1041,7 +1051,10 @@ class ItemManagerState extends State<ItemManager> {
                               context: context,
                               builder: (BuildContext context) => Dialog(
                                 child: SensorSingle(
-                                  sn: dateModel.sn ?? '-',
+                                                    sn: dateModel.sn ?? '-',
+                                  curData:dateModel.curValue.toString() ,
+                                  curTime: dateModel.curTime??'-',
+                                  refData: dateModel.refValue.toString(),
                                 ),
                               ),
                             ).then((v) {
@@ -1062,7 +1075,10 @@ class ItemManagerState extends State<ItemManager> {
                               context: context,
                               builder: (BuildContext context) => Dialog(
                                 child: SensorSingle(
-                                  sn: dateModel.sn ?? '-',
+                                                    sn: dateModel.sn ?? '-',
+                                  curData:dateModel.curValue.toString() ,
+                                  curTime: dateModel.curTime??'-',
+                                  refData: dateModel.refValue.toString(),
                                 ),
                               ),
                             ).then((v) {
@@ -1083,7 +1099,10 @@ class ItemManagerState extends State<ItemManager> {
                               context: context,
                               builder: (BuildContext context) => Dialog(
                                 child: SensorSingle(
-                                  sn: dateModel.sn ?? '-',
+                                                    sn: dateModel.sn ?? '-',
+                                  curData:dateModel.curValue.toString() ,
+                                  curTime: dateModel.curTime??'-',
+                                  refData: dateModel.refValue.toString(),
                                 ),
                               ),
                             ).then((v) {
@@ -1109,7 +1128,10 @@ class ItemManagerState extends State<ItemManager> {
                               context: context,
                               builder: (BuildContext context) => Dialog(
                                 child: SensorSingle(
-                                  sn: dateModel.sn ?? '-',
+                                                    sn: dateModel.sn ?? '-',
+                                  curData:dateModel.curValue.toString() ,
+                                  curTime: dateModel.curTime??'-',
+                                  refData: dateModel.refValue.toString(),
                                 ),
                               ),
                             ).then((v) {
@@ -1233,7 +1255,10 @@ class ItemManagerState extends State<ItemManager> {
                                   context: context,
                                   builder: (BuildContext context) => Dialog(
                                     child: SensorSingle(
-                                      sn: dateModel.sn ?? '-',
+                                                        sn: dateModel.sn ?? '-',
+                                      curData:'X轴${dateModel.curValueX.toString()} Y轴${dateModel.curValueY.toString()}',
+                                      curTime: '-',
+                                      refData: 'X轴${dateModel.refValueX.toString()} Y轴${dateModel.refValueY.toString()}',
                                     ),
                                   ),
                                 ).then((v) {
@@ -1260,7 +1285,10 @@ class ItemManagerState extends State<ItemManager> {
                                   context: context,
                                   builder: (BuildContext context) => Dialog(
                                     child: SensorSingle(
-                                      sn: dateModel.sn ?? '-',
+                                                        sn: dateModel.sn ?? '-',
+                                      curData:'X轴${dateModel.curValueX.toString()} Y轴${dateModel.curValueY.toString()}',
+                                      curTime: '-',
+                                      refData: 'X轴${dateModel.refValueX.toString()} Y轴${dateModel.refValueY.toString()}',
                                     ),
                                   ),
                                 ).then((v) {
@@ -1281,7 +1309,10 @@ class ItemManagerState extends State<ItemManager> {
                                   context: context,
                                   builder: (BuildContext context) => Dialog(
                                     child: SensorSingle(
-                                      sn: dateModel.sn ?? '-',
+                                                        sn: dateModel.sn ?? '-',
+                                      curData:'X轴${dateModel.curValueX.toString()} Y轴${dateModel.curValueY.toString()}',
+                                      curTime: '-',
+                                      refData: 'X轴${dateModel.refValueX.toString()} Y轴${dateModel.refValueY.toString()}',
                                     ),
                                   ),
                                 ).then((v) {
@@ -1314,7 +1345,10 @@ class ItemManagerState extends State<ItemManager> {
                                   context: context,
                                   builder: (BuildContext context) => Dialog(
                                     child: SensorSingle(
-                                      sn: dateModel.sn ?? '-',
+                                                        sn: dateModel.sn ?? '-',
+                                      curData:'X轴${dateModel.curValueX.toString()} Y轴${dateModel.curValueY.toString()}',
+                                      curTime: '-',
+                                      refData: 'X轴${dateModel.refValueX.toString()} Y轴${dateModel.refValueY.toString()}',
                                     ),
                                   ),
                                 ).then((v) {
@@ -1335,7 +1369,10 @@ class ItemManagerState extends State<ItemManager> {
                                   context: context,
                                   builder: (BuildContext context) => Dialog(
                                     child: SensorSingle(
-                                      sn: dateModel.sn ?? '-',
+                                                        sn: dateModel.sn ?? '-',
+                                      curData:'X轴${dateModel.curValueX.toString()} Y轴${dateModel.curValueY.toString()}',
+                                      curTime: '-',
+                                      refData: 'X轴${dateModel.refValueX.toString()} Y轴${dateModel.refValueY.toString()}',
                                     ),
                                   ),
                                 ).then((v) {
@@ -1356,7 +1393,10 @@ class ItemManagerState extends State<ItemManager> {
                                   context: context,
                                   builder: (BuildContext context) => Dialog(
                                     child: SensorSingle(
-                                      sn: dateModel.sn ?? '-',
+                                                        sn: dateModel.sn ?? '-',
+                                      curData:'X轴${dateModel.curValueX.toString()} Y轴${dateModel.curValueY.toString()}',
+                                      curTime: '-',
+                                      refData: 'X轴${dateModel.refValueX.toString()} Y轴${dateModel.refValueY.toString()}',
                                     ),
                                   ),
                                 ).then((v) {
@@ -1382,7 +1422,10 @@ class ItemManagerState extends State<ItemManager> {
                                   context: context,
                                   builder: (BuildContext context) => Dialog(
                                     child: SensorSingle(
-                                      sn: dateModel.sn ?? '-',
+                                                        sn: dateModel.sn ?? '-',
+                                      curData:'X轴${dateModel.curValueX.toString()} Y轴${dateModel.curValueY.toString()}',
+                                      curTime: '-',
+                                      refData: 'X轴${dateModel.refValueX.toString()} Y轴${dateModel.refValueY.toString()}',
                                     ),
                                   ),
                                 ).then((v) {
@@ -1409,7 +1452,10 @@ class ItemManagerState extends State<ItemManager> {
                                   context: context,
                                   builder: (BuildContext context) => Dialog(
                                     child: SensorSingle(
-                                      sn: dateModel.sn ?? '-',
+                                                        sn: dateModel.sn ?? '-',
+                                      curData:'X轴${dateModel.curValueX.toString()} Y轴${dateModel.curValueY.toString()}',
+                                      curTime: '-',
+                                      refData: 'X轴${dateModel.refValueX.toString()} Y轴${dateModel.refValueY.toString()}',
                                     ),
                                   ),
                                 ).then((v) {
@@ -1437,6 +1483,9 @@ class ItemManagerState extends State<ItemManager> {
                                   builder: (BuildContext context) => Dialog(
                                     child: SensorSingle(
                                       sn: dateModel.sn ?? '-',
+                                      curData:'X轴${dateModel.curValueX.toString()} Y轴${dateModel.curValueY.toString()}',
+                                      curTime: '-',
+                                      refData: 'X轴${dateModel.refValueX.toString()} Y轴${dateModel.refValueY.toString()}',
                                     ),
                                   ),
                                 ).then((v) {
@@ -1462,7 +1511,10 @@ class ItemManagerState extends State<ItemManager> {
                                   context: context,
                                   builder: (BuildContext context) => Dialog(
                                     child: SensorSingle(
-                                      sn: dateModel.sn ?? '-',
+                                                        sn: dateModel.sn ?? '-',
+                                  curData:'X轴${dateModel.curValueX.toString()} Y轴${dateModel.curValueY.toString()}',
+                                  curTime: '-',
+                                  refData: 'X轴${dateModel.refValueX.toString()} Y轴${dateModel.refValueY.toString()}',
                                     ),
                                   ),
                                 ).then((v) {

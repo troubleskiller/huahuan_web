@@ -1,4 +1,4 @@
-import 'package:bruno/bruno.dart';
+
 import 'package:flutter/material.dart';
 import 'package:huahuan_web/constant/common_constant.dart';
 import 'package:huahuan_web/model/admin/SensorHoleModel.dart';
@@ -6,6 +6,7 @@ import 'package:huahuan_web/util/store_util.dart';
 import 'package:huahuan_web/util/tro_util.dart';
 import 'package:huahuan_web/widget/button/icon_button.dart';
 import 'package:huahuan_web/widget/input/TroInput.dart';
+import 'package:huahuan_web/widget/input/TroSelect.dart';
 
 import '../../api/sensor_api.dart';
 
@@ -34,9 +35,9 @@ class RefSensor {
 class SensorHoleEditState extends State<SensorHoleEdit> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   SensorHoleModel _sensorData = SensorHoleModel();
-  BrnPortraitRadioGroupOption? selectedValue;
-  BrnPortraitRadioGroupOption? selectedValue2;
-  BrnPortraitRadioGroupOption? selectedValue3;
+  String? selectedValue;
+  String? selectedValue2;
+  String? selectedValue3;
   String? initValue;
   String? initValue2;
   String? initValue3;
@@ -52,6 +53,7 @@ class SensorHoleEditState extends State<SensorHoleEdit> {
     }
     _sensorData.projectId = widget.projectId;
     refSensors = widget.refSensors ?? [];
+    refSensors.add(RefSensor(name: '没有参考点',id: null));
     super.initState();
   }
 
@@ -79,22 +81,15 @@ class SensorHoleEditState extends State<SensorHoleEdit> {
               _sensorData.sn = v;
             },
           ),
-          BrnExpandableGroup(
-            title: '传感器类型',
-            children: [
-              BrnPortraitRadioGroup.withSimpleList(
-                selectedOption: initValue ?? '',
-                options: sensorMap.values.toList(),
-                onChanged: (BrnPortraitRadioGroupOption? old,
-                    BrnPortraitRadioGroupOption? newList) {
-                  BrnToast.show(newList?.title ?? '', context);
-                  selectedValue = newList;
-                  _sensorData.sensorTypeId = sensorMapF[selectedValue?.title];
-                },
-              ),
-            ],
-            onExpansionChanged: (a) async {
-              // await getAllCustomersAccessible();
+          TroSelect(
+            value: initValue ?? '静力水准',
+            dataList: sensorMap.values
+                .map((e) => SelectOptionVO(value: e, label: e))
+                .toList(),
+            label: '传感器类型',
+            onChange: (newList) {
+              selectedValue = newList;
+              _sensorData.sensorTypeId = sensorMapF[selectedValue];
             },
           ),
           TroInput(
@@ -125,44 +120,29 @@ class SensorHoleEditState extends State<SensorHoleEdit> {
               _sensorData.sensorOffset = v;
             },
           ),
-          BrnExpandableGroup(
-            title: '单位',
-            children: [
-              BrnPortraitRadioGroup.withSimpleList(
-                selectedOption: initValue2 ?? '',
-                options: paramsEx.values.toList(),
-                onChanged: (BrnPortraitRadioGroupOption? old,
-                    BrnPortraitRadioGroupOption? newList) {
-                  BrnToast.show(newList?.title ?? '', context);
-                  selectedValue2 = newList;
-                  _sensorData.unitId = paramsExF[selectedValue2?.title];
-                },
-              ),
-            ],
-            onExpansionChanged: (a) async {
-              // await getAllCustomersAccessible();
+          TroSelect(
+            value: initValue2 ?? 'cm',
+            dataList: paramsEx.values
+                .map((e) => SelectOptionVO(value: e, label: e))
+                .toList(),
+            label: '单位',
+            onChange: (newList) {
+              selectedValue2 = newList;
+              _sensorData.unitId = paramsExF[selectedValue2];
             },
           ),
-          BrnExpandableGroup(
-            title: '参考点',
-            children: [
-              BrnPortraitRadioGroup.withSimpleList(
-                selectedOption: initValue3 ?? '',
-                options: refSensors.map((e) => e.name!).toList(),
-                onChanged: (BrnPortraitRadioGroupOption? old,
-                    BrnPortraitRadioGroupOption? newList) {
-                  BrnToast.show(newList?.title ?? '', context);
-                  selectedValue3 = newList;
-                  _sensorData.refSensorId = refSensors.singleWhere(
-                      (element) => element.name == selectedValue3?.title,
-                      orElse: () {
+          TroSelect(
+            value: initValue3 ?? '没有参考点',
+            dataList: refSensors.map((e) => SelectOptionVO(value: e.name, label: e.name))
+                .toList(),
+            label: '参考点',
+            onChange: (newList) {
+              selectedValue3 = newList;
+              _sensorData.refSensorId = refSensors.singleWhere(
+                      (element) => element.name == selectedValue3,
+                  orElse: () {
                     return RefSensor();
                   }).id;
-                },
-              ),
-            ],
-            onExpansionChanged: (a) async {
-              // await getAllCustomersAccessible();
             },
           ),
         ],

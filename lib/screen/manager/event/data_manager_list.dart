@@ -145,6 +145,11 @@ class _DataManagerListState extends State<DataManagerList> {
                                       Container(
                                         padding: EdgeInsets.symmetric(
                                             horizontal: 15, vertical: 5),
+                                        child: Center(child: Text('测项id')),
+                                      ),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 15, vertical: 5),
                                         child: Center(child: Text('测项类型')),
                                       ),
                                       Container(
@@ -175,6 +180,12 @@ class _DataManagerListState extends State<DataManagerList> {
                                               child: Center(
                                                   child: Text(
                                                       e.userId.toString())),
+                                            ),            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 15, vertical: 5),
+                                              child: Center(
+                                                  child: Text(
+                                                      e.id.toString())),
                                             ),
                                             Container(
                                               padding: EdgeInsets.symmetric(

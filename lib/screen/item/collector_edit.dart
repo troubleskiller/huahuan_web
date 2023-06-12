@@ -1,5 +1,6 @@
 import 'package:bruno/bruno.dart';
 import 'package:flutter/material.dart';
+import 'package:get/utils.dart';
 import 'package:huahuan_web/api/collector_api.dart';
 import 'package:huahuan_web/constant/common_constant.dart';
 import 'package:huahuan_web/model/admin/CollectorModel.dart';
@@ -7,6 +8,7 @@ import 'package:huahuan_web/util/store_util.dart';
 import 'package:huahuan_web/util/tro_util.dart';
 import 'package:huahuan_web/widget/button/icon_button.dart';
 import 'package:huahuan_web/widget/input/TroInput.dart';
+import 'package:huahuan_web/widget/input/TroSelect.dart';
 
 class CollectorEdit extends StatefulWidget {
   final CollectorModel? collectorModel;
@@ -22,14 +24,15 @@ class CollectorEdit extends StatefulWidget {
 class CollectorEditState extends State<CollectorEdit> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   CollectorModel? _collectorData = CollectorModel();
-  BrnPortraitRadioGroupOption? selectedValue;
+  String? selectedValue;
   String? initValue;
   @override
   void initState() {
     if (widget.collectorModel != null) {
       _collectorData = widget.collectorModel;
 
-      initValue = sensorMap[_collectorData?.collectorTypeId];
+      initValue = collectorType[_collectorData?.collectorTypeId];
+
     }
     super.initState();
   }
@@ -41,6 +44,17 @@ class CollectorEditState extends State<CollectorEdit> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          TroInput(
+            enable: widget.collectorModel==null,
+            value: _collectorData!.projectId.toString(),
+            label: '所属测项id',
+            onSaved: (v) {
+              _collectorData!.projectId = int.tryParse(v);
+            },
+            validator: (v) {
+              return! v!.isNumericOnly ? '请输入数字' : null;
+            },
+          ),
           TroInput(
             value: _collectorData!.name,
             label: '设备名称',
@@ -58,23 +72,16 @@ class CollectorEditState extends State<CollectorEdit> {
               _collectorData!.sn = v;
             },
           ),
-          BrnExpandableGroup(
-            title: '采集仪类型',
-            children: [
-              BrnPortraitRadioGroup.withSimpleList(
-                selectedOption: initValue ?? '',
-                options: collectorType.values.toList(),
-                onChanged: (BrnPortraitRadioGroupOption? old,
-                    BrnPortraitRadioGroupOption? newList) {
-                  BrnToast.show(newList?.title ?? '', context);
-                  selectedValue = newList;
-                  _collectorData?.collectorTypeId =
-                      collectorTypeF[selectedValue?.title];
-                },
-              ),
-            ],
-            onExpansionChanged: (a) async {
-              // await getAllCustomersAccessible();
+          TroSelect(
+            value: initValue ?? 'HD-CJY2021-电池版',
+            dataList: collectorType.values
+                .map((e) => SelectOptionVO(value: e, label: e))
+                .toList(),
+            label: '采集仪类型',
+            onChange: (newList) {
+              selectedValue = newList;
+              _collectorData?.collectorTypeId =
+              collectorTypeF[selectedValue];
             },
           ),
           TroInput(
