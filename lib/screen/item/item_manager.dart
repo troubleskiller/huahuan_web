@@ -1,28 +1,29 @@
-import 'package:bottom_picker/bottom_picker.dart';
 import 'package:bruno/bruno.dart';
 import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:huahuan_web/api/collector_api.dart';
 import 'package:huahuan_web/api/event_api.dart';
 import 'package:huahuan_web/api/project_api.dart';
+import 'package:huahuan_web/api/sensor_api.dart';
 import 'package:huahuan_web/constant/common_constant.dart';
 import 'package:huahuan_web/model/admin/CollectorModel.dart';
+import 'package:huahuan_web/model/admin/SensorHoleModel.dart';
 import 'package:huahuan_web/model/admin/project_model.dart';
 import 'package:huahuan_web/model/api/response_api.dart';
 import 'package:huahuan_web/model/application/event_model.dart';
 import 'package:huahuan_web/screen/item/date_model.dart';
 import 'package:huahuan_web/screen/item/sensor_single/sensor_single.dart';
 import 'package:huahuan_web/screen/manager/event/collector_list_view.dart';
-import 'package:huahuan_web/util/data_table.dart';
 import 'package:huahuan_web/util/store_util.dart';
 import 'package:huahuan_web/widget/button/icon_button.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import 'DataRequest.dart';
 import 'DateModel2.dart';
+import 'data_source/common_data.dart';
 import 'delegate.dart';
-import 'item_line.dart';
 
 ItemManagerState? itemManagerState;
 
@@ -41,6 +42,27 @@ class ItemManager extends StatefulWidget {
 }
 
 class ItemManagerState extends State<ItemManager> {
+  Map<String, bool> commonTableMap = {
+    'name': true,
+    'refTime': true,
+    'refValue': true,
+    'curTime': true,
+    'curValue': true,
+    'curOffset': true,
+    'totalOffset': true,
+  };
+  Map<String, bool> cexieTableMap = {
+    'name': true,
+    'location': true,
+    'curShapeX': true,
+    'curShapeY': true,
+    'refShapeX': true,
+    'refShapeY': true,
+    'curShapeOffsetX': true,
+    'curShapeOffsetY': true,
+    'curValueX': true,
+    'curValueY': true,
+  };
   PageController pageController = PageController(initialPage: 0);
   int timestamp = 60;
   int selectedIndex = 0;
@@ -278,44 +300,293 @@ class ItemManagerState extends State<ItemManager> {
               direction: Axis.vertical,
               children: [
                 Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      BrnMultiDataPicker(
-                        context: context,
-                        title: '来源',
-                        delegate: Brn1RowDelegate(controller.nowProjects ?? []),
-                        confirmClick: (list) async {
-                          BrnToast.show(list.toString(), context);
-                          ResponseBodyApi res = await ProjectApi.getCurEvents(
-                              {"id": controller.nowProjects?[list[0]].id});
-                          controller.updateEventModel(
-                            nP: controller.nowProjects?[list[0]],
-                            nEs: List.from(res.data)
-                                .map((e) => ProjectModel.fromJson(e))
-                                .toList(),
-                            nE: List.from(res.data)
-                                .map((e) => ProjectModel.fromJson(e))
-                                .toList()[0],
-                          );
-                          setState(() {});
-                        },
-                      ).show();
-                    },
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 40,
-                        ),
-                        Text(
-                          controller.nowProject?.name ?? '-',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 25,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: GestureDetector(
+                          onTap: () {
+                            BrnMultiDataPicker(
+                              context: context,
+                              title: '来源',
+                              delegate:
+                                  Brn1RowDelegate(controller.nowProjects ?? []),
+                              confirmClick: (list) async {
+                                BrnToast.show(list.toString(), context);
+                                ResponseBodyApi res =
+                                    await ProjectApi.getCurEvents({
+                                  "id": controller.nowProjects?[list[0]].id
+                                });
+                                controller.updateEventModel(
+                                  nP: controller.nowProjects?[list[0]],
+                                  nEs: List.from(res.data)
+                                      .map((e) => ProjectModel.fromJson(e))
+                                      .toList(),
+                                  nE: List.from(res.data)
+                                      .map((e) => ProjectModel.fromJson(e))
+                                      .toList()[0],
+                                );
+                                setState(() {});
+                              },
+                            ).show();
+                          },
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 40,
+                              ),
+                              Text(
+                                controller.nowProject?.name ?? '-',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 25,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      Spacer(),
+                      Expanded(
+                        flex: 8,
+                        child: StatefulBuilder(builder: (context, set) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              InkWell(
+                                child: Container(
+                                  height: 50,
+                                  width: 150,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: const [
+                                      Text(
+                                        '本期数据时间',
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                      Icon(
+                                        Icons.calendar_month,
+                                        size: 16,
+                                        color: Colors.blueAccent,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                onTap: () {
+                                  BrnDatePicker.showDatePicker(context,
+                                      maxDateTime:
+                                          DateTime.parse('2024-01-01 00:00:00'),
+                                      minDateTime:
+                                          DateTime.parse('2019-01-01 00:00:00'),
+                                      initialDateTime:
+                                          DateTime.parse('2023-03-14 15:43:48'),
+                                      // 支持DateTimePickerMode.date、DateTimePickerMode.datetime、DateTimePickerMode.time
+                                      pickerMode:
+                                          BrnDateTimePickerMode.datetime,
+                                      minuteDivider: 1,
+                                      pickerTitleConfig:
+                                          BrnPickerTitleConfig.Default,
+                                      dateFormat: 'yyyy年,MM月,dd日,HH时:mm分:ss秒',
+                                      onConfirm: (dateTime, list) {
+                                    set(
+                                      () {
+                                        statDate =
+                                            dateTime.toString().split('.')[0];
+                                        BrnToast.show(
+                                            "onConfirm:  $dateTime ", context);
+                                      },
+                                    );
+                                  }, onClose: () {
+                                    print("onClose");
+                                  }, onCancel: () {
+                                    print("onCancel");
+                                  }, onChange: (dateTime, list) {
+                                    print("onChange:  $dateTime    $list");
+                                  });
+                                },
+                              ),
+                              Container(
+                                width: 20,
+                              ),
+                              InkWell(
+                                child: Container(
+                                  height: 50,
+                                  width: 150,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: const [
+                                      Text(
+                                        '参考数据时间',
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                      Icon(
+                                        Icons.calendar_month,
+                                        size: 16,
+                                        color: Colors.blueAccent,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                onTap: () {
+                                  BrnDatePicker.showDatePicker(context,
+                                      maxDateTime:
+                                          DateTime.parse('2024-01-01 00:00:00'),
+                                      minDateTime:
+                                          DateTime.parse('2019-01-01 00:00:00'),
+                                      initialDateTime:
+                                          DateTime.parse('2023-03-14 09:43:48'),
+                                      // 支持DateTimePickerMode.date、DateTimePickerMode.datetime、DateTimePickerMode.time
+                                      pickerMode:
+                                          BrnDateTimePickerMode.datetime,
+                                      minuteDivider: 1,
+                                      pickerTitleConfig:
+                                          BrnPickerTitleConfig.Default,
+                                      dateFormat: 'yyyy,MM,dd,HH:mm:ss',
+                                      onConfirm: (dateTime, list) {
+                                    set(() {
+                                      endData =
+                                          dateTime.toString().split('.')[0];
+                                      BrnToast.show(
+                                          "onConfirm:  $dateTime", context);
+                                    });
+                                  }, onClose: () {
+                                    print("onClose");
+                                  }, onCancel: () {
+                                    print("onCancel");
+                                  }, onChange: (dateTime, list) {
+                                    print("onChange:  $dateTime    $list");
+                                  });
+                                },
+                              ),
+                              Container(
+                                width: 20,
+                              ),
+                              //时间间隔选择
+                              InkWell(
+                                child: Row(
+                                  children: [
+                                    Text('时间间隔'),
+                                    Icon(Icons.arrow_drop_down),
+                                  ],
+                                ),
+                                onTap: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (_) => StatefulBuilder(
+                                            builder: (context, state) {
+                                              return BrnSingleSelectDialog(
+                                                  isClose: true,
+                                                  title: '请选择测量间隔时间',
+                                                  conditions: conditions,
+                                                  checkedItem:
+                                                      conditions[selectedIndex],
+                                                  submitText: '提交',
+                                                  isCustomFollowScroll: true,
+                                                  onItemClick:
+                                                      (BuildContext context,
+                                                          int index) {
+                                                    selectedIndex = index;
+                                                    state(() {});
+                                                  },
+                                                  onSubmitClick: (data) {
+                                                    timestamp = timeMap[
+                                                            selectedIndex] ??
+                                                        60;
+                                                    BrnToast.show(
+                                                        data!, context);
+                                                  });
+                                            },
+                                          ));
+                                },
+                              ),
+                              Container(
+                                width: 20,
+                              ),
+                              //检测方向选择
+                              [
+                                4,
+                                8,
+                                9
+                              ].contains(controller.nowEvent?.projectTypeId)
+                                  ? InkWell(
+                                      child: Row(
+                                        children: [
+                                          Text('测量方向'),
+                                          Icon(Icons.arrow_drop_down),
+                                        ],
+                                      ),
+                                      onTap: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (_) => StatefulBuilder(
+                                                  builder: (context, state) {
+                                                    return BrnSingleSelectDialog(
+                                                        isClose: true,
+                                                        title: '请选择测量方向',
+                                                        conditions:
+                                                            ceConditions,
+                                                        checkedItem:
+                                                            ceConditions[
+                                                                ceSelectedIndex],
+                                                        submitText: '提交',
+                                                        isCustomFollowScroll:
+                                                            true,
+                                                        onItemClick:
+                                                            (BuildContext
+                                                                    context,
+                                                                int index) {
+                                                          ceSelectedIndex =
+                                                              index;
+                                                          state(() {});
+                                                        },
+                                                        onSubmitClick: (data) {
+                                                          direction =
+                                                              ceSelectedIndex;
+                                                          BrnToast.show(
+                                                              data!, context);
+                                                        });
+                                                  },
+                                                ));
+                                      },
+                                    )
+                                  : Container(),
+                              Container(
+                                width: 20,
+                              ),
+                              ButtonWithIcon(
+                                iconData: Icons.search,
+                                onPressed: () {
+                                  [
+                                    4,
+                                    8,
+                                    9
+                                  ].contains(controller.nowEvent?.projectTypeId)
+                                      ? getCurCeXie(DataRequest(
+                                          id: controller.nowEvent?.id,
+                                          direction: direction,
+                                          sampMinutes: timestamp,
+                                          type: controller
+                                              .nowEvent?.projectTypeId,
+                                          statDate: statDate,
+                                          endDate: endData))
+                                      : getCurData(DataRequest(
+                                          id: controller.nowEvent?.id,
+                                          direction: direction,
+                                          sampMinutes: timestamp,
+                                          type: controller
+                                              .nowEvent?.projectTypeId,
+                                          statDate: statDate,
+                                          endDate: endData));
+                                },
+                              ),
+                            ],
+                          );
+                        }),
+                      ),
+                    ],
                   ),
                 ),
                 Expanded(
@@ -384,279 +655,12 @@ class ItemManagerState extends State<ItemManager> {
                       Spacer(),
                       Expanded(
                         flex: 8,
-                        child: Flex(
-                          direction: Axis.vertical,
+                        child: Column(
+                          // mainAxisAlignment: MainAxisAlignment.start,
+                          // direction: Axis.vertical,
                           children: [
                             Expanded(
-                              child: StatefulBuilder(builder: (context, set) {
-                                return Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    InkWell(
-                                      child: Container(
-                                        height: 50,
-                                        width: 150,
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: const [
-                                                Text(
-                                                  '本期数据时间',
-                                                  style:
-                                                      TextStyle(fontSize: 16),
-                                                ),
-                                                Icon(
-                                                  Icons.calendar_month,
-                                                  size: 16,
-                                                  color: Colors.blueAccent,
-                                                ),
-                                              ],
-                                            ),
-                                            Text(statDate),
-                                          ],
-                                        ),
-                                      ),
-                                      onTap: () {
-                                        BrnDatePicker.showDatePicker(context,
-                                            maxDateTime: DateTime.parse(
-                                                '2024-01-01 00:00:00'),
-                                            minDateTime: DateTime.parse(
-                                                '2019-01-01 00:00:00'),
-                                            initialDateTime: DateTime.parse(
-                                                '2023-03-14 15:43:48'),
-                                            // 支持DateTimePickerMode.date、DateTimePickerMode.datetime、DateTimePickerMode.time
-                                            pickerMode:
-                                                BrnDateTimePickerMode.datetime,
-                                            minuteDivider: 1,
-                                            pickerTitleConfig:
-                                                BrnPickerTitleConfig.Default,
-                                            dateFormat:
-                                                'yyyy年,MM月,dd日,HH时:mm分:ss秒',
-                                            onConfirm: (dateTime, list) {
-                                          set(
-                                            () {
-                                              statDate = dateTime
-                                                  .toString()
-                                                  .split('.')[0];
-                                              BrnToast.show(
-                                                  "onConfirm:  $dateTime ",
-                                                  context);
-                                            },
-                                          );
-                                        }, onClose: () {
-                                          print("onClose");
-                                        }, onCancel: () {
-                                          print("onCancel");
-                                        }, onChange: (dateTime, list) {
-                                          print(
-                                              "onChange:  $dateTime    $list");
-                                        });
-                                      },
-                                    ),
-                                    Container(
-                                      width: 20,
-                                    ),
-                                    InkWell(
-                                      child: Container(
-                                        height: 50,
-                                        width: 150,
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: const [
-                                                Text(
-                                                  '参考数据时间',
-                                                  style:
-                                                      TextStyle(fontSize: 16),
-                                                ),
-                                                Icon(
-                                                  Icons.calendar_month,
-                                                  size: 16,
-                                                  color: Colors.blueAccent,
-                                                ),
-                                              ],
-                                            ),
-                                            Text(endData),
-                                          ],
-                                        ),
-                                      ),
-                                      onTap: () {
-                                        BrnDatePicker.showDatePicker(context,
-                                            maxDateTime: DateTime.parse(
-                                                '2024-01-01 00:00:00'),
-                                            minDateTime: DateTime.parse(
-                                                '2019-01-01 00:00:00'),
-                                            initialDateTime: DateTime.parse(
-                                                '2023-03-14 09:43:48'),
-                                            // 支持DateTimePickerMode.date、DateTimePickerMode.datetime、DateTimePickerMode.time
-                                            pickerMode:
-                                                BrnDateTimePickerMode.datetime,
-                                            minuteDivider: 1,
-                                            pickerTitleConfig:
-                                                BrnPickerTitleConfig.Default,
-                                            dateFormat: 'yyyy,MM,dd,HH:mm:ss',
-                                            onConfirm: (dateTime, list) {
-                                          set(() {
-                                            endData = dateTime
-                                                .toString()
-                                                .split('.')[0];
-                                            BrnToast.show(
-                                                "onConfirm:  $dateTime",
-                                                context);
-                                          });
-                                        }, onClose: () {
-                                          print("onClose");
-                                        }, onCancel: () {
-                                          print("onCancel");
-                                        }, onChange: (dateTime, list) {
-                                          print(
-                                              "onChange:  $dateTime    $list");
-                                        });
-                                      },
-                                    ),
-                                    Container(
-                                      width: 20,
-                                    ),
-                                    //时间间隔选择
-                                    InkWell(
-                                      child: Row(
-                                        children: [
-                                          Text('时间间隔'),
-                                          Icon(Icons.arrow_drop_down),
-                                        ],
-                                      ),
-                                      onTap: () {
-                                        showDialog(
-                                            context: context,
-                                            builder: (_) => StatefulBuilder(
-                                                  builder: (context, state) {
-                                                    return BrnSingleSelectDialog(
-                                                        isClose: true,
-                                                        title: '请选择测量间隔时间',
-                                                        conditions: conditions,
-                                                        checkedItem: conditions[
-                                                            selectedIndex],
-                                                        submitText: '提交',
-                                                        isCustomFollowScroll:
-                                                            true,
-                                                        onItemClick:
-                                                            (BuildContext
-                                                                    context,
-                                                                int index) {
-                                                          selectedIndex = index;
-                                                          state(() {});
-                                                        },
-                                                        onSubmitClick: (data) {
-                                                          timestamp = timeMap[
-                                                                  selectedIndex] ??
-                                                              60;
-                                                          BrnToast.show(
-                                                              data!, context);
-                                                        });
-                                                  },
-                                                ));
-                                      },
-                                    ),
-                                    Container(
-                                      width: 20,
-                                    ),
-                                    //检测方向选择
-                                    [4, 8, 9].contains(
-                                            controller.nowEvent?.projectTypeId)
-                                        ? InkWell(
-                                            child: Row(
-                                              children: [
-                                                Text('测量方向'),
-                                                Icon(Icons.arrow_drop_down),
-                                              ],
-                                            ),
-                                            onTap: () {
-                                              showDialog(
-                                                  context: context,
-                                                  builder: (_) =>
-                                                      StatefulBuilder(
-                                                        builder:
-                                                            (context, state) {
-                                                          return BrnSingleSelectDialog(
-                                                              isClose: true,
-                                                              title: '请选择测量方向',
-                                                              conditions:
-                                                                  ceConditions,
-                                                              checkedItem:
-                                                                  ceConditions[
-                                                                      ceSelectedIndex],
-                                                              submitText: '提交',
-                                                              isCustomFollowScroll:
-                                                                  true,
-                                                              onItemClick:
-                                                                  (BuildContext
-                                                                          context,
-                                                                      int
-                                                                          index) {
-                                                                ceSelectedIndex =
-                                                                    index;
-                                                                state(() {});
-                                                              },
-                                                              onSubmitClick:
-                                                                  (data) {
-                                                                direction =
-                                                                    ceSelectedIndex;
-                                                                BrnToast.show(
-                                                                    data!,
-                                                                    context);
-                                                              });
-                                                        },
-                                                      ));
-                                            },
-                                          )
-                                        : Container(),
-                                    Container(
-                                      width: 20,
-                                    ),
-                                    ButtonWithIcon(
-                                      iconData: Icons.search,
-                                      onPressed: () {
-                                        [4, 8, 9].contains(controller
-                                                .nowEvent?.projectTypeId)
-                                            ? getCurCeXie(DataRequest(
-                                                id: controller.nowEvent?.id,
-                                                direction: direction,
-                                                sampMinutes: timestamp,
-                                                type: controller
-                                                    .nowEvent?.projectTypeId,
-                                                statDate: statDate,
-                                                endDate: endData))
-                                            : getCurData(DataRequest(
-                                                id: controller.nowEvent?.id,
-                                                direction: direction,
-                                                sampMinutes: timestamp,
-                                                type: controller
-                                                    .nowEvent?.projectTypeId,
-                                                statDate: statDate,
-                                                endDate: endData));
-                                      },
-                                    ),
-                                  ],
-                                );
-                              }),
-                            ),
-                            Expanded(
-                              flex: 7,
+                              flex: 6,
                               child: PageView(
                                 controller: pageController,
                                 children: [
@@ -677,22 +681,21 @@ class ItemManagerState extends State<ItemManager> {
                                 ],
                               ),
                             ),
+                            Spacer(),
                             StatefulBuilder(builder: (context, set) {
                               return Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                      BrnIconButton(
-                                        name: '下载报表',
-                                        iconWidget: Icon(Icons.download),
-                                        onTap: () {
-                                          [
-                                            4,
-                                            8,
-                                            9
-                                          ].contains(controller.nowEvent?.projectTypeId)
-                                              ? downLoadCeXie():downLoad();
-                                        },
-                                      ),
+                                  BrnIconButton(
+                                    name: '下载报表',
+                                    iconWidget: Icon(Icons.download),
+                                    onTap: () {
+                                      [4, 8, 9].contains(controller
+                                              .nowEvent?.projectTypeId)
+                                          ? downLoadCeXie()
+                                          : downLoad();
+                                    },
+                                  ),
                                   Container(
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(12),
@@ -734,6 +737,7 @@ class ItemManagerState extends State<ItemManager> {
                           ],
                         ),
                       ),
+                      Spacer()
                     ],
                   ),
                 ),
@@ -876,791 +880,411 @@ class ItemManagerState extends State<ItemManager> {
   }
 
   Widget _buildDataCells() {
-    DateModel select = DateModel();
-    return Flex(
-      direction: Axis.horizontal,
-      children: [
-        Expanded(
-          flex: 9,
-          child: SingleChildScrollView(
-              child: StatefulBuilder(builder: (context, sse) {
-            return Table(
-              defaultColumnWidth: IntrinsicColumnWidth(),
-              border: TableBorder.all(color: Colors.black, width: 1),
-              children: [
-                TableRow(
-                  children: [
-                    const Center(
-                      child: Text(
-                        '测点名',
-                        style: TextStyle(fontSize: 15),
+    CommonDataSource cur = CommonDataSource(commonData: ans);
+    return StatefulBuilder(builder: (context, sse) {
+      List<MultiSelectItem> conditions = [
+        MultiSelectItem('name', '测点名称',
+            isChecked: commonTableMap['name'] ?? true),
+        MultiSelectItem('refTime', '参考时间',
+            isChecked: commonTableMap['refTime'] ?? true),
+        MultiSelectItem('refValue', '参考数据',
+            isChecked: commonTableMap['refValue'] ?? true),
+        MultiSelectItem('curTime', '本期时间',
+            isChecked: commonTableMap['curTime'] ?? true),
+        MultiSelectItem('curValue', '本期数据',
+            isChecked: commonTableMap['curValue'] ?? true),
+        MultiSelectItem('curOffset', '本期变化',
+            isChecked: commonTableMap['curOffset'] ?? true),
+        MultiSelectItem('totalOffset', '累计变化',
+            isChecked: commonTableMap['totalOffset'] ?? true),
+      ];
+      return Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+                child: Container(
+              height: 500,
+              child: SfDataGrid(
+                columnWidthCalculationRange:
+                    ColumnWidthCalculationRange.visibleRows,
+                gridLinesVisibility: GridLinesVisibility.both,
+                headerGridLinesVisibility: GridLinesVisibility.both,
+                onCellDoubleTap: (data) async {
+                  DateModel dateModel = ans.singleWhere((element) =>
+                      element.name ==
+                      cur.dataGridRows[data.rowColumnIndex.rowIndex - 1]
+                          .getCells()[0]
+                          .value);
+                  ResponseBodyApi res =
+                      await SensorApi.selectOneById('{"id": ${dateModel.id}}');
+                  SensorHoleModel sensorHole =
+                      SensorHoleModel.fromJson(res.data);
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) => Dialog(
+                      child: SensorSingle(
+                        sn: dateModel.sn ?? '-',
+                        curData: '${dateModel.curValue}',
+                        refData: '${dateModel.refValue}',
+                        initTime: '${sensorHole.initTime}',
+                        initData: '${sensorHole.initValue}',
                       ),
                     ),
-                    const Center(
+                  ).then((v) {
+                    if (v != null) {
+                      setState(() {});
+                    }
+                  });
+                },
+                selectionMode: SelectionMode.single,
+                navigationMode: GridNavigationMode.cell,
+                source: cur,
+                columnWidthMode: ColumnWidthMode.fill,
+                columns: [
+                  GridColumn(
+                    visible: commonTableMap['name'] ?? true,
+                    columnName: 'name',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '测点名称',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: commonTableMap['refTime'] ?? true,
+                    columnName: 'refTime',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
                       child: Text(
                         '参考时间',
-                        style: TextStyle(fontSize: 15),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const Center(
+                  ),
+                  GridColumn(
+                    visible: commonTableMap['refValue'] ?? true,
+                    columnName: 'refValue',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '参考数据',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: commonTableMap['curTime'] ?? true,
+                    columnName: 'curTime',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
                       child: Text(
                         '本期时间',
-                        style: TextStyle(fontSize: 15),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const Center(
-                        child: Text(
-                      '本期数据',
-                      style: TextStyle(fontSize: 15),
-                    )),
-                    const Center(
-                        child: Text(
-                      '参考数据',
-                      style: TextStyle(fontSize: 15),
-                    )),
-                    const Center(
-                        child: Text(
-                      '本期变化',
-                      style: TextStyle(fontSize: 15),
-                    )),
-                    const Center(
-                        child: Text(
-                      '累计变化',
-                      style: TextStyle(fontSize: 15),
-                    )),
-                  ],
-                ),
-                ...ans.map((dateModel) {
-                  DateTime? refTime =
-                      DateTime.tryParse(dateModel.refTime ?? '');
-                  DateTime? curTime =
-                      DateTime.tryParse(dateModel.curTime ?? '');
-                  String ref =
-                      '${refTime?.year ?? '/'}年${refTime?.month ?? '/'}月${refTime?.day ?? '/'}日${refTime?.hour ?? '/'}时${refTime?.minute ?? '/'}分${refTime?.second ?? '/'}秒';
-                  String cur =
-                      '${curTime?.year ?? '/'}年${curTime?.month ?? '/'}月${curTime?.day ?? '/'}日${curTime?.hour ?? '/'}时${curTime?.minute ?? '/'}分${curTime?.second ?? '/'}秒';
-                  return TableRow(
-                      decoration: BoxDecoration(
-                          color:
-                              select == dateModel ? Colors.blue : Colors.white),
-                      children: [
-                        GestureDetector(
-                          child: Center(
-                            child: Text(
-                              dateModel.name ?? '-',
-                              style: TextStyle(fontSize: 15),
-                            ),
-                          ),
-                          onTap: () {
-                            sse(() {
-                              select = dateModel;
-                            });
-                          },
-                          onDoubleTap: () async {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) => Dialog(
-                                child: SensorSingle(
-                                  sn: dateModel.sn ?? '-',
-                                  curData:dateModel.curValue.toString() ,
-                                  curTime: dateModel.curTime??'-',
-                                  refData: dateModel.refValue.toString(),
-                                ),
-                              ),
-                            ).then((v) {
-                              if (v != null) {
-                                setState(() {});
-                              }
-                            });
-                          },
-                        ),
-                        GestureDetector(
-                          child: Center(
-                            child: Text(
-                              ref ?? '-',
-                              style: TextStyle(fontSize: 15),
-                            ),
-                          ),
-                          onTap: () {
-                            sse(() {
-                              select = dateModel;
-                            });
-                          },
-                          onDoubleTap: () async {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) => Dialog(
-                                child: SensorSingle(
-                                  sn: dateModel.sn ?? '-',
-                                  curData:dateModel.curValue.toString() ,
-                                  curTime: dateModel.curTime??'-',
-                                  refData: dateModel.refValue.toString(),
-                                ),
-                              ),
-                            ).then((v) {
-                              if (v != null) {
-                                setState(() {});
-                              }
-                            });
-                          },
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            sse(() {
-                              select = dateModel;
-                            });
-                          },
-                          onDoubleTap: () async {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) => Dialog(
-                                child: SensorSingle(
-                                                    sn: dateModel.sn ?? '-',
-                                  curData:dateModel.curValue.toString() ,
-                                  curTime: dateModel.curTime??'-',
-                                  refData: dateModel.refValue.toString(),
-
-                                ),
-                              ),
-                            ).then((v) {
-                              if (v != null) {
-                                setState(() {});
-                              }
-                            });
-                          },
-                          child: Center(
-                            child: Text(
-                              cur ?? '',
-                              style: TextStyle(fontSize: 15),
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            sse(() {
-                              select = dateModel;
-                            });
-                          },
-                          child: Center(
-                              child: Text(
-                            dateModel.curValue?.toStringAsFixed(2) ?? '-',
-                            style: TextStyle(fontSize: 15),
-                          )),
-                          onDoubleTap: () async {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) => Dialog(
-                                child: SensorSingle(
-                                                    sn: dateModel.sn ?? '-',
-                                  curData:dateModel.curValue.toString() ,
-                                  curTime: dateModel.curTime??'-',
-                                  refData: dateModel.refValue.toString(),
-                                ),
-                              ),
-                            ).then((v) {
-                              if (v != null) {
-                                setState(() {});
-                              }
-                            });
-                          },
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            sse(() {
-                              select = dateModel;
-                            });
-                          },
-                          onDoubleTap: () async {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) => Dialog(
-                                child: SensorSingle(
-                                                    sn: dateModel.sn ?? '-',
-                                  curData:dateModel.curValue.toString() ,
-                                  curTime: dateModel.curTime??'-',
-                                  refData: dateModel.refValue.toString(),
-                                ),
-                              ),
-                            ).then((v) {
-                              if (v != null) {
-                                setState(() {});
-                              }
-                            });
-                          },
-                          child: Center(
-                              child: Text(
-                            dateModel.refValue?.toStringAsFixed(2) ?? '-',
-                            style: TextStyle(fontSize: 15),
-                          )),
-                        ),
-                        GestureDetector(
-                          onDoubleTap: () async {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) => Dialog(
-                                child: SensorSingle(
-                                                    sn: dateModel.sn ?? '-',
-                                  curData:dateModel.curValue.toString() ,
-                                  curTime: dateModel.curTime??'-',
-                                  refData: dateModel.refValue.toString(),
-                                ),
-                              ),
-                            ).then((v) {
-                              if (v != null) {
-                                setState(() {});
-                              }
-                            });
-                          },
-                          onTap: () {
-                            sse(() {
-                              select = dateModel;
-                            });
-                          },
-                          child: Center(
-                              child: Text(
-                            dateModel.curOffset?.toStringAsFixed(2) ?? '-',
-                            style: TextStyle(fontSize: 15),
-                          )),
-                        ),
-                        GestureDetector(
-                          onDoubleTap: () async {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) => Dialog(
-                                child: SensorSingle(
-                                                    sn: dateModel.sn ?? '-',
-                                  curData:dateModel.curValue.toString() ,
-                                  curTime: dateModel.curTime??'-',
-                                  refData: dateModel.refValue.toString(),
-                                ),
-                              ),
-                            ).then((v) {
-                              if (v != null) {
-                                setState(() {});
-                              }
-                            });
-                          },
-                          onTap: () {
-                            sse(() {
-                              select = dateModel;
-                            });
-                          },
-                          child: Center(
-                              child: Text(
-                            dateModel.totalOffset?.toStringAsFixed(2) ?? '-',
-                            style: TextStyle(fontSize: 15),
-                          )),
-                        )
-                      ]);
-                }).toList(),
-              ],
-            );
-          })),
-        ),
-      ],
-    );
+                  ),
+                  GridColumn(
+                    visible: commonTableMap['curValue'] ?? true,
+                    columnName: 'curValue',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '本期数据',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: commonTableMap['curOffset'] ?? true,
+                    columnName: 'curOffset',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '本期变化',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: commonTableMap['totalOffset'] ?? true,
+                    columnName: 'totalOffset',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '累计变化',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )),
+          ),
+          ButtonWithIcon(
+            iconData: Icons.edit_note,
+            label: '选择展示的列表',
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (_) => StatefulBuilder(
+                        builder: (context, state) {
+                          return BrnMultiSelectDialog(
+                              isClose: true,
+                              title: '请选择展示的列表',
+                              conditions: conditions,
+                              submitText: '提交',
+                              isCustomFollowScroll: true,
+                              onItemClick: (BuildContext context, int index) {
+                                commonTableMap[conditions[index].code] =
+                                    conditions[index].isChecked;
+                                state(() {});
+                              },
+                              onSubmitClick: (data) {
+                                sse(() {});
+                                return true;
+                              });
+                        },
+                      ));
+            },
+          )
+        ],
+      );
+    });
   }
 
   Widget _buildCeXieCells() {
-    DateModel2 select = DateModel2();
-    return Flex(
-      direction: Axis.horizontal,
-      children: [
-        Expanded(
-            flex: 9,
+    CeXieDataSource cur = CeXieDataSource(commonData: ceXies);
+    return StatefulBuilder(builder: (context, sse) {
+      List<MultiSelectItem> conditions = [
+        MultiSelectItem('name', '测点名称',
+            isChecked: cexieTableMap['name'] ?? true),
+        MultiSelectItem('location', '位置',
+            isChecked: cexieTableMap['location'] ?? true),
+        MultiSelectItem('curShapeX', '本期管型X',
+            isChecked: cexieTableMap['curShapeX'] ?? true),
+        MultiSelectItem('curShapeY', '本期管型Y',
+            isChecked: cexieTableMap['curShapeY'] ?? true),
+        MultiSelectItem('refShapeX', '参考管型X',
+            isChecked: cexieTableMap['refShapeX'] ?? true),
+        MultiSelectItem('refShapeY', '参考管型Y',
+            isChecked: cexieTableMap['refShapeY'] ?? true),
+        MultiSelectItem('curShapeOffsetX', '本期变化X',
+            isChecked: cexieTableMap['curShapeOffsetX'] ?? true),
+        MultiSelectItem('curShapeOffsetY', '本期变化Y',
+            isChecked: cexieTableMap['curShapeOffsetY'] ?? true),
+        MultiSelectItem('curValueX', '累计变化X',
+            isChecked: cexieTableMap['curValueX'] ?? true),
+        MultiSelectItem('curValueY', '累计变化Y',
+            isChecked: cexieTableMap['curValueY'] ?? true),
+      ];
+      return Column(
+        children: [
+          Expanded(
             child: SingleChildScrollView(
-              child: StatefulBuilder(builder: (context, sse) {
-                return Table(
-                  defaultColumnWidth: IntrinsicColumnWidth(),
-                  border: TableBorder.all(color: Colors.black, width: 1),
-                  children: [
-                    TableRow(
-                      children: [
-                        const Center(
-                          child: Text(
-                            '测点名',
-                            style: TextStyle(fontSize: 15),
-                          ),
-                        ),
-                        const Center(
-                          child: Text(
-                            '位置',
-                            style: TextStyle(fontSize: 15),
-                          ),
-                        ),
-                        const Center(
-                          child: Text(
-                            '本期管型X',
-                            style: TextStyle(fontSize: 15),
-                          ),
-                        ),
-                        const Center(
-                            child: Text(
-                          '本期管型Y',
-                          style: TextStyle(fontSize: 15),
-                        )),
-                        const Center(
-                            child: Text(
-                          '参考管型X',
-                          style: TextStyle(fontSize: 15),
-                        )),
-                        const Center(
-                            child: Text(
-                          '参考管型Y',
-                          style: TextStyle(fontSize: 15),
-                        )),
-                        const Center(
-                            child: Text(
-                          '本期变化X',
-                          style: TextStyle(fontSize: 15),
-                        )),
-                        const Center(
-                            child: Text(
-                          '本期变化Y',
-                          style: TextStyle(fontSize: 15),
-                        )),
-                        const Center(
-                            child: Text(
-                          '累计变化X',
-                          style: TextStyle(fontSize: 15),
-                        )),
-                        const Center(
-                            child: Text(
-                          '累计变化Y',
-                          style: TextStyle(fontSize: 15),
-                        )),
-                      ],
+                child: Container(
+              height: 500,
+              child: SfDataGrid(
+                columnWidthCalculationRange:
+                    ColumnWidthCalculationRange.visibleRows,
+                gridLinesVisibility: GridLinesVisibility.both,
+                headerGridLinesVisibility: GridLinesVisibility.both,
+                onCellDoubleTap: (data) async {
+                  DateModel2 dateModel = ceXies.singleWhere((element) =>
+                      element.name ==
+                      cur.dataGridRows[data.rowColumnIndex.rowIndex - 1]
+                          .getCells()[0]
+                          .value);
+                  ResponseBodyApi res =
+                      await SensorApi.selectOneById('{"id": ${dateModel.id}}');
+                  SensorHoleModel sensorHole =
+                      SensorHoleModel.fromJson(res.data);
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) => Dialog(
+                      child: SensorMulti(
+                        sn: dateModel.sn ?? '-',
+                        curDataX: '${dateModel.curValueX}',
+                        curDataY: '${dateModel.curValueY}',
+                        refDataX: '${dateModel.refValueX}',
+                        refDataY: '${dateModel.refValueY}',
+                        initTime: '${sensorHole.initTime}',
+                        initData: '${sensorHole.initValue}',
+                      ),
                     ),
-                    ...ceXies.map((dateModel) {
-                      return TableRow(
-                          decoration: BoxDecoration(
-                              color: select == dateModel
-                                  ? Colors.blue
-                                  : Colors.white),
-                          children: [
-                            GestureDetector(
-                              child: Center(
-                                child: Text(
-                                  dateModel.name ?? '-',
-                                  style: TextStyle(fontSize: 15),
-                                ),
-                              ),
-                              onTap: () {
-                                sse(() {
-                                  select = dateModel;
-                                });
+                  ).then((v) {
+                    if (v != null) {
+                      setState(() {});
+                    }
+                  });
+                },
+                selectionMode: SelectionMode.single,
+                navigationMode: GridNavigationMode.cell,
+                source: cur,
+                columnWidthMode: ColumnWidthMode.fill,
+                columns: [
+                  GridColumn(
+                    visible: cexieTableMap['name'] ?? true,
+                    columnName: 'name',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '测点名称',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: cexieTableMap['location'] ?? true,
+                    columnName: 'location',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '位置',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: cexieTableMap['curShapeX'] ?? true,
+                    columnName: 'curShapeX',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '本期管型X',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: cexieTableMap['curShapeY'] ?? true,
+                    columnName: 'curShapeY',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '本期管型Y',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: cexieTableMap['refShapeX'] ?? true,
+                    columnName: 'refShapeX',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '参考管型X',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: cexieTableMap['refShapeY'] ?? true,
+                    columnName: 'refShapeY',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '参考管型Y',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: cexieTableMap['curShapeOffsetX'] ?? true,
+                    columnName: 'curShapeOffsetX',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '本期变化X',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: cexieTableMap['curShapeOffsetY'] ?? true,
+                    columnName: 'curShapeOffsetY',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '本期变化Y',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: cexieTableMap['curValueX'] ?? true,
+                    columnName: 'curValueX',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '累计变化X',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: cexieTableMap['curValueY'] ?? true,
+                    columnName: 'curValueY',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '累计变化Y',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )),
+          ),
+          ButtonWithIcon(
+            iconData: Icons.edit_note,
+            label: '选择展示的列表',
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (_) => StatefulBuilder(
+                        builder: (context, state) {
+                          return BrnMultiSelectDialog(
+                              isClose: true,
+                              title: '请选择展示的列表',
+                              conditions: conditions,
+                              submitText: '提交',
+                              isCustomFollowScroll: true,
+                              onItemClick: (BuildContext context, int index) {
+                                cexieTableMap[conditions[index].code] =
+                                    conditions[index].isChecked;
+                                state(() {});
                               },
-                              onDoubleTap: () async {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) => Dialog(
-                                    child: SensorSingle(
-                                                        sn: dateModel.sn ?? '-',
-                                      curData:'X轴${dateModel.curValueX.toString()} Y轴${dateModel.curValueY.toString()}',
-                                      curTime: '-',
-                                      refData: 'X轴${dateModel.refValueX.toString()} Y轴${dateModel.refValueY.toString()}',
-                                    ),
-                                  ),
-                                ).then((v) {
-                                  if (v != null) {
-                                    setState(() {});
-                                  }
-                                });
-                              },
-                            ),
-                            GestureDetector(
-                              child: Center(
-                                child: Text(
-                                  dateModel.location.toString(),
-                                  style: TextStyle(fontSize: 15),
-                                ),
-                              ),
-                              onTap: () {
-                                sse(() {
-                                  select = dateModel;
-                                });
-                              },
-                              onDoubleTap: () async {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) => Dialog(
-                                    child: SensorSingle(
-                                                        sn: dateModel.sn ?? '-',
-                                      curData:'X轴${dateModel.curValueX.toString()} Y轴${dateModel.curValueY.toString()}',
-                                      curTime: '-',
-                                      refData: 'X轴${dateModel.refValueX.toString()} Y轴${dateModel.refValueY.toString()}',
-                                    ),
-                                  ),
-                                ).then((v) {
-                                  if (v != null) {
-                                    setState(() {});
-                                  }
-                                });
-                              },
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                sse(() {
-                                  select = dateModel;
-                                });
-                              },
-                              onDoubleTap: () async {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) => Dialog(
-                                    child: SensorSingle(
-                                                        sn: dateModel.sn ?? '-',
-                                      curData:'X轴${dateModel.curValueX.toString()} Y轴${dateModel.curValueY.toString()}',
-                                      curTime: '-',
-                                      refData: 'X轴${dateModel.refValueX.toString()} Y轴${dateModel.refValueY.toString()}',
-                                    ),
-                                  ),
-                                ).then((v) {
-                                  if (v != null) {
-                                    setState(() {});
-                                  }
-                                });
-                              },
-                              child: Center(
-                                child: Text(
-                                  dateModel.curShapeX?.toStringAsFixed(2) ??
-                                      '-',
-                                  style: TextStyle(fontSize: 15),
-                                ),
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                sse(() {
-                                  select = dateModel;
-                                });
-                              },
-                              child: Center(
-                                  child: Text(
-                                dateModel.curShapeY?.toStringAsFixed(2) ?? '-',
-                                style: TextStyle(fontSize: 15),
-                              )),
-                              onDoubleTap: () async {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) => Dialog(
-                                    child: SensorSingle(
-                                                        sn: dateModel.sn ?? '-',
-                                      curData:'X轴${dateModel.curValueX.toString()} Y轴${dateModel.curValueY.toString()}',
-                                      curTime: '-',
-                                      refData: 'X轴${dateModel.refValueX.toString()} Y轴${dateModel.refValueY.toString()}',
-                                    ),
-                                  ),
-                                ).then((v) {
-                                  if (v != null) {
-                                    setState(() {});
-                                  }
-                                });
-                              },
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                sse(() {
-                                  select = dateModel;
-                                });
-                              },
-                              onDoubleTap: () async {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) => Dialog(
-                                    child: SensorSingle(
-                                                        sn: dateModel.sn ?? '-',
-                                      curData:'X轴${dateModel.curValueX.toString()} Y轴${dateModel.curValueY.toString()}',
-                                      curTime: '-',
-                                      refData: 'X轴${dateModel.refValueX.toString()} Y轴${dateModel.refValueY.toString()}',
-                                    ),
-                                  ),
-                                ).then((v) {
-                                  if (v != null) {
-                                    setState(() {});
-                                  }
-                                });
-                              },
-                              child: Center(
-                                  child: Text(
-                                dateModel.refShapeX?.toStringAsFixed(2) ?? '-',
-                                style: TextStyle(fontSize: 15),
-                              )),
-                            ),
-                            GestureDetector(
-                              onDoubleTap: () async {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) => Dialog(
-                                    child: SensorSingle(
-                                                        sn: dateModel.sn ?? '-',
-                                      curData:'X轴${dateModel.curValueX.toString()} Y轴${dateModel.curValueY.toString()}',
-                                      curTime: '-',
-                                      refData: 'X轴${dateModel.refValueX.toString()} Y轴${dateModel.refValueY.toString()}',
-                                    ),
-                                  ),
-                                ).then((v) {
-                                  if (v != null) {
-                                    setState(() {});
-                                  }
-                                });
-                              },
-                              onTap: () {
-                                sse(() {
-                                  select = dateModel;
-                                });
-                              },
-                              child: Center(
-                                  child: Text(
-                                dateModel.refShapeY?.toStringAsFixed(2) ?? '-',
-                                style: TextStyle(fontSize: 15),
-                              )),
-                            ),
-                            GestureDetector(
-                              onDoubleTap: () async {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) => Dialog(
-                                    child: SensorSingle(
-                                                        sn: dateModel.sn ?? '-',
-                                      curData:'X轴${dateModel.curValueX.toString()} Y轴${dateModel.curValueY.toString()}',
-                                      curTime: '-',
-                                      refData: 'X轴${dateModel.refValueX.toString()} Y轴${dateModel.refValueY.toString()}',
-                                    ),
-                                  ),
-                                ).then((v) {
-                                  if (v != null) {
-                                    setState(() {});
-                                  }
-                                });
-                              },
-                              onTap: () {
-                                sse(() {
-                                  select = dateModel;
-                                });
-                              },
-                              child: Center(
-                                  child: Text(
-                                dateModel.curShapeOffsetX?.toStringAsFixed(2) ??
-                                    '-',
-                                style: TextStyle(fontSize: 15),
-                              )),
-                            ),
-                            GestureDetector(
-                              onDoubleTap: () async {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) => Dialog(
-                                    child: SensorSingle(
-                                                        sn: dateModel.sn ?? '-',
-                                      curData:'X轴${dateModel.curValueX.toString()} Y轴${dateModel.curValueY.toString()}',
-                                      curTime: '-',
-                                      refData: 'X轴${dateModel.refValueX.toString()} Y轴${dateModel.refValueY.toString()}',
-                                    ),
-                                  ),
-                                ).then((v) {
-                                  if (v != null) {
-                                    setState(() {});
-                                  }
-                                });
-                              },
-                              onTap: () {
-                                sse(() {
-                                  select = dateModel;
-                                });
-                              },
-                              child: Center(
-                                  child: Text(
-                                dateModel.curShapeOffsetY?.toStringAsFixed(2) ??
-                                    '-',
-                                style: TextStyle(fontSize: 15),
-                              )),
-                            ),
-                            GestureDetector(
-                              onDoubleTap: () async {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) => Dialog(
-                                    child: SensorSingle(
-                                      sn: dateModel.sn ?? '-',
-                                      curData:'X轴${dateModel.curValueX.toString()} Y轴${dateModel.curValueY.toString()}',
-                                      curTime: '-',
-                                      refData: 'X轴${dateModel.refValueX.toString()} Y轴${dateModel.refValueY.toString()}',
-                                    ),
-                                  ),
-                                ).then((v) {
-                                  if (v != null) {
-                                    setState(() {});
-                                  }
-                                });
-                              },
-                              onTap: () {
-                                sse(() {
-                                  select = dateModel;
-                                });
-                              },
-                              child: Center(
-                                  child: Text(
-                                dateModel.curValueX?.toStringAsFixed(2) ?? '-',
-                                style: TextStyle(fontSize: 15),
-                              )),
-                            ),
-                            GestureDetector(
-                              onDoubleTap: () async {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) => Dialog(
-                                    child: SensorSingle(
-                                                        sn: dateModel.sn ?? '-',
-                                  curData:'X轴${dateModel.curValueX.toString()} Y轴${dateModel.curValueY.toString()}',
-                                  curTime: '-',
-                                  refData: 'X轴${dateModel.refValueX.toString()} Y轴${dateModel.refValueY.toString()}',
-                                    ),
-                                  ),
-                                ).then((v) {
-                                  if (v != null) {
-                                    setState(() {});
-                                  }
-                                });
-                              },
-                              onTap: () {
-                                sse(() {
-                                  select = dateModel;
-                                });
-                              },
-                              child: Center(
-                                  child: Text(
-                                dateModel.curValueY?.toStringAsFixed(2) ?? '-',
-                                style: TextStyle(fontSize: 15),
-                              )),
-                            ),
-                          ]);
-                    }).toList(),
-                  ],
-                );
-              }),
-            )
-            // ListView(
-            //   children: [
-            //     Flex(
-            //       direction: Axis.horizontal,
-            //       children: [
-            //         Expanded(
-            //             child: Container(
-            //           decoration: BoxDecoration(
-            //               border: Border.all(color: Colors.blueAccent)),
-            //           child: const Center(
-            //               child: Text(
-            //             '测点名',
-            //             style: TextStyle(fontSize: 10),
-            //           )),
-            //         )),
-            //         Expanded(
-            //             child: Container(
-            //           decoration: BoxDecoration(
-            //               border: Border.all(color: Colors.blueAccent)),
-            //           child: const Center(
-            //               child: Text(
-            //             '位置',
-            //             style: TextStyle(fontSize: 10),
-            //           )),
-            //         )),
-            //         Expanded(
-            //             child: Container(
-            //           decoration: BoxDecoration(
-            //               border: Border.all(color: Colors.blueAccent)),
-            //           child: const Center(
-            //               child: Text(
-            //             '本期管形X',
-            //             style: TextStyle(fontSize: 10),
-            //           )),
-            //         )),
-            //         Expanded(
-            //             child: Container(
-            //           decoration: BoxDecoration(
-            //               border: Border.all(color: Colors.blueAccent)),
-            //           child: const Center(
-            //               child: Text(
-            //             '本期管形Y',
-            //             style: TextStyle(fontSize: 10),
-            //           )),
-            //         )),
-            //         Expanded(
-            //             child: Container(
-            //           decoration: BoxDecoration(
-            //               border: Border.all(color: Colors.blueAccent)),
-            //           child: const Center(
-            //               child: Text(
-            //             '参考管形X',
-            //             style: TextStyle(fontSize: 10),
-            //           )),
-            //         )),
-            //         Expanded(
-            //             child: Container(
-            //           decoration: BoxDecoration(
-            //               border: Border.all(color: Colors.blueAccent)),
-            //           child: const Center(
-            //               child: Text(
-            //             '参考管形Y',
-            //             style: TextStyle(fontSize: 10),
-            //           )),
-            //         )),
-            //         Expanded(
-            //             child: Container(
-            //           decoration: BoxDecoration(
-            //               border: Border.all(color: Colors.blueAccent)),
-            //           child: const Center(
-            //               child: Text(
-            //             '本期变化X',
-            //             style: TextStyle(fontSize: 10),
-            //           )),
-            //         )),
-            //         Expanded(
-            //             child: Container(
-            //           decoration: BoxDecoration(
-            //               border: Border.all(color: Colors.blueAccent)),
-            //           child: const Center(
-            //               child: Text(
-            //             '本期变化Y',
-            //             style: TextStyle(fontSize: 10),
-            //           )),
-            //         )),
-            //         Expanded(
-            //             child: Container(
-            //           decoration: BoxDecoration(
-            //               border: Border.all(color: Colors.blueAccent)),
-            //           child: const Center(
-            //               child: Text(
-            //             '累计变化X',
-            //             style: TextStyle(fontSize: 10),
-            //           )),
-            //         )),
-            //         Expanded(
-            //             child: Container(
-            //           decoration: BoxDecoration(
-            //               border: Border.all(color: Colors.blueAccent)),
-            //           child: const Center(
-            //               child: Text(
-            //             '累计变化Y',
-            //             style: TextStyle(fontSize: 10),
-            //           )),
-            //         )),
-            //         const Spacer(),
-            //       ],
-            //     ),
-            //     ...ceXies.map((e) => CeXieLine(dateModel: e)).toList(),
-            //     BrnIconButton(
-            //       name: '下载报表',
-            //       iconWidget: Icon(Icons.download),
-            //       onTap: () {
-            //         downLoadCeXie();
-            //       },
-            //     )
-            //   ],
-            // ),
-            ),
-      ],
-    );
+                              onSubmitClick: (data) {
+                                sse(() {});
+                                return true;
+                              });
+                        },
+                      ));
+            },
+          )
+        ],
+      );
+    });
   }
 
   Widget _buildCeXieChart() {
@@ -1671,7 +1295,16 @@ class ItemManagerState extends State<ItemManager> {
             zoomPanBehavior: ZoomPanBehavior(
               enableMouseWheelZooming: true,
               zoomMode: ZoomMode.x,
+              maximumZoomLevel: 0.5,
             ),
+            onZoomStart: (ZoomPanArgs args) {
+              print(args.currentZoomFactor);
+              print(args.currentZoomPosition);
+            },
+            onZoomEnd: (ZoomPanArgs args) {
+              print(args.currentZoomFactor);
+              print(args.currentZoomPosition);
+            },
             primaryXAxis: CategoryAxis(
                 isVisible: true,
                 //显示时间轴置顶

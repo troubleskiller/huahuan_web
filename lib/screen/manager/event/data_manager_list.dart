@@ -125,7 +125,8 @@ class _DataManagerListState extends State<DataManagerList> {
                                   1: FlexColumnWidth(1),
                                   2: FlexColumnWidth(1),
                                   3: FlexColumnWidth(1),
-                                  4: FlexColumnWidth(3),
+                                  4: FlexColumnWidth(2),
+                                  5: FlexColumnWidth(3),
                                 },
                                 border: TableBorder.all(
                                     width: 0.5, color: Colors.black),
@@ -180,12 +181,12 @@ class _DataManagerListState extends State<DataManagerList> {
                                               child: Center(
                                                   child: Text(
                                                       e.userId.toString())),
-                                            ),            Container(
+                                            ),
+                                            Container(
                                               padding: EdgeInsets.symmetric(
                                                   horizontal: 15, vertical: 5),
                                               child: Center(
-                                                  child: Text(
-                                                      e.id.toString())),
+                                                  child: Text(e.id.toString())),
                                             ),
                                             Container(
                                               padding: EdgeInsets.symmetric(

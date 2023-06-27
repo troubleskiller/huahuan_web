@@ -128,7 +128,7 @@ class CollectorListViewState extends State<CollectorListView> {
                 child: SingleChildScrollView(
                   controller: aController,
                   scrollDirection: Axis.horizontal,
-                  child: Container(height: 800, width: 1100, child: table),
+                  child: Container(height: 800, width: 1200, child: table),
                 )),
           ),
         ],

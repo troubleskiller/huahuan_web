@@ -21,6 +21,7 @@ import 'package:huahuan_web/screen/layout/layout_controller.dart';
 import 'package:huahuan_web/util/store_util.dart';
 import 'package:huahuan_web/util/utils.dart';
 import 'package:huahuan_web/widget/button/icon_button.dart';
+import 'package:huahuan_web/widget/common/common_card.dart';
 import 'package:provider/provider.dart';
 
 class ProjectView extends StatefulWidget {
@@ -98,9 +99,7 @@ class _ProjectViewState extends State<ProjectView> {
                     Utils.openTab(14);
                     layoutState.setState(() {});
                     if (itemManagerState != null) {
-                      itemManagerState!.setState(() {
-
-                      });
+                      itemManagerState!.setState(() {});
                       itemManagerState!.init();
                     }
                     // layoutController.update(9);
@@ -185,7 +184,8 @@ class _ProjectViewState extends State<ProjectView> {
     return loadData
         ? Container()
         : Scaffold(
-            backgroundColor: Colors.white,
+            // backgroundColor: Colors.white30,
+            backgroundColor: Colors.white30,
             body: Padding(
               padding:
                   const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
@@ -193,18 +193,18 @@ class _ProjectViewState extends State<ProjectView> {
                 direction: Axis.horizontal,
                 children: [
                   Expanded(
-                      flex: 1,
-                      child: Column(
-                        children: [
-                          Text(
-                            '项目名称',
-                            style: TextStyle(fontSize: 30, color: Colors.black),
-                          ),
-                          Expanded(
-                            flex: 12,
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 20),
+                      flex: 14,
+                      child: CommonCard(
+                        backgroundColor: Colors.white,
+                        child: Column(
+                          children: [
+                            Text(
+                              '项目名称',
+                              style:
+                                  TextStyle(fontSize: 30, color: Colors.black),
+                            ),
+                            Expanded(
+                              flex: 12,
                               child: ListView(
                                 children: projects
                                     .map((e) => Container(
@@ -249,36 +249,36 @@ class _ProjectViewState extends State<ProjectView> {
                                     .toList(),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       )),
+                  Spacer(),
                   Expanded(
-                    flex: 6,
+                    flex: 75,
                     child: Flex(
                       direction: Axis.vertical,
                       children: [
                         Expanded(
-                          ///项目描述、时间和地点
                           flex: 8,
-
-                          ///项目描述、时间和地点
                           child: Flex(
                             direction: Axis.horizontal,
                             // mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               ///项目图片
                               Expanded(
-                                flex: 6,
-                                child: projectBytes != null
-                                    ? Image.memory(
-                                        projectBytes!,
-                                        fit: BoxFit.cover,
-                                      )
-                                    : Image.network(
-                                        'https://t7.baidu.com/it/u=1595072465,3644073269&fm=193&f=GIF',
-                                        fit: BoxFit.cover,
-                                      ),
-                              ),
+                                  flex: 6,
+                                  child: CommonCard(
+                                    backgroundColor: Colors.white,
+                                    child: projectBytes != null
+                                        ? Image.memory(
+                                            projectBytes!,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Image.network(
+                                            'https://t7.baidu.com/it/u=1595072465,3644073269&fm=193&f=GIF',
+                                            fit: BoxFit.cover,
+                                          ),
+                                  )),
                               Spacer(
                                 flex: 1,
                               ),
@@ -286,69 +286,75 @@ class _ProjectViewState extends State<ProjectView> {
                               ///项目描述和时间
                               Expanded(
                                 flex: 12,
-                                child: Flex(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  direction: Axis.vertical,
-                                  children: [
-                                    Expanded(
-                                        flex: 8,
-                                        child: Flex(
-                                          direction: Axis.horizontal,
-                                          children: [
-                                            Expanded(
+                                child: CommonCard(
+                                  child: Flex(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    direction: Axis.vertical,
+                                    children: [
+                                      Expanded(
+                                          flex: 8,
+                                          child: Flex(
+                                            direction: Axis.horizontal,
+                                            children: [
+                                              Expanded(
+                                                  child: Text(
+                                                curProject.name ?? '--',
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              )),
+                                              Spacer(),
+                                            ],
+                                          )),
+                                      Spacer(
+                                        flex: 1,
+                                      ),
+                                      Expanded(
+                                          flex: 7,
+                                          child: Flex(
+                                            direction: Axis.horizontal,
+                                            children: [
+                                              Expanded(
+                                                flex: 20,
+                                                child: Text(DateTime.parse(
+                                                        curProject.created ??
+                                                            '')
+                                                    .toString()
+                                                    .split('.')[0]),
+                                              ),
+                                              Spacer(
+                                                flex: 2,
+                                              ),
+                                              Container(
+                                                width: 2,
+                                                color: Colors.grey,
+                                              ),
+                                              Spacer(
+                                                flex: 2,
+                                              ),
+                                              Expanded(
+                                                flex: 18,
                                                 child: Text(
-                                              curProject.name ?? '--',
-                                              style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold),
-                                            )),
-                                            Spacer(),
-                                          ],
-                                        )),
-                                    Spacer(
-                                      flex: 1,
-                                    ),
-                                    Expanded(
-                                        flex: 7,
-                                        child: Flex(
-                                          direction: Axis.horizontal,
-                                          children: [
-                                            Expanded(
-                                              flex: 20,
-                                              child: Text(DateTime.parse(
-                                                      curProject.created ?? '')
-                                                  .toString()
-                                                  .split('.')[0]),
-                                            ),
-                                            Spacer(
-                                              flex: 2,
-                                            ),
-                                            Container(
-                                              width: 2,
-                                              color: Colors.grey,
-                                            ),
-                                            Spacer(
-                                              flex: 2,
-                                            ),
-                                            Expanded(
-                                              flex: 18,
-                                              child: Text(
-                                                  curProject.location ?? '--'),
-                                            ),
-                                          ],
-                                        )),
-                                    Spacer(
-                                      flex: 3,
-                                    ),
-                                    Expanded(
-                                      flex: 20,
-                                      child:
-                                          Text(curProject.description ?? '--'),
-                                    ),
-                                    Spacer(
-                                      flex: 1,
-                                    ),
-                                  ],
+                                                    curProject.location ??
+                                                        '--'),
+                                              ),
+                                            ],
+                                          )),
+                                      Spacer(
+                                        flex: 3,
+                                      ),
+                                      Expanded(
+                                        flex: 20,
+                                        child: Text(
+                                            curProject.description ?? '--'),
+                                      ),
+                                      Spacer(
+                                        flex: 1,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
@@ -357,107 +363,107 @@ class _ProjectViewState extends State<ProjectView> {
                         Spacer(
                           flex: 1,
                         ),
-                        Container(
-                          height: 1,
-                          color: Colors.grey,
-                        ),
 
                         ///项目工况和项目下属测项
                         Expanded(
                           flex: 24,
-                          child: Flex(
-                            direction: Axis.horizontal,
-                            children: [
-                              Expanded(
-                                flex: 18,
-                                child: Flex(
-                                  direction: Axis.vertical,
-                                  children: [
-                                    ///工况轮播图
-                                    Spacer(),
-                                    Expanded(
-                                        flex: 8,
-                                        child: Swiper(
-                                          autoplay: false,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            return StateOrDiseaseWidget(
-                                              projectStateModel:
-                                                  curAllStates[index],
-                                              edit: (Uint8List? bytes) {
-                                                _editState(
-                                                    curState:
-                                                        curAllStates[index],
-                                                    bytes: bytes);
-                                              },
-                                            );
-                                          },
-                                          itemCount: curAllStates.length,
-                                          pagination: SwiperPagination(),
-                                          control: SwiperControl(),
-                                        )),
-                                    Spacer(),
-                                    Container(
-                                      height: 1,
-                                      color: Colors.grey,
-                                    ),
-                                    Spacer(),
-                                    Expanded(
-                                        flex: 8,
-                                        child: Swiper(
-                                          autoplay: false,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            return StateOrDiseaseWidget(
-                                              projectStateModel:
-                                                  curAllDiseases[index],
-                                              edit: (Uint8List? bytes) {
-                                                _editState(
-                                                    curState:
-                                                        curAllDiseases[index],
-                                                    bytes: bytes);
-                                              },
-                                            );
-                                          },
-                                          itemCount: curAllDiseases.length,
-                                          pagination: SwiperPagination(),
-                                          control: SwiperControl(),
-                                        )),
-                                    Spacer(),
-                                    Expanded(
-                                        flex: 1,
-                                        child: ButtonWithIcon(
-                                          iconData: Icons.add,
-                                          onPressed: () {
-                                            _editState();
-                                          },
-                                        )),
-                                    Spacer(),
-                                  ],
+                          child: Container(
+                            child: Flex(
+                              direction: Axis.horizontal,
+                              children: [
+                                Expanded(
+                                  flex: 45,
+                                  child: Flex(
+                                    direction: Axis.vertical,
+                                    children: [
+                                      ///工况轮播图
+                                      Expanded(
+                                          flex: 8,
+                                          child: Swiper(
+                                            autoplay: false,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              return CommonCard(
+                                                backgroundColor: Colors.white,
+                                                child: StateOrDiseaseWidget(
+                                                  projectStateModel:
+                                                      curAllStates[index],
+                                                  edit: (Uint8List? bytes) {
+                                                    _editState(
+                                                        curState:
+                                                            curAllStates[index],
+                                                        bytes: bytes);
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                            itemCount: curAllStates.length,
+                                            pagination: SwiperPagination(),
+                                            control: SwiperControl(),
+                                          )),
+                                      Spacer(),
+                                      Expanded(
+                                          flex: 8,
+                                          child: Swiper(
+                                            autoplay: false,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              return CommonCard(
+                                                backgroundColor: Colors.white,
+                                                child: StateOrDiseaseWidget(
+                                                  projectStateModel:
+                                                      curAllDiseases[index],
+                                                  edit: (Uint8List? bytes) {
+                                                    _editState(
+                                                        curState:
+                                                            curAllDiseases[
+                                                                index],
+                                                        bytes: bytes);
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                            itemCount: curAllDiseases.length,
+                                            pagination: SwiperPagination(),
+                                            control: SwiperControl(),
+                                          )),
+                                      Spacer(),
+                                      Expanded(
+                                          flex: 1,
+                                          child: ButtonWithIcon(
+                                            iconData: Icons.add,
+                                            onPressed: () {
+                                              _editState();
+                                            },
+                                          )),
+                                      Spacer(),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                width: 1,
-                                color: Colors.grey,
-                              ),
-                              Spacer(
-                                flex: 1,
-                              ),
-                              Expanded(
-                                flex: 6,
-                                child: Flex(
-                                  direction: Axis.vertical,
-                                  children: [
-                                    Expanded(
-                                      flex: 12,
-                                      child: ListView(
-                                        children: eventsUnProject,
+                                Spacer(
+                                  flex: 1,
+                                ),
+                                Expanded(
+                                  flex: 15,
+                                  child: Flex(
+                                    direction: Axis.vertical,
+                                    children: [
+                                      Expanded(
+                                        flex: 12,
+                                        child: CommonCard(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          backgroundColor: Colors.white,
+                                          child: ListView(
+                                            children: eventsUnProject,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            ],
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         )
                       ],
@@ -532,19 +538,21 @@ class _StateOrDiseaseWidgetState extends State<StateOrDiseaseWidget> {
         ///项目图片
         Expanded(
           flex: 6,
-          child: FutureBuilder(
-              future: getCurImage(),
-              initialData: null,
-              builder: (_, as) {
-                return bytes != null
-                    ? Image.memory(
-                        bytes!,
-                        fit: BoxFit.cover,
-                      )
-                    : Image.network(
-                        'https://t7.baidu.com/it/u=1595072465,3644073269&fm=193&f=GIF',
-                      );
-              }),
+          child: CommonCard(
+              backgroundColor: Colors.white30,
+              child: FutureBuilder(
+                  future: getCurImage(),
+                  initialData: null,
+                  builder: (_, as) {
+                    return bytes != null
+                        ? Image.memory(
+                            bytes!,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.network(
+                            'https://t7.baidu.com/it/u=1595072465,3644073269&fm=193&f=GIF',
+                          );
+                  })),
         ),
         Spacer(
           flex: 1,
@@ -553,74 +561,77 @@ class _StateOrDiseaseWidgetState extends State<StateOrDiseaseWidget> {
         ///项目描述和时间
         Expanded(
           flex: 12,
-          child: Flex(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            direction: Axis.vertical,
-            children: [
-              Flex(
-                direction: Axis.horizontal,
-                children: [
-                  Expanded(
-                    flex: 8,
-                    child: Text(
-                      widget.projectStateModel.name ?? '--',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          child: CommonCard(
+            backgroundColor: Color.fromRGBO(240, 242, 246, 1),
+            child: Flex(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              direction: Axis.vertical,
+              children: [
+                Flex(
+                  direction: Axis.horizontal,
+                  children: [
+                    Expanded(
+                      flex: 8,
+                      child: Text(
+                        widget.projectStateModel.name ?? '--',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                  ButtonWithIcon(
-                    iconData: Icons.edit,
-                    onPressed: () {
-                      widget.edit(bytes);
-                    },
-                  )
-                ],
-              ),
-              Spacer(
-                flex: 1,
-              ),
-              Expanded(
-                  flex: 7,
-                  child: Flex(
-                    direction: Axis.horizontal,
-                    children: [
-                      Expanded(
-                        flex: 20,
-                        child: Text(DateTime.parse(
-                                widget.projectStateModel.startTime ?? '')
-                            .toString()
-                            .split('.')[0]),
-                      ),
-                      Spacer(
-                        flex: 2,
-                      ),
-                      Container(
-                        width: 2,
-                        color: Colors.grey,
-                      ),
-                      Spacer(
-                        flex: 2,
-                      ),
-                      Expanded(
-                        flex: 18,
-                        child: Text(DateTime.parse(
-                                widget.projectStateModel.endTime ?? '')
-                            .toString()
-                            .split('.')[0]),
-                      ),
-                    ],
-                  )),
-              Spacer(
-                flex: 3,
-              ),
-              Expanded(
-                flex: 20,
-                child: Text(widget.projectStateModel.description ?? '--'),
-              ),
-              Spacer(
-                flex: 1,
-              ),
-            ],
+                    ButtonWithIcon(
+                      iconData: Icons.edit,
+                      onPressed: () {
+                        widget.edit(bytes);
+                      },
+                    )
+                  ],
+                ),
+                Spacer(
+                  flex: 1,
+                ),
+                Expanded(
+                    flex: 7,
+                    child: Flex(
+                      direction: Axis.horizontal,
+                      children: [
+                        Expanded(
+                          flex: 20,
+                          child: Text(DateTime.parse(
+                                  widget.projectStateModel.startTime ?? '')
+                              .toString()
+                              .split('.')[0]),
+                        ),
+                        Spacer(
+                          flex: 2,
+                        ),
+                        Container(
+                          width: 2,
+                          color: Colors.grey,
+                        ),
+                        Spacer(
+                          flex: 2,
+                        ),
+                        Expanded(
+                          flex: 18,
+                          child: Text(DateTime.parse(
+                                  widget.projectStateModel.endTime ?? '')
+                              .toString()
+                              .split('.')[0]),
+                        ),
+                      ],
+                    )),
+                Spacer(
+                  flex: 3,
+                ),
+                Expanded(
+                  flex: 20,
+                  child: Text(widget.projectStateModel.description ?? '--'),
+                ),
+                Spacer(
+                  flex: 1,
+                ),
+              ],
+            ),
           ),
         ),
       ],

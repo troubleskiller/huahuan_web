@@ -10,6 +10,12 @@ class SensorApi {
     return responseBodyApi;
   }
 
+  static Future<ResponseBodyApi> selectOneById(data) async {
+    ResponseBodyApi responseBodyApi = await HttpUtil.post('/sensor/selectOne',
+        data: data, requestToken: true);
+    return responseBodyApi;
+  }
+
   static Future<ResponseBodyApi> update(data) async {
     ResponseBodyApi responseBodyApi =
         await HttpUtil.post('/sensor/update', data: data, requestToken: true);
