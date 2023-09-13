@@ -1,7 +1,6 @@
 // import 'package:easy_localization/easy_localization.dart';
 import 'package:bruno/bruno.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_2d_amap/flutter_2d_amap.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:huahuan_web/model/application/event_model.dart';
@@ -10,6 +9,7 @@ import 'package:huahuan_web/route/main_route_delegate.dart';
 import 'package:huahuan_web/route/route_information_parser.dart';
 import 'package:huahuan_web/screen/layout/layout.dart';
 import 'package:huahuan_web/screen/layout/layout_controller.dart';
+import 'package:huahuan_web/screen/login.dart';
 import 'package:provider/provider.dart';
 
 import 'context/application_context.dart';
@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     Map<String, Widget> pageMap = {
       '/': Layout(),
-      // '/login': Login(),
+      '/login': Login(),
     };
     return GetMaterialApp.router(
       key: UniqueKey(),
@@ -64,7 +64,7 @@ class MyApp extends StatelessWidget {
       localizationsDelegates: [
         BrnLocalizationDelegate.delegate,
       ],
-      title: 'FLUTTER_ADMIN',
+      title: 'Iot云监测平台',
       enableLog: false,
       routerDelegate: MainRouterDelegate(pageMap: pageMap),
       routeInformationParser: TroRouteInformationParser(),

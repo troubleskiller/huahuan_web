@@ -28,18 +28,19 @@ class RoleApi {
 
   static Future<ResponseBodyApi> addRole(data) async {
     ResponseBodyApi responseBodyApi =
-    await HttpUtil.post('/role/addRole', data: data, requestToken: true);
+        await HttpUtil.post('/role/add', data: data, requestToken: true);
     return responseBodyApi;
+  }
 
-  }  static Future<ResponseBodyApi> selectOne(data) async {
+  static Future<ResponseBodyApi> selectOne(data) async {
     ResponseBodyApi responseBodyApi =
-    await HttpUtil.post('/role/selectOne', data: data, requestToken: true);
+        await HttpUtil.post('/role/selectOne', data: data, requestToken: true);
     return responseBodyApi;
   }
 
   static Future<ResponseBodyApi> recoveryRole(data) async {
     ResponseBodyApi responseBodyApi =
-    await HttpUtil.post('/role/recovery', data: data, requestToken: true);
+        await HttpUtil.post('/role/recovery', data: data, requestToken: true);
     return responseBodyApi;
   }
 }

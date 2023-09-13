@@ -27,17 +27,22 @@ class LayoutSetting extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-            child: Text('mySettings'),
+            child: Text('我的设置'),
             decoration: BoxDecoration(
               color: Colors.cyanAccent,
             ),
           ),
           Divider(thickness: 1),
           ListTile(
-            title: Text('menuDisplay'),
+            title: Text('展示模式'),
             trailing: menuDisplayType,
           ),
           Divider(thickness: 1),
+          // ListTile(
+          //   // title: Text(tr('language')),
+          //   title: Text('语言'),
+          //   trailing: LangSwitch(),
+          // ),
           ListTile(
             // title: Text(tr('language')),
             title: Text('语言'),

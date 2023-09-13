@@ -544,6 +544,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "6.0.2"
+  searchable_listview:
+    dependency: "direct main"
+    description:
+      name: searchable_listview
+      sha256: "0a158665571e03890408e2d5569f0673a36f79fac5a671a54495b52f67b93b63"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.4.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -602,6 +610,14 @@ packages:
     description:
       name: syncfusion_flutter_datagrid
       sha256: "1bd1adc3f69986849c15b61b76bc0494e74b1ebd3b503ea263f2414c803c38b0"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "20.4.54"
+  syncfusion_flutter_datepicker:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_datepicker
+      sha256: e4d4794d54f3a315046031d431a27e0d7350544b1bef0bcd1d2acf58f940dd37
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "20.4.54"

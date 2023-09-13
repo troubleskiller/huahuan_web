@@ -91,7 +91,7 @@ class SensorHoleModel {
   String? created;
   dynamic collectorId;
   int? sensorTypeId;
-  dynamic protocolTypeId;
+  int? protocolTypeId;
   int? refSensorId;
   String? initTime;
   dynamic initTemp;
@@ -104,7 +104,7 @@ class SensorHoleModel {
   int? unitId;
   int? projectId;
   String? location;
-  dynamic paramsEx;
+  String? paramsEx;
   int? status;
   String? sensorTypeName;
   String? unitName;

@@ -166,11 +166,12 @@ class MyDS extends DataTableSource {
     }
     CollectorDto collectorModel = dataList[dataIndex];
 
+    DateTime? created = DateTime.tryParse(collectorModel.created ?? '');
     return DataRow.byIndex(
       index: index,
       cells: <DataCell>[
         DataCell(Text(collectorModel.collectorSn ?? '--')),
-        DataCell(Text(collectorModel.created ?? '--')),
+        DataCell(Text(created.toString().split('.')[0])),
         DataCell(Text(collectorModel.status == 0 ? '在线' : '离线')),
       ],
     );
@@ -180,7 +181,12 @@ class MyDS extends DataTableSource {
   bool get isRowCountApproximate => false;
 
   @override
-  int get rowCount => page.sum ?? 0;
+  int get rowCount {
+    if (page.sum != null) {
+      return page.sum! - 1;
+    }
+    return 0;
+  }
 
   @override
   int get selectedRowCount => 0;

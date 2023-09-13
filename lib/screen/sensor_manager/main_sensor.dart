@@ -5,19 +5,26 @@ import 'package:huahuan_web/model/admin/CollectorModel.dart';
 import 'package:huahuan_web/model/api/response_api.dart';
 import 'package:huahuan_web/model/application/event_model.dart';
 import 'package:huahuan_web/screen/item/collector_edit.dart';
+import 'package:huahuan_web/screen/item/data_source/common_data.dart';
 import 'package:huahuan_web/screen/sensor_manager/sensorTest.dart';
 import 'package:huahuan_web/util/tro_util.dart';
 import 'package:huahuan_web/widget/dialog/tro_dialog.dart';
 import 'package:provider/provider.dart';
+import 'package:syncfusion_flutter_datagrid/datagrid.dart';
+
+late MainSensorState mainSensorState;
 
 class MainSensor extends StatefulWidget {
   const MainSensor({Key? key}) : super(key: key);
 
   @override
-  State<MainSensor> createState() => _MainSensorState();
+  State<MainSensor> createState() {
+    mainSensorState = MainSensorState();
+    return mainSensorState;
+  }
 }
 
-class _MainSensorState extends State<MainSensor> {
+class MainSensorState extends State<MainSensor> {
   late EventModel eventModel;
 
   List<SensorTest> projects = [];
@@ -36,12 +43,21 @@ class _MainSensorState extends State<MainSensor> {
         .map((e) => SensorTest.fromJson(e))
         .toList();
   }
-  _edit({CollectorModel? sensorModel}) {
+
+  void refresh() async {
+    await init();
+    setState(() {});
+  }
+
+  _edit({
+    CollectorModel? sensorModel,
+  }) {
     showDialog(
       context: context,
       builder: (BuildContext context) => Dialog(
         child: CollectorEdit(
           collectorModel: sensorModel,
+          isUpdate: false,
         ),
       ),
     ).then((v) {});
@@ -69,8 +85,12 @@ class _MainSensorState extends State<MainSensor> {
           GestureDetector(
             child: Container(
               child: Text('添加'),
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20,),
-              decoration: BoxDecoration(border: Border.all(color: Colors.black,width: 1)),
+              padding: EdgeInsets.symmetric(
+                vertical: 10,
+                horizontal: 20,
+              ),
+              decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black, width: 1)),
             ),
             onTap: () {
               _edit();
@@ -142,11 +162,16 @@ class _SensorDataState extends State<SensorData> {
               GestureDetector(
                 child: Container(
                   child: Text('添加'),
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20,),
-                  decoration: BoxDecoration(border: Border.all(color: Colors.black,width: 1)),
+                  padding: EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 20,
+                  ),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black, width: 1)),
                 ),
                 onTap: () {
                   _edit(
+                      isUpdate: false,
                       sensorModel: CollectorModel(
                         projectId: widget.sensorP.id,
                       ));
@@ -155,145 +180,129 @@ class _SensorDataState extends State<SensorData> {
             ],
           ),
           (widget.sensorP.collectors ?? []).isNotEmpty
-              ? Table(
-                  border: TableBorder.all(width: 0.5, color: Colors.black),
-                  children: [
-                      TableRow(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 15, vertical: 10),
-                            child: Center(child: Text('采集仪名称')),
-                          ),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 15, vertical: 10),
-                            child: Center(child: Text('采集仪编号')),
-                          ),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 15, vertical: 10),
-                            child: Center(child: Text('采集仪类型')),
-                          ),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 15, vertical: 10),
-                            child: Center(child: Text('采集周期')),
-                          ),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 15, vertical: 10),
-                            child: Center(child: Text('采集端口')),
-                          ),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 15, vertical: 10),
-                            child: Center(child: Text('用户id')),
-                          ),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 15, vertical: 10),
-                            child: Center(child: Text('操作')),
-                          )
-                        ],
-                      )
-                    ])
-              : Container(),
-          Table(
-            border: TableBorder.all(width: 0.5, color: Colors.black),
-            children: [
-              ...(widget.sensorP.collectors ?? []).map((e) =>
-                  TableRow(children: [
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                      child: Center(
-                        child: Text(e.name ?? '--'),
-                      ),
-                    ),
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                      child: Center(
-                        child: Text(e.sn ?? '--'),
-                      ),
-                    ),
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                      child: Center(
-                        child: Text(collectorType[e.collectorTypeId] ?? '--'),
-                      ),
-                    ),
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                      child: Center(
-                        child: Text(e.cycle.toString() ?? '--'),
-                      ),
-                    ),
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                      child: Center(
-                        child: Text(e.port.toString() ?? '--'),
-                      ),
-                    ),
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                      child: Center(
-                        child: Text(e.userId ?? '--'),
-                      ),
-                    ),
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                      child: Center(
-                        child: ButtonBar(
-                          alignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            IconButton(
-                              icon: const Icon(Icons.edit),
-                              onPressed: () {
-                                _edit(sensorModel: e);
-                              },
+              ? Builder(builder: (context) {
+                  CollectorSource cur = CollectorSource(
+                    commonData: widget.sensorP.collectors ?? [],
+                    context: context,
+                    edit: (CollectorModel? sensorModel) {
+                      _edit(sensorModel: sensorModel, isUpdate: true);
+                    },
+                  );
+                  return Container(
+                    height: ((widget.sensorP.collectors ?? []).length + 1) * 60,
+                    child: SfDataGrid(
+                      columnWidthCalculationRange:
+                          ColumnWidthCalculationRange.allRows,
+                      gridLinesVisibility: GridLinesVisibility.both,
+                      headerGridLinesVisibility: GridLinesVisibility.both,
+                      selectionMode: SelectionMode.single,
+                      navigationMode: GridNavigationMode.cell,
+                      source: cur,
+                      columnWidthMode: ColumnWidthMode.fill,
+                      columns: [
+                        GridColumn(
+                          columnName: 'name',
+                          label: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            alignment: Alignment.center,
+                            child: Text(
+                              '采集仪名称',
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.delete),
-                              onPressed: () {
-                                troConfirm(context, 'confirmDelete',
-                                    (context) async {
-                                  var result = await CollectorApi.delete(
-                                      '{"id": ${e.id}}');
-                                  if (result.code == 200) {
-                                    TroUtils.message('success');
-                                  }
-                                });
-                              },
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                    )
-                  ])),
-            ],
-          ),
-
+                        GridColumn(
+                          columnName: 'sn',
+                          label: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            alignment: Alignment.center,
+                            child: Text(
+                              '采集仪编号',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                        GridColumn(
+                          columnName: 'type',
+                          label: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            alignment: Alignment.center,
+                            child: Text(
+                              '采集仪类型',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                        GridColumn(
+                          columnName: 'cycle',
+                          label: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            alignment: Alignment.center,
+                            child: Text(
+                              '采集周期',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                        GridColumn(
+                          columnName: 'port',
+                          label: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            alignment: Alignment.center,
+                            child: Text(
+                              '采集端口',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                        GridColumn(
+                          columnName: 'userId',
+                          label: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            alignment: Alignment.center,
+                            child: Text(
+                              '用户id',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                        GridColumn(
+                          width: 200,
+                          columnWidthMode: ColumnWidthMode.none,
+                          columnName: 'operation',
+                          label: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            alignment: Alignment.center,
+                            child: Text(
+                              '操作',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                })
+              : Container(),
         ],
       ),
     );
   }
 
-  _edit({CollectorModel? sensorModel}) {
+  _edit({CollectorModel? sensorModel, required bool isUpdate}) {
     showDialog(
       context: context,
       builder: (BuildContext context) => Dialog(
         child: CollectorEdit(
           collectorModel: sensorModel,
+          isUpdate: isUpdate,
         ),
       ),
-    ).then((v) {});
+    ).then((v) async {
+      if (v != null) {
+        mainSensorState.refresh();
+      }
+    });
   }
 }
 
@@ -335,7 +344,7 @@ class _SensorLineState extends State<SensorLine> {
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () {
-                troConfirm(context, 'confirmDelete', (context) async {
+                troConfirm(context, '确认删除', (context) async {
                   var result =
                       await CollectorApi.delete('{"id": ${widget.data.id}}');
                   if (result.code == 200) {
@@ -356,6 +365,7 @@ class _SensorLineState extends State<SensorLine> {
       builder: (BuildContext context) => Dialog(
         child: CollectorEdit(
           collectorModel: sensorModel,
+          isUpdate: true,
         ),
       ),
     ).then((v) {});

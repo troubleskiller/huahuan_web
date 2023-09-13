@@ -1,9 +1,3 @@
-/// @author: cairuoyu
-/// @homepage: http://cairuoyu.com
-/// @github: https://github.com/cairuoyu/cry、https://github.com/cairuoyu/flutter_admin
-/// @date: 2021/6/21
-/// @version: 1.0
-/// @description:
 import 'package:flutter/material.dart';
 
 import 'icon_button.dart';
@@ -12,7 +6,7 @@ class ButtonWithIcons {
   ButtonWithIcons._();
 
   static add(context, onPressed, {showLabel = true}) => ButtonWithIcon(
-      label: showLabel ? 'add' : null,
+      label: showLabel ? '添加' : null,
       iconData: Icons.add,
       onPressed: onPressed);
   static collect(context, onPressed, {showLabel = true}) => ButtonWithIcon(
@@ -25,47 +19,47 @@ class ButtonWithIcons {
       onPressed: onPressed);
 
   static delete(context, onPressed, {showLabel = true}) => ButtonWithIcon(
-      label: showLabel ? 'delete' : null,
+      label: showLabel ? '删除' : null,
       iconData: Icons.delete,
       onPressed: onPressed);
 
   static edit(context, onPressed, {showLabel = true}) => ButtonWithIcon(
-      label: showLabel ? 'edit' : null,
+      label: showLabel ? '编辑' : null,
       iconData: Icons.edit,
       onPressed: onPressed);
 
   static query(context, onPressed, {showLabel = true}) => ButtonWithIcon(
-      label: showLabel ? 'query' : null,
+      label: showLabel ? '搜索' : null,
       iconData: Icons.search,
       onPressed: onPressed);
 
   static reset(context, onPressed, {showLabel = true}) => ButtonWithIcon(
-      label: showLabel ? 'reset' : null,
+      label: showLabel ? '刷新' : null,
       iconData: Icons.refresh,
       onPressed: onPressed);
 
   static save(context, onPressed, {showLabel = true}) => ButtonWithIcon(
-      label: showLabel ? 'save' : null,
+      label: showLabel ? '保存' : null,
       iconData: Icons.save,
       onPressed: onPressed);
 
   static cancel(context, onPressed, {showLabel = true}) => ButtonWithIcon(
-      label: showLabel ? 'cancel' : null,
+      label: showLabel ? '取消' : null,
       iconData: Icons.cancel,
       onPressed: onPressed);
 
   static commit(context, onPressed, {showLabel = true}) => ButtonWithIcon(
-      label: showLabel ? 'commit' : null,
+      label: showLabel ? '提交' : null,
       iconData: Icons.done,
       onPressed: onPressed);
 
   static sensor(context, onPressed, {showLabel = true}) => ButtonWithIcon(
-      label: showLabel ? 'sensor' : null,
+      label: showLabel ? '传感器' : null,
       iconData: Icons.sensors,
       onPressed: onPressed);
 
   static data(context, onPressed, {showLabel = true}) => ButtonWithIcon(
-      label: showLabel ? 'data' : null,
+      label: showLabel ? '数据' : null,
       iconData: Icons.data_exploration_outlined,
       onPressed: onPressed);
 }

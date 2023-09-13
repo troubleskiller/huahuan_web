@@ -4,23 +4,26 @@ import 'package:huahuan_web/model/admin/project_model.dart';
 import 'package:huahuan_web/model/api/response_api.dart';
 import 'package:huahuan_web/model/application/event_model.dart';
 import 'package:huahuan_web/screen/event/event_manage/event_edit.dart';
+import 'package:huahuan_web/screen/item/data_source/common_data.dart';
 import 'package:huahuan_web/screen/manager/sensor_hole_manager.dart';
 import 'package:huahuan_web/screen/sensor_manager/collector_list_manager.dart';
 import 'package:huahuan_web/widget/button/buttons.dart';
 import 'package:provider/provider.dart';
+import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
-import '../../../constant/common_constant.dart';
-import '../../../util/tro_util.dart';
-import '../../../widget/dialog/tro_dialog.dart';
+late DataManagerListState _dataManagerListState;
 
 class DataManagerList extends StatefulWidget {
   const DataManagerList({Key? key}) : super(key: key);
 
   @override
-  State<DataManagerList> createState() => _DataManagerListState();
+  State<DataManagerList> createState() {
+    _dataManagerListState = DataManagerListState();
+    return _dataManagerListState;
+  }
 }
 
-class _DataManagerListState extends State<DataManagerList> {
+class DataManagerListState extends State<DataManagerList> {
   late EventModel controller;
   List<ProjectModel> projects = [];
 
@@ -71,12 +74,13 @@ class _DataManagerListState extends State<DataManagerList> {
     });
   }
 
-  void _editSensor(int? id) {
+  void _editSensor(int? id, int? projectTypeId) {
     showDialog(
       context: context,
       builder: (BuildContext context) => Dialog(
         child: SensorHoleManager(
           pid: id,
+          projectTypeId: projectTypeId,
         ),
       ),
     ).then((v) {
@@ -99,8 +103,25 @@ class _DataManagerListState extends State<DataManagerList> {
                 builder: (_, as) {
                   return Column(
                     children: [
-                      ...projects.map(
-                        (e) => ExpansionTile(
+                      ...projects.map((e) {
+                        EventSource cur = EventSource(
+                          commonData: e.events ?? [],
+                          context: context,
+                          editEvent: (ProjectModel ad) {
+                            _editEvent(curProject: ad);
+                          },
+                          getAllProjects: () {
+                            getAllProjects();
+                          },
+                          state: _dataManagerListState,
+                          editCollectors: (int? id) {
+                            _editCollectors(id);
+                          },
+                          editSensor: (int? id, int? prjectTypeId) {
+                            _editSensor(id, prjectTypeId);
+                          },
+                        );
+                        return ExpansionTile(
                           title: Row(
                             children: [
                               Text(e.name ?? '-'),
@@ -116,161 +137,111 @@ class _DataManagerListState extends State<DataManagerList> {
                             ],
                           ),
                           onExpansionChanged: (value) {
-                            if (value) {}
+                            if ((e.events ?? []).isEmpty) {
+                              return;
+                            }
                           },
-                          children: [
-                            Table(
-                                columnWidths: <int, TableColumnWidth>{
-                                  0: FlexColumnWidth(1),
-                                  1: FlexColumnWidth(1),
-                                  2: FlexColumnWidth(1),
-                                  3: FlexColumnWidth(1),
-                                  4: FlexColumnWidth(2),
-                                  5: FlexColumnWidth(3),
-                                },
-                                border: TableBorder.all(
-                                    width: 0.5, color: Colors.black),
-                                children: [
-                                  TableRow(
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 15, vertical: 5),
-                                        child: Center(child: Text('项目名称')),
-                                      ),
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 15, vertical: 5),
-                                        child: Center(child: Text('用户id')),
-                                      ),
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 15, vertical: 5),
-                                        child: Center(child: Text('测项id')),
-                                      ),
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 15, vertical: 5),
-                                        child: Center(child: Text('测项类型')),
-                                      ),
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 15, vertical: 5),
-                                        child: Center(child: Text('创建时间')),
-                                      ),
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 15, vertical: 5),
-                                        child: Center(child: Text('操作')),
-                                      ),
-                                    ],
-                                  ),
-                                  ...e.events!
-                                      .map(
-                                        (e) => TableRow(
-                                          children: [
-                                            Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 15, vertical: 5),
-                                              child: Center(
-                                                  child: Text(e.name ?? '-')),
+                          children: (e.events ?? []).isEmpty
+                              ? <Widget>[]
+                              : [
+                                  Container(
+                                    height: (e.events!.length + 1) * 60,
+                                    child: SfDataGrid(
+                                      columnWidthCalculationRange:
+                                          ColumnWidthCalculationRange.allRows,
+                                      gridLinesVisibility:
+                                          GridLinesVisibility.both,
+                                      headerGridLinesVisibility:
+                                          GridLinesVisibility.both,
+                                      selectionMode: SelectionMode.single,
+                                      navigationMode: GridNavigationMode.cell,
+                                      source: cur,
+                                      columnWidthMode: ColumnWidthMode.fill,
+                                      columns: [
+                                        GridColumn(
+                                          columnName: 'name',
+                                          label: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 16.0),
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              '项目名称',
+                                              overflow: TextOverflow.ellipsis,
                                             ),
-                                            Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 15, vertical: 5),
-                                              child: Center(
-                                                  child: Text(
-                                                      e.userId.toString())),
-                                            ),
-                                            Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 15, vertical: 5),
-                                              child: Center(
-                                                  child: Text(e.id.toString())),
-                                            ),
-                                            Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 15, vertical: 5),
-                                              child: Center(
-                                                  child: Text(eventType[
-                                                          e.projectTypeId] ??
-                                                      '-')),
-                                            ),
-                                            Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 15, vertical: 5),
-                                              child: Center(
-                                                child: Text(
-                                                  DateTime.tryParse(
-                                                          e.created ?? '-')
-                                                      .toString(),
-                                                ),
-                                              ),
-                                            ),
-                                            Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 15, vertical: 5),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Expanded(
-                                                    flex: 2,
-                                                    child:
-                                                        ButtonWithIcons.collect(
-                                                      context,
-                                                      () {
-                                                        _editCollectors(e.id);
-                                                      },
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    flex: 2,
-                                                    child:
-                                                        ButtonWithIcons.detect(
-                                                      context,
-                                                      () {
-                                                        _editSensor(e.id);
-                                                      },
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    child: ButtonWithIcons.edit(
-                                                        context, () {
-                                                      _editEvent(curProject: e);
-                                                    }, showLabel: false),
-                                                  ),
-                                                  Expanded(
-                                                    child:
-                                                        ButtonWithIcons.delete(
-                                                            context, () {
-                                                      troConfirm(context,
-                                                          'confirmDelete',
-                                                          (context) async {
-                                                        var result = await ProjectApi
-                                                            .deleteProjectById(
-                                                                '{"id": ${e.id}}');
-                                                        if (result.code ==
-                                                            200) {
-                                                          getAllProjects();
-                                                          TroUtils.message(
-                                                              'success');
-                                                          setState(() {});
-                                                        }
-                                                      });
-                                                    }, showLabel: false),
-                                                  ),
-                                                ],
-                                              ),
-                                            )
-                                          ],
+                                          ),
                                         ),
-                                      )
-                                      .toList(),
-                                ]),
-                            // ...e.events!.map((e) => Text(e.name ?? '--'))
-                          ],
-                        ),
-                      ),
+                                        GridColumn(
+                                          columnWidthMode:
+                                              ColumnWidthMode.fitByColumnName,
+                                          columnName: 'userId',
+                                          label: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 16.0),
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              '用户id',
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ),
+                                        GridColumn(
+                                          columnWidthMode:
+                                              ColumnWidthMode.fitByColumnName,
+                                          columnName: 'eventId',
+                                          label: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 16.0),
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              '测项id',
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ),
+                                        GridColumn(
+                                          columnName: 'type',
+                                          label: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 16.0),
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              '测项类型',
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ),
+                                        GridColumn(
+                                          columnName: 'createTime',
+                                          label: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 16.0),
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              '创建时间',
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ),
+                                        GridColumn(
+                                          width: 500,
+                                          columnWidthMode: ColumnWidthMode.none,
+                                          columnName: 'operation',
+                                          label: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 16.0),
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              '操作',
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                        );
+                      }),
                     ],
                   );
                 },

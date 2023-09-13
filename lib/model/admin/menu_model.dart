@@ -28,7 +28,7 @@ class MenuModel extends TreeData {
       id: json['id'],
       name: json['name'],
       thisName: json['thisName'],
-      icon: json['icon'],
+      icon: json['pic'],
       parentId: json['parentId'],
       url: json['url'],
       type: json['type'],
@@ -50,7 +50,7 @@ class MenuModel extends TreeData {
     map['id'] = id;
     map['name'] = name;
     map['thisName'] = thisName;
-    map['icon'] = icon;
+    map['pic'] = icon;
     map['parentId'] = parentId;
     map['url'] = url;
     map['type'] = type;

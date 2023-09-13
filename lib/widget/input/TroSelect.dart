@@ -6,23 +6,36 @@ class TroSelect extends TroFormField {
     Key? key,
     String? label,
     String? value,
+    double? width,
+    double? labelWidth,
+    TextStyle? labelStyle,
     ValueChanged? onChange,
     FormFieldSetter? onSaved,
     List<SelectOptionVO> dataList = const [],
   }) : super(
           key: key,
           label: label,
+          width: width,
+          labelStyle: labelStyle,
+          labelWidth: labelWidth,
           builder: (TroFormFieldState state) {
             return DropdownButtonFormField<String>(
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.symmetric(horizontal: 10),
                 border: OutlineInputBorder(),
               ),
+              style: TextStyle(overflow: TextOverflow.ellipsis),
               value: value,
               items: dataList.map((v) {
                 return DropdownMenuItem<String>(
                   value: v.value as String?,
-                  child: Text(v.label!),
+                  child: Container(
+                    width: 150,
+                    child: Text(
+                      v.label!,
+                      style: TextStyle(overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
                 );
               }).toList(),
               onChanged: (v) {

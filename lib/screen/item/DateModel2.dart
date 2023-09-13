@@ -4,6 +4,8 @@ class DateModel2 {
     this.sn,
     this.name,
     this.location,
+    this.curTime,
+    this.refTime,
     this.curValueX,
     this.curValueY,
     this.refValueX,
@@ -27,6 +29,8 @@ class DateModel2 {
     curValueY = json['curValueY'];
     refValueX = json['refValueX'];
     refValueY = json['refValueY'];
+    curTime = json['curTime'];
+    refTime = json['refTime'];
     curShapeX = json['curShapeX'];
     curShapeY = json['curShapeY'];
     refShapeX = json['refShapeX'];
@@ -40,6 +44,8 @@ class DateModel2 {
   String? sn;
   String? name;
   String? location;
+  String? curTime;
+  String? refTime;
   num? curValueX;
   num? curValueY;
   num? refValueX;
@@ -60,6 +66,8 @@ class DateModel2 {
     map['name'] = name;
     map['location'] = location;
     map['curValueX'] = curValueX;
+    map['refTime'] = refTime;
+    map['curTime'] = curTime;
     map['curValueY'] = curValueY;
     map['refValueX'] = refValueX;
     map['refValueY'] = refValueY;

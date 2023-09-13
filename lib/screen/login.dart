@@ -6,7 +6,6 @@ import 'package:huahuan_web/model/admin/user_model.dart';
 import 'package:huahuan_web/model/api/response_api.dart';
 import 'package:huahuan_web/screen/layout/layout.dart';
 import 'package:huahuan_web/util/store_util.dart';
-import 'package:huahuan_web/widget/dialog/tro_dialog.dart';
 // import 'package:huahuan_web/util/store_util.dart';
 
 class Login extends StatefulWidget {
@@ -199,10 +198,7 @@ class _LoginState extends State<Login> {
 
     StoreUtil.write(
         Constant.KEY_MENU_LIST, responseBodyApi.data[Constant.KEY_MENU_LIST]);
-
-    troConfirm(context, '进入公司', (context) async {
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) => Layout()));
-      StoreUtil.init();
-    });
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => Layout()));
+    StoreUtil.init();
   }
 }

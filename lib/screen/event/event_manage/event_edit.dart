@@ -1,4 +1,3 @@
-import 'package:bruno/bruno.dart';
 import 'package:flutter/material.dart';
 import 'package:huahuan_web/api/project_api.dart';
 import 'package:huahuan_web/constant/common_constant.dart';
@@ -75,7 +74,6 @@ class EventEditState extends State<EventEdit> {
               _curProject?.projectTypeId = eventTypeF[selectedValue];
             },
           ),
-
         ],
       ),
     );
@@ -130,8 +128,8 @@ class EventEditState extends State<EventEdit> {
       bottomNavigationBar: buttonBar,
     );
     return SizedBox(
-      width: 650,
-      height: 500,
+      width: 400,
+      height: 400,
       child: result,
     );
   }

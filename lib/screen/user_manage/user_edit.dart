@@ -1,4 +1,3 @@
-import 'package:bruno/bruno.dart';
 import 'package:flutter/material.dart';
 import 'package:huahuan_web/api/customer_api.dart';
 import 'package:huahuan_web/api/role_api.dart';
@@ -49,7 +48,7 @@ class UserEditState extends State<UserEdit> {
     _userInfo?.isEnable = 1;
     _userInfo?.isDel = 0;
 
-    selectedValue= _userInfo?.customerModel?.name;
+    selectedValue = _userInfo?.customerModel?.name;
 
     setState(() {
       isLoading = false;
@@ -60,9 +59,8 @@ class UserEditState extends State<UserEdit> {
   Future getAllRolesAccessible() async {
     ResponseBodyApi responseBodyApi = await RoleApi.selectAllRole();
     if (responseBodyApi.code == 200) {
-      curRoles = List.from(responseBodyApi.data)
-          .map((e) => Role.fromJson(e))
-          .toList();
+      curRoles =
+          List.from(responseBodyApi.data).map((e) => Role.fromJson(e)).toList();
       selectedValue2 = _userInfo?.role?.name;
       // if (StoreUtil.getCurrentUserInfo().roleId != 1) {
       //   curRoles.removeWhere((element) =>
@@ -124,7 +122,7 @@ class UserEditState extends State<UserEdit> {
               },
             ),
             TroSelect(
-              value:selectedValue ,
+              value: selectedValue,
               dataList: curCustomers
                   .map((e) => SelectOptionVO(value: e.name, label: e.name))
                   .toList(),
@@ -132,13 +130,12 @@ class UserEditState extends State<UserEdit> {
               onChange: (newList) {
                 selectedValue = newList;
                 _userInfo?.customerId = curCustomers
-                    .singleWhere(
-                        (element) => element.name == newList)
+                    .singleWhere((element) => element.name == newList)
                     .id;
               },
             ),
             TroSelect(
-              value:selectedValue2 ,
+              value: selectedValue2,
               dataList: curRoles
                   .map((e) => SelectOptionVO(value: e.name, label: e.name))
                   .toList(),
@@ -146,8 +143,7 @@ class UserEditState extends State<UserEdit> {
               onChange: (newList) {
                 selectedValue2 = newList;
                 _userInfo?.roleId = curRoles
-                    .singleWhere(
-                        (element) => element.name == newList?.title)
+                    .singleWhere((element) => element.name == newList?.title)
                     .id;
               },
             ),
@@ -206,8 +202,8 @@ class UserEditState extends State<UserEdit> {
     return isLoading
         ? Container()
         : SizedBox(
-            width: 650,
-            height: isDisplayDesktop(context) ? 350 : 500,
+            width: 350,
+            height: 510,
             child: result,
           );
   }

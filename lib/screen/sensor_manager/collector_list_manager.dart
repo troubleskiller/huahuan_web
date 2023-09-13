@@ -37,12 +37,13 @@ class CollectorListManagerState extends State<CollectorListManager> {
     myDS.loadData();
   }
 
-  _edit({CollectorModel? collectorModel}) {
+  _edit({CollectorModel? collectorModel, required bool isUpdate}) {
     showDialog(
       context: context,
       builder: (BuildContext context) => Dialog(
         child: CollectorEdit(
           collectorModel: collectorModel,
+          isUpdate: isUpdate,
         ),
       ),
     ).then((v) {
@@ -78,7 +79,11 @@ class CollectorListManagerState extends State<CollectorListManager> {
           onPressed: () => Navigator.pop(context),
         ),
         ButtonWithIcon(
-            label: 'add', iconData: Icons.add, onPressed: () => _edit()),
+            label: '添加',
+            iconData: Icons.add,
+            onPressed: () => _edit(
+                collectorModel: CollectorModel(projectId: pid),
+                isUpdate: false)),
       ],
     );
 
@@ -232,13 +237,13 @@ class MyDS extends DataTableSource {
             IconButton(
               icon: const Icon(Icons.edit),
               onPressed: () {
-                state._edit(collectorModel: collectorModel);
+                state._edit(collectorModel: collectorModel, isUpdate: true);
               },
             ),
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () {
-                troConfirm(context, 'confirmDelete', (context) async {
+                troConfirm(context, '确认删除', (context) async {
                   var result =
                       await CollectorApi.delete('{"id": ${collectorModel.id}}');
                   if (result.code == 200) {
@@ -258,7 +263,12 @@ class MyDS extends DataTableSource {
   bool get isRowCountApproximate => false;
 
   @override
-  int get rowCount => page.sum ?? 0;
+  int get rowCount {
+    if (page.sum != null) {
+      return page.sum! - 1;
+    }
+    return 0;
+  }
 
   @override
   int get selectedRowCount => 0;

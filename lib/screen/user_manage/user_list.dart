@@ -1,6 +1,7 @@
-import 'package:bruno/bruno.dart';
 import 'package:flutter/material.dart';
+import 'package:huahuan_web/api/role_api.dart';
 import 'package:huahuan_web/api/user_api.dart';
+import 'package:huahuan_web/model/admin/role_model.dart';
 import 'package:huahuan_web/model/admin/user_info.dart';
 import 'package:huahuan_web/model/api/page_model.dart';
 import 'package:huahuan_web/model/api/request_api.dart';
@@ -125,12 +126,6 @@ class UserListState extends State {
               label: Text('用户所属客户'),
             ),
             DataColumn(
-              label: Text('用户创建时间'),
-            ),
-            DataColumn(
-              label: Text('用户是否启用'),
-            ),
-            DataColumn(
               label: Text('用户角色'),
             ),
             DataColumn(
@@ -157,7 +152,7 @@ class UserListState extends State {
                 controller: aController,
                 slivers: [
                   SliverToBoxAdapter(
-                    child: Container(height: 800, width: 1920, child: table),
+                    child: Container(height: 800, width: 1300, child: table),
                   )
                 ],
               ),
@@ -176,6 +171,7 @@ class MyDS extends DataTableSource {
   late BuildContext context;
   late List<UserInfo> dataList;
   RequestBodyApi requestBodyApi = RequestBodyApi(data: UserInfo(id: 1));
+  List<Role> roles = [];
 
   PageModel page = PageModel();
 
@@ -202,6 +198,12 @@ class MyDS extends DataTableSource {
     loadData();
   }
 
+  Future getAllRolesAccessible() async {
+    ResponseBodyApi responseBodyApi = await RoleApi.selectAllRole();
+    roles =
+        List.from(responseBodyApi.data).map((e) => Role.fromJson(e)).toList();
+  }
+
   @override
   DataRow? getRow(int index) {
     var dataIndex = index;
@@ -217,27 +219,12 @@ class MyDS extends DataTableSource {
       cells: <DataCell>[
         //用户名
         DataCell(Text(userInfo.name ?? '--')),
-
         //用户账号
         DataCell(Text(userInfo.loginName ?? '--')),
         //用户电话
         DataCell(Text(userInfo.tel ?? '--')),
         //用户所属客户
         DataCell(Text(userInfo.customerModel?.name.toString() ?? '--')),
-        //创建时间
-        ///创建时间：先读取毫秒级的时间，再通过拆字符串得到精确到秒的时间。
-        DataCell(Text(
-            DateTime.parse(userInfo.created ?? '').toString().split('.')[0])),
-        //是否启用，状态
-        DataCell(
-          BrnSwitchButton(
-              value: userInfo.isEnable == 1,
-              onChanged: (value) {
-                userInfo.isEnable = value ? 1 : 0;
-                notifyListeners();
-                //todo: 设置更改用户启用状态api
-              }),
-        ),
         // //用户权限等级 todo:add 权限
         DataCell(
           IconButton(
@@ -259,7 +246,7 @@ class MyDS extends DataTableSource {
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () {
-                troConfirm(context, 'confirmDelete', (context) async {
+                troConfirm(context, '确认删除', (context) async {
                   var result =
                       await UserApi.deleteUser('{"id": ${userInfo.id}}');
                   if (result.code == 200) {
@@ -279,7 +266,12 @@ class MyDS extends DataTableSource {
   bool get isRowCountApproximate => false;
 
   @override
-  int get rowCount => page.sum ?? 0;
+  int get rowCount {
+    if (page.sum != null) {
+      return page.sum! - 1;
+    }
+    return 0;
+  }
 
   @override
   int get selectedRowCount => 0;

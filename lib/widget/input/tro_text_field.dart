@@ -4,6 +4,7 @@ class TroFormField extends StatefulWidget {
   final String? label;
   final double? width;
   final double? labelWidth;
+  final TextStyle? labelStyle;
   final Function(TroFormFieldState)? builder;
 
   TroFormField({
@@ -12,6 +13,7 @@ class TroFormField extends StatefulWidget {
     this.builder,
     this.width,
     this.labelWidth,
+    this.labelStyle,
   }) : super(key: key);
 
   @override
@@ -30,17 +32,19 @@ class TroFormFieldState extends State<TroFormField> {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             SizedBox(
-              width: widget.labelWidth ?? 100,
+              width: widget.labelWidth ?? 120,
               child: Padding(
                 padding: EdgeInsets.only(right: 20),
                 child: Align(
+                  alignment: Alignment.centerLeft,
                   child: Text(
                     widget.label!,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    style: widget.labelStyle ??
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
-                  alignment: Alignment.centerLeft,
                 ),
               ),
             ),
@@ -58,15 +62,17 @@ class TroFormFieldState extends State<TroFormField> {
           child: Row(
             children: <Widget>[
               SizedBox(
-                width: widget.labelWidth ?? 100,
+                width: widget.labelWidth ?? 120,
                 child: Padding(
                   padding: EdgeInsets.only(right: 20),
                   child: Align(
-                    child: Text(
-                      widget.label!,
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                    ),
+                    child: Text(widget.label!,
+                        style: widget.labelStyle ??
+                            TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                        textDirection: TextDirection.ltr),
                     alignment: Alignment.centerRight,
                   ),
                 ),

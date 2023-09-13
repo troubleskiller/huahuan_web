@@ -36,6 +36,11 @@ class HttpUtil {
     } catch (e) {
       responseBodyApi = ResponseBodyApi();
     }
+    if (responseBodyApi.code == 500) {
+      TroUtils.message(responseBodyApi.msg ?? '网络错误，请重试。');
+    } else if (responseBodyApi.code == 200) {
+      TroUtils.message(responseBodyApi.msg ?? '请求成功');
+    }
 
     return responseBodyApi;
   }

@@ -57,6 +57,10 @@ dependencies:
   intl: ^0.17.0
   #可选列 数据格
   syncfusion_flutter_datagrid: ^20.4.54
+  #可搜索的列表
+  searchable_listview:  2.4.0
+  #时间选择器
+  syncfusion_flutter_datepicker: ^20.4.54
 
 dev_dependencies:
   flutter_test:

@@ -78,7 +78,7 @@ class ImageUploadState extends State<ImageUpload> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           TroInput(
-            label: 'imageTitle',
+            label: '图片名称',
             value: imageModel.url,
             onSaved: (v) => {imageModel.url = v},
             validator: (v) {

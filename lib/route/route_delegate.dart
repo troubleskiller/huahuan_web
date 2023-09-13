@@ -6,6 +6,7 @@
 /// @description:
 import 'package:flutter/material.dart';
 import 'package:huahuan_web/route/route.dart';
+import 'package:huahuan_web/screen/login.dart';
 
 import 'Tro.dart';
 
@@ -67,13 +68,18 @@ class TroRouterDelegate extends RouterDelegate<RouteInformation>
   }
 
   pushNamed(String name) {
-    var widget = pageMap[name];
+    Widget? widget;
+    if (name == '/login') {
+      widget = Login();
+    } else {
+      var widget = pageMap[name];
+    }
+
     location = name;
     if (widget == null) {
       widget = Container();
       location = '404';
     }
-
     pages.add(
       MaterialPage(
         key: UniqueKey(),

@@ -57,7 +57,7 @@ Map<int, String> eventType = {
   7: '收敛',
   8: '自动测斜',
   9: '滑动测斜',
-  10: '	支撑轴力'
+  10: '支撑轴力'
 };
 Map<String, int> eventTypeF = {
   '其它': 1,

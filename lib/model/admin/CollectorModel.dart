@@ -9,6 +9,7 @@ class CollectorModel {
     this.downString,
     this.isDown,
     this.created,
+    this.simNum,
     this.userId,
     this.status, //状态
     this.projectId,
@@ -24,6 +25,7 @@ class CollectorModel {
     sn = json['sn'];
     name = json['name'];
     port = json['port'];
+    simNum = json['simNum'];
     collectorTypeId = json['collectorTypeId'];
     cycle = json['cycle'];
     downString = json['downString'];
@@ -48,6 +50,7 @@ class CollectorModel {
   int? isDown;
   String? created;
   String? userId;
+  String? simNum;
   int? status;
   int? projectId;
   int? isEnable;
@@ -66,6 +69,7 @@ class CollectorModel {
     map['cycle'] = cycle;
     map['downString'] = downString;
     map['isDown'] = isDown;
+    map['simNum'] = simNum;
     map['created'] = created;
     map['userId'] = userId;
     map['status'] = status;

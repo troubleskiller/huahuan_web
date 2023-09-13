@@ -10,6 +10,14 @@ class SensorApi {
     return responseBodyApi;
   }
 
+  static Future<ResponseBodyApi> getSensorType(data) async {
+    ResponseBodyApi responseBodyApi = await HttpUtil.post(
+        '/config/selectByType',
+        data: data,
+        requestToken: true);
+    return responseBodyApi;
+  }
+
   static Future<ResponseBodyApi> selectOneById(data) async {
     ResponseBodyApi responseBodyApi = await HttpUtil.post('/sensor/selectOne',
         data: data, requestToken: true);
@@ -25,6 +33,14 @@ class SensorApi {
   static Future<ResponseBodyApi> add(data) async {
     ResponseBodyApi responseBodyApi =
         await HttpUtil.post('/sensor/add', data: data, requestToken: true);
+    return responseBodyApi;
+  }
+
+  static Future<ResponseBodyApi> setInit(data) async {
+    ResponseBodyApi responseBodyApi = await HttpUtil.post(
+        '/sensor/batchSetInitial',
+        data: data,
+        requestToken: true);
     return responseBodyApi;
   }
 

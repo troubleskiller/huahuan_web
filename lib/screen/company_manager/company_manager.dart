@@ -70,11 +70,6 @@ class CompanyManagerState extends State {
     var buttonBar = ButtonBar(
       children: <Widget>[
         ButtonWithIcon(
-          label: '返回',
-          iconData: Icons.arrow_back,
-          onPressed: () => Navigator.pop(context),
-        ),
-        ButtonWithIcon(
             label: '刷新', iconData: Icons.refresh, onPressed: () => _query()),
         ButtonWithIcon(
             label: '添加', iconData: Icons.add, onPressed: () => _edit()),
@@ -107,9 +102,6 @@ class CompanyManagerState extends State {
               label: Text('客户地址'),
             ),
             DataColumn(
-              label: Text('创建时间'),
-            ),
-            DataColumn(
               label: Text('联系电话'),
             ),
             DataColumn(
@@ -133,17 +125,18 @@ class CompanyManagerState extends State {
           buttonBar,
           Expanded(
             child: Scrollbar(
-              controller: aController,
-              child: CustomScrollView(
-                scrollDirection: Axis.horizontal,
                 controller: aController,
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Container(height: 800, width: 1920, child: table),
-                  )
-                ],
-              ),
-            ),
+                child: Container(height: 800, width: 1360, child: table)
+                // CustomScrollView(
+                //   scrollDirection: Axis.horizontal,
+                //   controller: aController,
+                //   slivers: [
+                //     SliverToBoxAdapter(
+                //       child: Container(height: 800, width: 1300, child: table),
+                //     )
+                //   ],
+                // ),
+                ),
           ),
         ],
       ),
@@ -212,8 +205,6 @@ class MyDS extends DataTableSource {
         //用户所属客户
         DataCell(Text(customerModel.address ?? '--')),
         //创建时间
-        ///创建时间：先读取毫秒级的时间，再通过拆字符串得到精确到秒的时间。
-        DataCell(Text(customerModel.created?.split('.')[0] ?? '--')),
         DataCell(Text(customerModel.tel ?? '--')),
         DataCell(Text(customerModel.userId.toString() ?? '--')),
         // //用户权限等级 todo:add 权限
@@ -229,7 +220,7 @@ class MyDS extends DataTableSource {
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () {
-                troConfirm(context, 'confirmDelete', (context) async {
+                troConfirm(context, '确定删除', (context) async {
                   var result = await CustomerApi.removeByIds(
                       '{"id": ${customerModel.id}}');
                   if (result.code == 200) {
@@ -249,7 +240,12 @@ class MyDS extends DataTableSource {
   bool get isRowCountApproximate => false;
 
   @override
-  int get rowCount => page.sum ?? 0;
+  int get rowCount {
+    if (page.sum != null) {
+      return page.sum! - 1;
+    }
+    return 0;
+  }
 
   @override
   int get selectedRowCount => 0;

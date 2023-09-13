@@ -54,8 +54,6 @@ class ApplicationContext {
   loadApplication() async {
     var yamlStr = await rootBundle.loadString('config/application.yaml');
     yamlMap = loadYaml(yamlStr);
-    print("application:");
-    print(yamlMap.nodes);
     await parseCryProperties();
   }
 

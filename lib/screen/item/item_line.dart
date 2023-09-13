@@ -13,10 +13,9 @@ class ItemLine extends StatelessWidget {
   Widget build(BuildContext context) {
     DateTime? refTime = DateTime.tryParse(dateModel.refTime ?? '');
     DateTime? curTime = DateTime.tryParse(dateModel.curTime ?? '');
-    String ref =
-        '${refTime?.year ?? '/'}-${refTime?.month ?? '/'}-${refTime?.day ?? '/'} ${refTime?.hour ?? '/'}:${refTime?.minute ?? '/'}:${refTime?.second ?? '/'}';
-    String cur =
-        '${curTime?.year ?? '/'}-${curTime?.month ?? '/'}-${curTime?.day ?? '/'} ${curTime?.hour ?? '/'}:${curTime?.minute ?? '/'}:${curTime?.second ?? '/'}';
+    String ref = refTime.toString().split('.')[0];
+
+    String cur = curTime.toString().split('.')[0];
     return GestureDetector(
       onTap: () {
         onTap.call(dateModel.sn);

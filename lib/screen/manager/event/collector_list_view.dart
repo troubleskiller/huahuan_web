@@ -239,7 +239,12 @@ class MyDS extends DataTableSource {
   bool get isRowCountApproximate => false;
 
   @override
-  int get rowCount => page.sum ?? 0;
+  int get rowCount {
+    if (page.sum != null) {
+      return page.sum!;
+    }
+    return 0;
+  }
 
   @override
   int get selectedRowCount => 0;

@@ -8,6 +8,7 @@ class TroInput extends TroFormField {
     String? label,
     double? labelWidth,
     String? value,
+    int? maxLines,
     ValueChanged? onChange,
     FormFieldSetter? onSaved,
     FormFieldValidator<String>? validator,
@@ -19,8 +20,10 @@ class TroInput extends TroFormField {
           labelWidth: labelWidth,
           builder: (state) {
             return TextFormField(
+              maxLines: maxLines,
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 border: OutlineInputBorder(),
                 enabled: enable ?? true,
               ),

@@ -10,10 +10,12 @@ import 'package:huahuan_web/widget/button/icon_button.dart';
 import '../../util/tro_util.dart';
 import '../../widget/dialog/tro_dialog.dart';
 
+///todo: 参考点还没有做 7月20日做
 class SensorHoleManager extends StatefulWidget {
   final int? pid;
+  final int? projectTypeId;
 
-  const SensorHoleManager({super.key, this.pid});
+  const SensorHoleManager({super.key, this.pid, this.projectTypeId});
 
   @override
   State<SensorHoleManager> createState() => SensorHoleManagerState();
@@ -40,6 +42,7 @@ class SensorHoleManagerState extends State<SensorHoleManager> {
       context: context,
       builder: (BuildContext context) => Dialog(
         child: SensorHoleEdit(
+          projectTypeId: widget.projectTypeId,
           sensorData: sensorModel,
           refSensors: myDS.dataList
               .map((e) => RefSensor(name: e.name, id: e.id))
@@ -117,9 +120,9 @@ class SensorHoleManagerState extends State<SensorHoleManager> {
             DataColumn(
               label: Text('设备类型'),
             ),
-            DataColumn(
-              label: Text('参考点'),
-            ),
+            // DataColumn(
+            //   label: Text('参考点'),
+            // ),
             DataColumn(
               label: Text('初始值'),
             ),
@@ -139,7 +142,7 @@ class SensorHoleManagerState extends State<SensorHoleManager> {
     );
     return Container(
       color: Colors.white,
-      width: 1000,
+      width: 1100,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,7 +157,7 @@ class SensorHoleManagerState extends State<SensorHoleManager> {
                 controller: aController,
                 slivers: [
                   SliverToBoxAdapter(
-                    child: Container(height: 800, width: 1920, child: table),
+                    child: Container(height: 800, width: 1100, child: table),
                   )
                 ],
               ),
@@ -216,19 +219,14 @@ class MyDS extends DataTableSource {
         DataCell(Text(sensorModel.sn ?? '--')),
         //设备类型
         DataCell(Text(sensorMap[sensorModel.sensorTypeId] ?? '--')),
-        //参考点
-        DataCell(Text(dataList
-                .singleWhere((element) => element.id == sensorModel.refSensorId,
-                    orElse: () => SensorHoleModel(name: '--'))
-                .name ??
-            '--')),
         //初始值
         DataCell(Text(sensorModel.initValue.toString() ?? '--')),
-        // DataCell(Text(userInfo.creator ?? '--')),
         //用户所属客户
         DataCell(Text(paramsEx[sensorModel.unitId] ?? '--')),
         //创建时间
-        DataCell(Text(sensorModel.created.toString() ?? '--')),
+        DataCell(Text(DateTime.parse(sensorModel.created ?? '')
+            .toString()
+            .split('.')[0])),
 
         ///创建时间：先读取毫秒级的时间，再通过拆字符串得到精确到秒的时间。
         DataCell(ButtonBar(
@@ -243,12 +241,12 @@ class MyDS extends DataTableSource {
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () {
-                troConfirm(context, 'confirmDelete', (context) async {
+                troConfirm(context, '确定删除', (context) async {
                   var result =
-                      await SensorApi.delete('{"id": ${sensorModel.id}}');
+                      await SensorApi.delete('{"sn": ${sensorModel.sn}}');
                   if (result.code == 200) {
                     loadData();
-                    TroUtils.message('success');
+                    TroUtils.message('删除成功');
                   }
                 });
               },

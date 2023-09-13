@@ -50,7 +50,7 @@ class MainRouterDelegate extends TroRouterDelegate {
       var menu = menuList.firstWhereOrNull((element) => element.url == name);
       if (menu == null) {
         location = '/404';
-        return Layout();
+        return Login();
       }
       tabPage = menu.toTabPage();
     }

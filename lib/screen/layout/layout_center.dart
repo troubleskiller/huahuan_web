@@ -118,31 +118,31 @@ class LayoutCenterState extends State<LayoutCenter>
                 const PopupMenuItem(
                   value: TabMenuOption.close,
                   child: ListTile(
-                    title: Text('Close'),
+                    title: Text('关闭当前窗口'),
                   ),
                 ),
               const PopupMenuItem(
                 value: TabMenuOption.closeAll,
                 child: ListTile(
-                  title: Text('Close All'),
+                  title: Text('关闭所有窗口'),
                 ),
               ),
               const PopupMenuItem(
                 value: TabMenuOption.closeOthers,
                 child: ListTile(
-                  title: Text('Close Others'),
+                  title: Text('关闭其他窗口'),
                 ),
               ),
               const PopupMenuItem(
                 value: TabMenuOption.closeAllToTheRight,
                 child: ListTile(
-                  title: Text('Close All to the Right'),
+                  title: Text('关闭右侧所有窗口'),
                 ),
               ),
               const PopupMenuItem(
                 value: TabMenuOption.closeAllToTheLeft,
                 child: ListTile(
-                  title: Text('Close All to the Left'),
+                  title: Text('关闭左侧所有窗口'),
                 ),
               ),
             ],

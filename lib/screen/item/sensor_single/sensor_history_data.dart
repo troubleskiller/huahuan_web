@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:huahuan_web/api/collector_api.dart';
 import 'package:huahuan_web/api/sensor_api.dart';
 import 'package:huahuan_web/constant/common_constant.dart';
-import 'package:huahuan_web/model/admin/CollectorDto.dart';
 import 'package:huahuan_web/model/admin/CollectorModel.dart';
 import 'package:huahuan_web/model/api/page_model.dart';
 import 'package:huahuan_web/model/api/response_api.dart';
@@ -108,7 +106,6 @@ class SensorHistoryDataState extends State<SensorHistoryData> {
               DataColumn(
                 label: Text('数据值'),
               ),
-
             ],
             source: myDS,
           ),
@@ -154,7 +151,7 @@ class MyDS extends DataTableSource {
 
   loadData() async {
     ResponseBodyApi sensorData = await SensorApi.historyCurve(
-      {"sn": int.tryParse(state.sn ?? '', radix: 16)},
+      {"sn": state.sn},
     );
     List<SensorDto> sensors =
         List.from(sensorData.data).map((e) => SensorDto.fromJson(e)).toList();
@@ -180,6 +177,8 @@ class MyDS extends DataTableSource {
       return null;
     }
     SensorDto sensorDto = dataList[dataIndex];
+    DateTime? tested = DateTime.tryParse(sensorDto.tested ?? '');
+    String testedTime = tested.toString().split('.')[0];
 
     return DataRow.byIndex(
       index: index,
@@ -187,25 +186,10 @@ class MyDS extends DataTableSource {
         DataCell(Text(sensorDto.sensorSn ?? '--')),
         DataCell(Text(sensorDto.channel ?? '--')),
         DataCell(Text(sensorMap[sensorDto.sensorType] ?? '--')),
-        DataCell(Text(sensorDto.tested ?? '--')),
+        DataCell(Text(testedTime)),
         DataCell(Text((sensorDto.ain ?? 0).toString())),
         DataCell(Text((sensorDto.temperature ?? 0).toString())),
         DataCell(Text((sensorDto.value ?? 0).toString())),
-        // DataCell(ButtonBar(
-        //   alignment: MainAxisAlignment.start,
-        //   children: <Widget>[
-        //     ButtonWithIcon(
-        //       label: '查询历史数据',
-        //       iconData: Icons.search,
-        //       onPressed: () => getHistoryData(collectorModel.sn),
-        //     ),
-        //     ButtonWithIcon(
-        //       label: '查询历史状态',
-        //       iconData: Icons.search,
-        //       onPressed: () => getHistoryStatus(collectorModel.sn),
-        //     ),
-        //   ],
-        // )),
       ],
     );
   }
@@ -214,7 +198,12 @@ class MyDS extends DataTableSource {
   bool get isRowCountApproximate => false;
 
   @override
-  int get rowCount => page.sum ?? 0;
+  int get rowCount {
+    if (page.sum != null) {
+      return page.sum! - 1;
+    }
+    return 0;
+  }
 
   @override
   int get selectedRowCount => 0;

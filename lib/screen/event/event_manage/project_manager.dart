@@ -1,8 +1,7 @@
-import 'dart:typed_data';
-
 import 'package:card_swiper/card_swiper.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:huahuan_web/api/image_api.dart';
 import 'package:huahuan_web/api/project_api.dart';
 import 'package:huahuan_web/constant/common_constant.dart';
@@ -23,6 +22,7 @@ import 'package:huahuan_web/util/utils.dart';
 import 'package:huahuan_web/widget/button/icon_button.dart';
 import 'package:huahuan_web/widget/common/common_card.dart';
 import 'package:provider/provider.dart';
+import 'package:searchable_listview/searchable_listview.dart';
 
 class ProjectView extends StatefulWidget {
   const ProjectView({Key? key}) : super(key: key);
@@ -149,7 +149,6 @@ class _ProjectViewState extends State<ProjectView> {
 
   Future getAllStates(int i) async {
     ResponseBodyApi responseBodyApi = await ProjectApi.getAllStates({"id": i});
-    print(responseBodyApi.data);
     if (responseBodyApi.code == 200) {
       setState(() {
         curAllStates = List.from(responseBodyApi.data['operatingMode'])
@@ -166,15 +165,17 @@ class _ProjectViewState extends State<ProjectView> {
     showDialog(
       context: context,
       builder: (BuildContext context) => Dialog(
+        clipBehavior: Clip.antiAliasWithSaveLayer,
         child: StateEdit(
           curState: curState,
           pid: curProject.id,
           bytes: bytes,
         ),
       ),
-    ).then((v) {
+    ).then((v) async {
       if (v != null) {
-        // _query();
+        await getAllStates(curProject.id!);
+        setState(() {});
       }
     });
   }
@@ -184,7 +185,6 @@ class _ProjectViewState extends State<ProjectView> {
     return loadData
         ? Container()
         : Scaffold(
-            // backgroundColor: Colors.white30,
             backgroundColor: Colors.white30,
             body: Padding(
               padding:
@@ -198,57 +198,74 @@ class _ProjectViewState extends State<ProjectView> {
                         backgroundColor: Colors.white,
                         child: Column(
                           children: [
-                            Text(
-                              '项目名称',
-                              style:
-                                  TextStyle(fontSize: 30, color: Colors.black),
-                            ),
                             Expanded(
-                              flex: 12,
-                              child: ListView(
-                                children: projects
-                                    .map((e) => Container(
-                                          margin: EdgeInsets.only(top: 20),
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 10, horizontal: 10),
-                                          decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(12)),
-                                              color: e.id == curProject.id
-                                                  ? Colors.amberAccent
-                                                  : CommonConstant
-                                                      .backgroundColor),
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                curProject = e;
-                                                getCurEvents(curProject.id!);
-                                                getAllStates(curProject.id!);
-                                              });
-                                            },
-                                            child: Flex(
-                                              direction: Axis.horizontal,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Expanded(
-                                                  child: Text(
-                                                    e.name ?? '--',
-                                                    style: TextStyle(
-                                                        fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                ),
-                                                Icon(Icons.arrow_right)
-                                              ],
-                                            ),
+                              child: SearchableList<ProjectModel>(
+                                initialList: projects,
+                                builder: (ProjectModel e) => Container(
+                                  margin: EdgeInsets.only(top: 20),
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 10),
+                                  decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(12)),
+                                      color: e.id == curProject.id
+                                          ? Colors.amberAccent
+                                          : CommonConstant.backgroundColor),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        curProject = e;
+                                        getCurEvents(curProject.id!);
+                                        getAllStates(curProject.id!);
+                                      });
+                                    },
+                                    child: Flex(
+                                      direction: Axis.horizontal,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            e.name ?? '--',
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
                                           ),
-                                        ))
+                                        ),
+                                        Icon(Icons.arrow_right)
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                filter: (value) => projects
+                                    .where(
+                                      (element) => element.name!
+                                          .toLowerCase()
+                                          .contains(value),
+                                    )
                                     .toList(),
+                                // emptyWidget: const EmptyView(),
+
+                                inputDecoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Colors.blue,
+                                      width: 1.0,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  labelText: "搜索项目",
+                                  fillColor: Colors.white,
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      color: Colors.blue,
+                                      width: 1.0,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
                               ),
-                            ),
+                            )
                           ],
                         ),
                       )),
@@ -347,8 +364,23 @@ class _ProjectViewState extends State<ProjectView> {
                                       ),
                                       Expanded(
                                         flex: 20,
-                                        child: Text(
-                                            curProject.description ?? '--'),
+                                        child: Container(
+                                          width: 800,
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.black,
+                                                  width: 0.5),
+                                              borderRadius:
+                                                  BorderRadius.circular(8)),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 5, vertical: 3),
+                                          child: Text(
+                                            curProject.description ?? '--',
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(fontSize: 12),
+                                            maxLines: 4,
+                                          ),
+                                        ),
                                       ),
                                       Spacer(
                                         flex: 1,
@@ -377,6 +409,14 @@ class _ProjectViewState extends State<ProjectView> {
                                     direction: Axis.vertical,
                                     children: [
                                       ///工况轮播图
+                                      Align(
+                                          alignment: Alignment.topLeft,
+                                          child: Text(
+                                            '工况',
+                                            style: TextStyle(
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.bold),
+                                          )),
                                       Expanded(
                                           flex: 8,
                                           child: Swiper(
@@ -402,6 +442,15 @@ class _ProjectViewState extends State<ProjectView> {
                                             control: SwiperControl(),
                                           )),
                                       Spacer(),
+                                      Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Text(
+                                          '病害',
+                                          style: TextStyle(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
                                       Expanded(
                                           flex: 8,
                                           child: Swiper(
@@ -625,7 +674,19 @@ class _StateOrDiseaseWidgetState extends State<StateOrDiseaseWidget> {
                 ),
                 Expanded(
                   flex: 20,
-                  child: Text(widget.projectStateModel.description ?? '--'),
+                  child: Container(
+                    width: 500,
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black, width: 0.5),
+                        borderRadius: BorderRadius.circular(6)),
+                    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                    child: Text(
+                      widget.projectStateModel.description ?? '--',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 12),
+                      maxLines: 4,
+                    ),
+                  ),
                 ),
                 Spacer(
                   flex: 1,

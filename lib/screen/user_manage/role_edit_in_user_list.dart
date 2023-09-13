@@ -29,9 +29,6 @@ class RoleEditInUserScreenState extends State<RoleEditInUserScreen> {
   void initState() {
     getAllRolesAccessible();
     if (widget.userInfo != null) {
-      print(widget.userInfo?.toJson());
-      print(widget.userInfo?.role?.toJson());
-      print(widget.userInfo?.role?.name);
       _userInfo = widget.userInfo;
       initValue = _userInfo?.role?.name;
     }
@@ -81,6 +78,7 @@ class RoleEditInUserScreenState extends State<RoleEditInUserScreen> {
               future: getAllRolesAccessible(),
               builder: (context, sy) {
                 return BrnExpandableGroup(
+                  initiallyExpanded: true,
                   title: '所拥有权限',
                   children: [
                     BrnPortraitRadioGroup.withSimpleList(
@@ -106,7 +104,7 @@ class RoleEditInUserScreenState extends State<RoleEditInUserScreen> {
       bottomNavigationBar: buttonBar,
     );
     return SizedBox(
-      width: 650,
+      width: 200,
       height: isDisplayDesktop(context) ? 350 : 500,
       child: result,
     );

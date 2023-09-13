@@ -72,6 +72,12 @@ class ProjectApi {
     return responseBodyApi;
   }
 
+  static Future<ResponseBodyApi> findById(data) async {
+    ResponseBodyApi responseBodyApi = await HttpUtil.post('/project/findById',
+        data: data, requestToken: true);
+    return responseBodyApi;
+  }
+
   static Future<ResponseBodyApi> addState(data) async {
     ResponseBodyApi responseBodyApi = await HttpUtil.post('/projectState/add',
         data: data, requestToken: true);

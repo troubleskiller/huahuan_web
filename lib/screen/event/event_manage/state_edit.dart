@@ -7,6 +7,7 @@ import 'package:huahuan_web/model/admin/project_state_model.dart';
 import 'package:huahuan_web/model/admin/role_model.dart';
 import 'package:huahuan_web/util/tro_util.dart';
 import 'package:huahuan_web/widget/button/icon_button.dart';
+import 'package:huahuan_web/widget/common/common_card.dart';
 import 'package:huahuan_web/widget/common/image_upload.dart';
 import 'package:huahuan_web/widget/input/TroInput.dart';
 
@@ -28,10 +29,15 @@ class StateEditState extends State<StateEdit> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   ProjectStateModel? _curState = ProjectStateModel();
   ProjectStateModelDto _dTo = ProjectStateModelDto();
-  List<Role> roles = [];
-  int? _singleSelectedIndex;
+  DateTime curTime = DateTime.now().copyWith(hour: 15, minute: 0, second: 0);
+  DateTime endTime = DateTime.now()
+      .copyWith(day: DateTime.now().day + 1, hour: 15, minute: 0, second: 0);
   String? statDate;
   String? endDate;
+  DateTime? curDto;
+  DateTime? endDto;
+  List<Role> roles = [];
+  int? _singleSelectedIndex;
 
   @override
   void initState() {
@@ -52,6 +58,8 @@ class StateEditState extends State<StateEdit> {
       statDate = _curState!.startTime ?? '';
       endDate = _curState!.endTime ?? '';
     }
+    statDate = curTime.toString();
+    endDate = endTime.toString();
     _dTo.projectId = widget.pid;
   }
 
@@ -67,6 +75,73 @@ class StateEditState extends State<StateEdit> {
     );
   }
 
+  Future<void> _selectDate(DateTime dateTime) async {
+    final DateTime? date = await showDatePicker(
+      cancelText: '取消',
+      confirmText: '确定',
+      helpText: '选择时间',
+      context: context,
+      initialDate: dateTime,
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+    ).then((value) async {
+      if (value != null) {
+        endDto = value;
+        await _selectTime(dateTime);
+      }
+    });
+
+    if (date == null) return;
+  }
+
+  Future<void> _selectTime(DateTime dateTime) async {
+    final TimeOfDay? time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(dateTime),
+    );
+
+    if (time == null) return;
+
+    endDto = endDto?.copyWith(hour: time.hour, minute: time.minute);
+
+    _dTo.endTime = endDto?.millisecondsSinceEpoch;
+  }
+
+  Future<void> _selectCurDate(DateTime dateTime) async {
+    final DateTime? date = await showDatePicker(
+      context: context,
+      initialDate: dateTime,
+      cancelText: '取消',
+      confirmText: '确定',
+      helpText: '选择时间',
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+    ).then((value) async {
+      if (value != null) {
+        curDto = value;
+        await _selectCurTime(dateTime);
+      }
+    });
+
+    if (date == null) return;
+  }
+
+  Future<void> _selectCurTime(DateTime dateTime) async {
+    final TimeOfDay? time = await showTimePicker(
+      context: context,
+      cancelText: '取消',
+      confirmText: '确定',
+      helpText: '选择时间',
+      initialTime: TimeOfDay.fromDateTime(dateTime),
+    );
+
+    if (time == null) return;
+
+    curDto = curDto?.copyWith(hour: time.hour, minute: time.minute);
+
+    _dTo.startTime = curDto?.millisecondsSinceEpoch;
+  }
+
   @override
   Widget build(BuildContext context) {
     var form = Form(
@@ -74,21 +149,36 @@ class StateEditState extends State<StateEdit> {
       child: Row(
         children: [
           GestureDetector(
-            child: widget.bytes != null
-                ? Image.memory(
-                    widget.bytes!,
-                    width: 300,
-                    height: 300,
-                  )
-                : Image.network(
-                    'https://t7.baidu.com/it/u=1595072465,3644073269&fm=193&f=GIF',
-                    fit: BoxFit.cover,
-                    width: 300,
-                    height: 300,
-                  ),
             onTap: () {
               _upload(stateModel: widget.curState);
             },
+            child: CommonCard(
+              backgroundColor: Colors.white,
+              child: Stack(
+                children: [
+                  widget.bytes != null
+                      ? Image.memory(
+                          widget.bytes!,
+                          width: 250,
+                          height: 250,
+                        )
+                      : Image.network(
+                          'https://t7.baidu.com/it/u=1595072465,3644073269&fm=193&f=GIF',
+                          fit: BoxFit.cover,
+                          width: 250,
+                          height: 250,
+                        ),
+                  Positioned(
+                      top: 80,
+                      left: 80,
+                      child: Icon(
+                        Icons.add,
+                        size: 100,
+                        color: Colors.white54,
+                      )),
+                ],
+              ),
+            ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,13 +195,14 @@ class StateEditState extends State<StateEdit> {
               ),
               TroInput(
                 value: _dTo.description,
-                label: '描述',
+                label: '工况描述',
+                maxLines: 4,
                 onSaved: (v) {
                   _dTo.description = v;
                 },
               ),
               Container(
-                margin: EdgeInsets.symmetric(horizontal: 10),
+                margin: EdgeInsets.symmetric(horizontal: 25),
                 child: Row(
                   children: [
                     Text(
@@ -145,33 +236,17 @@ class StateEditState extends State<StateEdit> {
                                       ),
                                     ],
                                   ),
-                                  Text(statDate.toString().split('.')[0]),
+                                  Text(DateTime.parse(statDate ?? '')
+                                      .toString()
+                                      .split('.')[0]),
                                 ],
                               ),
                             ),
                             onTap: () {
-                              BrnDatePicker.showDatePicker(context,
-                                  maxDateTime:
-                                      DateTime.parse('2024-01-01 00:00:00'),
-                                  minDateTime:
-                                      DateTime.parse('2019-01-01 00:00:00'),
-                                  initialDateTime:
-                                      DateTime.parse('2023-03-14 15:43:48'),
-                                  // 支持DateTimePickerMode.date、DateTimePickerMode.datetime、DateTimePickerMode.time
-                                  pickerMode: BrnDateTimePickerMode.datetime,
-                                  minuteDivider: 1,
-                                  pickerTitleConfig:
-                                      BrnPickerTitleConfig.Default,
-                                  dateFormat: 'yyyy年,MM月,dd日,HH时:mm分:ss秒',
-                                  onConfirm: (dateTime, list) {
-                                a(() {
-                                  statDate = dateTime.toString();
-                                  BrnToast.show(
-                                      "onConfirm:  $dateTime ", context);
-                                  _dTo.startTime =
-                                      dateTime.millisecondsSinceEpoch;
-                                });
-                              });
+                              _selectCurDate(curTime).then((value) => a(() {
+                                    statDate = curDto.toString();
+                                    curTime = curDto!;
+                                  }));
                             },
                           ),
                         ],
@@ -181,7 +256,7 @@ class StateEditState extends State<StateEdit> {
                 ),
               ),
               Container(
-                margin: EdgeInsets.symmetric(horizontal: 10),
+                margin: EdgeInsets.symmetric(horizontal: 25),
                 child: Row(
                   children: [
                     Text(
@@ -215,34 +290,41 @@ class StateEditState extends State<StateEdit> {
                                       ),
                                     ],
                                   ),
-                                  Text(endDate.toString().split('.')[0]),
+                                  Text(DateTime.parse(endDate ?? '')
+                                      .toString()
+                                      .split('.')[0]),
                                 ],
                               ),
                             ),
                             onTap: () {
-                              BrnDatePicker.showDatePicker(
-                                context,
-                                maxDateTime:
-                                    DateTime.parse('2024-01-01 00:00:00'),
-                                minDateTime:
-                                    DateTime.parse('2019-01-01 00:00:00'),
-                                initialDateTime:
-                                    DateTime.parse('2023-03-14 15:43:48'),
-                                // 支持DateTimePickerMode.date、DateTimePickerMode.datetime、DateTimePickerMode.time
-                                pickerMode: BrnDateTimePickerMode.datetime,
-                                minuteDivider: 1,
-                                pickerTitleConfig: BrnPickerTitleConfig.Default,
-                                dateFormat: 'yyyy年,MM月,dd日,HH时:mm分:ss秒',
-                                onConfirm: (dateTime, list) {
-                                  a(() {
-                                    endDate = dateTime.toString();
-                                    BrnToast.show(
-                                        "onConfirm:  $dateTime ", context);
-                                    _dTo.endTime =
-                                        dateTime.millisecondsSinceEpoch;
-                                  });
-                                },
-                              );
+                              _selectDate(endTime).then((value) => a(() {
+                                    endDate = endDto.toString();
+                                    endTime = endDto!;
+                                  }));
+
+                              // BrnDatePicker.showDatePicker(
+                              //   context,
+                              //   maxDateTime:
+                              //       DateTime.parse('2024-01-01 00:00:00'),
+                              //   minDateTime:
+                              //       DateTime.parse('2019-01-01 00:00:00'),
+                              //   initialDateTime:
+                              //       DateTime.parse('2023-03-14 15:43:48'),
+                              //   // 支持DateTimePickerMode.date、DateTimePickerMode.datetime、DateTimePickerMode.time
+                              //   pickerMode: BrnDateTimePickerMode.datetime,
+                              //   minuteDivider: 1,
+                              //   pickerTitleConfig: BrnPickerTitleConfig.Default,
+                              //   dateFormat: 'yyyy年,MM月,dd日,HH时:mm分:ss秒',
+                              //   onConfirm: (dateTime, list) {
+                              //     a(() {
+                              //       endDate = dateTime.toString();
+                              //       BrnToast.show(
+                              //           "onConfirm:  $dateTime ", context);
+                              //       _dTo.endTime =
+                              //           dateTime.millisecondsSinceEpoch;
+                              //     });
+                              //   },
+                              // );
                             },
                           ),
                         ],
@@ -251,42 +333,48 @@ class StateEditState extends State<StateEdit> {
                   ],
                 ),
               ),
+              SizedBox(
+                height: 10,
+              ),
               StatefulBuilder(builder: (context, set) {
                 return Column(
                   children: [
                     BrnRadioButton(
+                      childOnRight: false,
                       disable: widget.curState != null,
                       radioIndex: 1,
                       isSelected: _singleSelectedIndex == 1,
                       child: const Padding(
-                        padding: EdgeInsets.only(left: 5),
-                        child: Text(
-                          "工况",
-                        ),
+                        padding: EdgeInsets.only(left: 25, right: 60),
+                        child: Text("工况",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20)),
                       ),
                       onValueChangedAtIndex: (index, value) {
                         set(() {
                           _singleSelectedIndex = index;
                           _dTo.type = index;
-                          BrnToast.show("单选，选中第$index个", context);
                         });
                       },
                     ),
+                    SizedBox(
+                      height: 20,
+                    ),
                     BrnRadioButton(
+                      childOnRight: false,
                       disable: widget.curState != null,
                       radioIndex: 2,
                       isSelected: _singleSelectedIndex == 2,
                       child: const Padding(
-                        padding: EdgeInsets.only(left: 5),
-                        child: Text(
-                          "灾害",
-                        ),
+                        padding: EdgeInsets.only(left: 25, right: 60),
+                        child: Text("病害",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20)),
                       ),
                       onValueChangedAtIndex: (index, value) {
                         set(() {
                           _singleSelectedIndex = index;
                           _dTo.type = index;
-                          BrnToast.show("单选，选中第$index个", context);
                         });
                       },
                     ),
@@ -333,6 +421,7 @@ class StateEditState extends State<StateEdit> {
       ],
     );
     var result = Scaffold(
+      backgroundColor: Colors.white10,
       appBar: AppBar(
         title: Text(widget.curState == null ? '添加新工况' : '修改信息 '),
       ),
