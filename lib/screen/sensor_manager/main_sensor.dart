@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:huahuan_web/api/collector_api.dart';
-import 'package:huahuan_web/constant/common_constant.dart';
 import 'package:huahuan_web/model/admin/CollectorModel.dart';
+import 'package:huahuan_web/model/admin/project_model.dart';
 import 'package:huahuan_web/model/api/response_api.dart';
 import 'package:huahuan_web/model/application/event_model.dart';
 import 'package:huahuan_web/screen/item/collector_edit.dart';
 import 'package:huahuan_web/screen/item/data_source/common_data.dart';
-import 'package:huahuan_web/screen/sensor_manager/sensorTest.dart';
-import 'package:huahuan_web/util/tro_util.dart';
-import 'package:huahuan_web/widget/dialog/tro_dialog.dart';
+import 'package:huahuan_web/widget/button/buttons.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
@@ -27,7 +25,7 @@ class MainSensor extends StatefulWidget {
 class MainSensorState extends State<MainSensor> {
   late EventModel eventModel;
 
-  List<SensorTest> projects = [];
+  List<ProjectModel> projects = [];
 
   @override
   void initState() {
@@ -40,7 +38,7 @@ class MainSensorState extends State<MainSensor> {
   Future init() async {
     ResponseBodyApi responseBodyApi = await CollectorApi.getAll();
     projects = List.from(responseBodyApi.data)
-        .map((e) => SensorTest.fromJson(e))
+        .map((e) => ProjectModel.fromJson(e))
         .toList();
   }
 
@@ -66,6 +64,7 @@ class MainSensorState extends State<MainSensor> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white54,
       body: Column(
         children: [
           Expanded(
@@ -75,27 +74,25 @@ class MainSensorState extends State<MainSensor> {
                 children: projects
                     .map(
                       (e) => SensorContent(
-                        sensorTest: e,
+                        project: e,
                       ),
                     )
                     .toList(),
               ),
             ),
           ),
-          GestureDetector(
-            child: Container(
-              child: Text('添加'),
-              padding: EdgeInsets.symmetric(
-                vertical: 10,
-                horizontal: 20,
-              ),
-              decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black, width: 1)),
-            ),
-            onTap: () {
+          Container(
+            height: 12,
+          ),
+          ButtonWithIcons.add(
+            context,
+            () {
               _edit();
             },
-          )
+          ),
+          Container(
+            height: 12,
+          ),
         ],
       ),
     );
@@ -103,192 +100,16 @@ class MainSensorState extends State<MainSensor> {
 // Widget _buildProjectList
 }
 
-class SensorContent extends StatelessWidget {
-  final SensorTest sensorTest;
+class SensorContent extends StatefulWidget {
+  final ProjectModel project;
 
-  const SensorContent({Key? key, required this.sensorTest}) : super(key: key);
+  const SensorContent({Key? key, required this.project}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      margin: EdgeInsets.symmetric(vertical: 20),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.black)),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(sensorTest.name ?? '-'),
-          ...(sensorTest.list ?? [])
-              .map((e) => SensorData(
-                    sensorP: e,
-                  ))
-              .toList()
-        ],
-      ),
-    );
-  }
+  State<SensorContent> createState() => _SensorContentState();
 }
 
-class SensorData extends StatefulWidget {
-  final SensorP sensorP;
-
-  const SensorData({Key? key, required this.sensorP}) : super(key: key);
-
-  @override
-  State<SensorData> createState() => _SensorDataState();
-}
-
-class _SensorDataState extends State<SensorData> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      margin: EdgeInsets.symmetric(vertical: 20),
-      width: double.infinity,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.black)),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(widget.sensorP.name ?? '-'),
-              GestureDetector(
-                child: Container(
-                  child: Text('添加'),
-                  padding: EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 20,
-                  ),
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black, width: 1)),
-                ),
-                onTap: () {
-                  _edit(
-                      isUpdate: false,
-                      sensorModel: CollectorModel(
-                        projectId: widget.sensorP.id,
-                      ));
-                },
-              )
-            ],
-          ),
-          (widget.sensorP.collectors ?? []).isNotEmpty
-              ? Builder(builder: (context) {
-                  CollectorSource cur = CollectorSource(
-                    commonData: widget.sensorP.collectors ?? [],
-                    context: context,
-                    edit: (CollectorModel? sensorModel) {
-                      _edit(sensorModel: sensorModel, isUpdate: true);
-                    },
-                  );
-                  return Container(
-                    height: ((widget.sensorP.collectors ?? []).length + 1) * 60,
-                    child: SfDataGrid(
-                      columnWidthCalculationRange:
-                          ColumnWidthCalculationRange.allRows,
-                      gridLinesVisibility: GridLinesVisibility.both,
-                      headerGridLinesVisibility: GridLinesVisibility.both,
-                      selectionMode: SelectionMode.single,
-                      navigationMode: GridNavigationMode.cell,
-                      source: cur,
-                      columnWidthMode: ColumnWidthMode.fill,
-                      columns: [
-                        GridColumn(
-                          columnName: 'name',
-                          label: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0),
-                            alignment: Alignment.center,
-                            child: Text(
-                              '采集仪名称',
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-                        GridColumn(
-                          columnName: 'sn',
-                          label: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0),
-                            alignment: Alignment.center,
-                            child: Text(
-                              '采集仪编号',
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-                        GridColumn(
-                          columnName: 'type',
-                          label: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0),
-                            alignment: Alignment.center,
-                            child: Text(
-                              '采集仪类型',
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-                        GridColumn(
-                          columnName: 'cycle',
-                          label: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0),
-                            alignment: Alignment.center,
-                            child: Text(
-                              '采集周期',
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-                        GridColumn(
-                          columnName: 'port',
-                          label: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0),
-                            alignment: Alignment.center,
-                            child: Text(
-                              '采集端口',
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-                        GridColumn(
-                          columnName: 'userId',
-                          label: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0),
-                            alignment: Alignment.center,
-                            child: Text(
-                              '用户id',
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-                        GridColumn(
-                          width: 200,
-                          columnWidthMode: ColumnWidthMode.none,
-                          columnName: 'operation',
-                          label: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0),
-                            alignment: Alignment.center,
-                            child: Text(
-                              '操作',
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                })
-              : Container(),
-        ],
-      ),
-    );
-  }
-
+class _SensorContentState extends State<SensorContent> {
   _edit({CollectorModel? sensorModel, required bool isUpdate}) {
     showDialog(
       context: context,
@@ -304,70 +125,153 @@ class _SensorDataState extends State<SensorData> {
       }
     });
   }
-}
 
-class SensorLine extends StatefulWidget {
-  final CollectorModel data;
-
-  const SensorLine({Key? key, required this.data}) : super(key: key);
-
-  @override
-  State<SensorLine> createState() => _SensorLineState();
-}
-
-class _SensorLineState extends State<SensorLine> {
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text(widget.data.name ?? '--'),
-
-        Text(widget.data.sn ?? '--'),
-
-        Text(sensorMap[widget.data.collectorTypeId] ?? '--'),
-        Text(widget.data.downString ?? '--'),
-        Text(widget.data.cycle.toString() ?? '--'),
-        Text(widget.data.userId ?? '--'),
-
-        Text(widget.data.port.toString() ?? '--'),
-
-        //读取毫秒级的时间，再通过拆字符串得到精确到秒的时间。
-        ButtonBar(
-          alignment: MainAxisAlignment.start,
-          children: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () {
-                _edit(sensorModel: widget.data);
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      margin: EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.black),
+          color: Colors.white10),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(widget.project.name ?? '-'),
+          ...(widget.project.events ?? []).map((e) {
+            CollectorSource cur = CollectorSource(
+              commonData: e.collectors ?? [],
+              context: context,
+              edit: (CollectorModel? sensorModel) {
+                _edit(sensorModel: sensorModel, isUpdate: true);
               },
-            ),
-            IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () {
-                troConfirm(context, '确认删除', (context) async {
-                  var result =
-                      await CollectorApi.delete('{"id": ${widget.data.id}}');
-                  if (result.code == 200) {
-                    TroUtils.message('success');
-                  }
-                });
+            );
+            return ExpansionTile(
+              title: Row(
+                children: [
+                  Text(e.name ?? '-'),
+                  Spacer(),
+                  ButtonWithIcons.add(
+                    context,
+                    () {
+                      _edit(
+                          isUpdate: false,
+                          sensorModel: CollectorModel(
+                            projectId: e.id,
+                          ));
+                    },
+                  ),
+                ],
+              ),
+              onExpansionChanged: (value) {
+                if ((e.collectors ?? []).isEmpty) {
+                  return;
+                }
               },
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  _edit({CollectorModel? sensorModel}) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => Dialog(
-        child: CollectorEdit(
-          collectorModel: sensorModel,
-          isUpdate: true,
-        ),
+              children: (e.collectors ?? []).isEmpty
+                  ? <Widget>[]
+                  : [
+                      Container(
+                        height: ((e.collectors ?? []).length + 1) * 60,
+                        child: SfDataGrid(
+                          columnWidthCalculationRange:
+                              ColumnWidthCalculationRange.allRows,
+                          gridLinesVisibility: GridLinesVisibility.both,
+                          headerGridLinesVisibility: GridLinesVisibility.both,
+                          selectionMode: SelectionMode.single,
+                          navigationMode: GridNavigationMode.cell,
+                          source: cur,
+                          columnWidthMode: ColumnWidthMode.fill,
+                          columns: [
+                            GridColumn(
+                              columnName: 'name',
+                              label: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  '采集仪名称',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                            GridColumn(
+                              columnName: 'sn',
+                              label: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  '采集仪编号',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                            GridColumn(
+                              columnName: 'type',
+                              label: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  '采集仪类型',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                            GridColumn(
+                              columnName: 'cycle',
+                              label: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  '采集周期',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                            GridColumn(
+                              columnName: 'port',
+                              label: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  '采集端口',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                            GridColumn(
+                              columnName: 'userId',
+                              label: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  '用户id',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                            GridColumn(
+                              width: 200,
+                              columnWidthMode: ColumnWidthMode.none,
+                              columnName: 'operation',
+                              label: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  '操作',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+            );
+          }).toList()
+        ],
       ),
-    ).then((v) {});
+    );
   }
 }

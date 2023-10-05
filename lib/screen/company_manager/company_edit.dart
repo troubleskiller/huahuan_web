@@ -61,7 +61,7 @@ class CompanyEditState extends State<CompanyEdit> {
           .toList();
     }
     BaseOptions options = BaseOptions(
-      baseUrl: 'http://huahuan.f3322.net:14500',
+      baseUrl: 'http://test.shhhcl.com/TESTAPI',
       connectTimeout: 20000,
       receiveTimeout: 20000,
       sendTimeout: 20000,
@@ -206,7 +206,7 @@ class CompanyEditState extends State<CompanyEdit> {
               });
 
               BaseOptions options = BaseOptions(
-                baseUrl: 'http://huahuan.f3322.net:14500',
+                baseUrl: 'http://test.shhhcl.com/TESTAPI',
                 connectTimeout: 200000,
                 receiveTimeout: 200000,
                 sendTimeout: 200000,

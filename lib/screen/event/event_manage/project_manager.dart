@@ -96,7 +96,10 @@ class _ProjectViewState extends State<ProjectView> {
                           .toList(),
                       nPs: projects,
                     );
-                    Utils.openTab(14);
+                    int? id = StoreUtil.getMenuList()
+                        .singleWhere((element) => element.name == '数据查看')
+                        .id;
+                    Utils.openTab(id!);
                     layoutState.setState(() {});
                     if (itemManagerState != null) {
                       itemManagerState!.setState(() {});
@@ -121,7 +124,7 @@ class _ProjectViewState extends State<ProjectView> {
           .toList();
     }
     BaseOptions options = BaseOptions(
-      baseUrl: 'http://huahuan.f3322.net:14500',
+      baseUrl: 'http://test.shhhcl.com/TESTAPI',
       connectTimeout: 20000,
       receiveTimeout: 20000,
       sendTimeout: 20000,
@@ -558,7 +561,7 @@ class _StateOrDiseaseWidgetState extends State<StateOrDiseaseWidget> {
           .toList();
     }
     BaseOptions options = BaseOptions(
-      baseUrl: 'http://huahuan.f3322.net:14500',
+      baseUrl: 'http://test.shhhcl.com/TESTAPI',
       connectTimeout: 20000,
       receiveTimeout: 20000,
       sendTimeout: 20000,

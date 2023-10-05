@@ -2,7 +2,7 @@ mall:
   profiles:
     active: test
   api:
-    baseUrl: http://huahuan.f3322.net:14500/TESTAPI
+    baseUrl: http://test.shhhcl.com/TESTAPI
     ##baseUrl: http://192.168.31.213:14500
     connectTimeout: 10000
     receiveTimeout: 3000

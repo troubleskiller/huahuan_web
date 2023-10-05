@@ -271,12 +271,21 @@ class ItemManagerState extends State<ItemManager> {
     collectors = List.from(curCollectors.data)
         .map((e) => CollectorModel.fromJson(e))
         .toList();
-    if (responseBodyApi.code == 200) {
-      ans = List.from(responseBodyApi.data)
-          .map((e) => DateModel.fromJson(e))
+    if (dataRequest.type == 5) {
+      ceXies = List.from(responseBodyApi.data)
+          .map((e) => DateModel2.fromJson(e))
           .toList();
       a = false;
       setState(() {});
+      return;
+    } else {
+      if (responseBodyApi.code == 200) {
+        ans = List.from(responseBodyApi.data)
+            .map((e) => DateModel.fromJson(e))
+            .toList();
+        a = false;
+        setState(() {});
+      }
     }
   }
 
@@ -691,14 +700,18 @@ class ItemManagerState extends State<ItemManager> {
                                     9
                                   ].contains(controller.nowEvent?.projectTypeId)
                                       ? _buildCeXieCells()
-                                      : _buildDataCells(),
+                                      : controller.nowEvent?.projectTypeId == 5
+                                          ? _buildQinXieCells()
+                                          : _buildDataCells(),
                                   [
                                     4,
                                     8,
                                     9
                                   ].contains(controller.nowEvent?.projectTypeId)
                                       ? _buildCeXieChart()
-                                      : _buildLineChart(),
+                                      : controller.nowEvent?.projectTypeId == 5
+                                          ? _buildQinXieChart()
+                                          : _buildLineChart(),
                                 ],
                               ),
                             ),
@@ -711,7 +724,7 @@ class ItemManagerState extends State<ItemManager> {
                                     name: '下载报表',
                                     iconWidget: Icon(Icons.download),
                                     onTap: () {
-                                      [4, 8, 9].contains(controller
+                                      [4, 5, 8, 9].contains(controller
                                               .nowEvent?.projectTypeId)
                                           ? downLoadCeXie()
                                           : downLoad();
@@ -1084,6 +1097,466 @@ class ItemManagerState extends State<ItemManager> {
         ],
       );
     });
+  }
+
+  Widget _buildQinXieCells() {
+    QinXieDataSource cur = QinXieDataSource(commonData: ceXies);
+    return StatefulBuilder(builder: (context, sse) {
+      List<MultiSelectItem> conditions = [
+        MultiSelectItem('sn', '测点编号', isChecked: cexieTableMap['sn'] ?? true),
+        MultiSelectItem('name', '测点名称',
+            isChecked: cexieTableMap['name'] ?? true),
+        MultiSelectItem('location', '位置',
+            isChecked: cexieTableMap['location'] ?? true),
+        MultiSelectItem('curShapeX', '本期管型X',
+            isChecked: cexieTableMap['curShapeX'] ?? true),
+        MultiSelectItem('curShapeY', '本期管型Y',
+            isChecked: cexieTableMap['curShapeY'] ?? true),
+        MultiSelectItem('refShapeX', '参考管型X',
+            isChecked: cexieTableMap['refShapeX'] ?? true),
+        MultiSelectItem('refShapeY', '参考管型Y',
+            isChecked: cexieTableMap['refShapeY'] ?? true),
+        MultiSelectItem('curShapeOffsetX', '本期变化X',
+            isChecked: cexieTableMap['curShapeOffsetX'] ?? true),
+        MultiSelectItem('curShapeOffsetY', '本期变化Y',
+            isChecked: cexieTableMap['curShapeOffsetY'] ?? true),
+        MultiSelectItem('curValueX', '累计变化X',
+            isChecked: cexieTableMap['curValueX'] ?? true),
+        MultiSelectItem('curValueY', '累计变化Y',
+            isChecked: cexieTableMap['curValueY'] ?? true),
+      ];
+      return Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+                child: Container(
+              height: 500,
+              child: SfDataGrid(
+                columnWidthCalculationRange:
+                    ColumnWidthCalculationRange.visibleRows,
+                gridLinesVisibility: GridLinesVisibility.both,
+                headerGridLinesVisibility: GridLinesVisibility.both,
+                onCellDoubleTap: (data) async {
+                  DateModel2 dateModel = ceXies.singleWhere((element) =>
+                      element.name ==
+                      cur.dataGridRows[data.rowColumnIndex.rowIndex - 1]
+                          .getCells()[0]
+                          .value);
+                  ResponseBodyApi res =
+                      await SensorApi.selectOneById('{"id": ${dateModel.id}}');
+                  SensorHoleModel sensorHole =
+                      SensorHoleModel.fromJson(res.data);
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) => Dialog(
+                      child: SensorMulti(
+                        sn: dateModel.sn ?? '-',
+                        curTime: '${dateModel.curTime}',
+                        curDataX: '${dateModel.curValueX}',
+                        curDataY: '${dateModel.curValueY}',
+                        refDataX: '${dateModel.refValueX}',
+                        refDataY: '${dateModel.refValueY}',
+                        initTime: '${sensorHole.initTime}',
+                        initData: '${sensorHole.initValue}',
+                      ),
+                    ),
+                  ).then((v) {
+                    if (v != null) {
+                      setState(() {});
+                    }
+                  });
+                },
+                selectionMode: SelectionMode.single,
+                navigationMode: GridNavigationMode.cell,
+                source: cur,
+                columnWidthMode: ColumnWidthMode.fill,
+                columns: [
+                  GridColumn(
+                    visible: cexieTableMap['sn'] ?? true,
+                    columnName: 'sn',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '测点编号',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: cexieTableMap['name'] ?? true,
+                    columnName: 'name',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '测点名称',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: cexieTableMap['location'] ?? true,
+                    columnName: 'location',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '位置',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: cexieTableMap['curShapeX'] ?? true,
+                    columnName: 'curShapeX',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '本期管型X',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: cexieTableMap['curShapeY'] ?? true,
+                    columnName: 'curShapeY',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '本期管型Y',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: cexieTableMap['refShapeX'] ?? true,
+                    columnName: 'refShapeX',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '参考管型X',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: cexieTableMap['refShapeY'] ?? true,
+                    columnName: 'refShapeY',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '参考管型Y',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: cexieTableMap['curShapeOffsetX'] ?? true,
+                    columnName: 'curShapeOffsetX',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '本期变化X',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: cexieTableMap['curShapeOffsetY'] ?? true,
+                    columnName: 'curShapeOffsetY',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '本期变化Y',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: cexieTableMap['curValueX'] ?? true,
+                    columnName: 'curValueX',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '累计变化X',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  GridColumn(
+                    visible: cexieTableMap['curValueY'] ?? true,
+                    columnName: 'curValueY',
+                    label: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '累计变化Y',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )),
+          ),
+          ButtonWithIcon(
+            iconData: Icons.edit_note,
+            label: '选择展示的列表',
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (_) => StatefulBuilder(
+                        builder: (context, state) {
+                          return BrnMultiSelectDialog(
+                              isClose: true,
+                              title: '请选择展示的列表',
+                              conditions: conditions,
+                              submitText: '提交',
+                              isCustomFollowScroll: true,
+                              onItemClick: (BuildContext context, int index) {
+                                cexieTableMap[conditions[index].code] =
+                                    conditions[index].isChecked;
+                                state(() {});
+                              },
+                              onSubmitClick: (data) {
+                                sse(() {});
+                                return true;
+                              });
+                        },
+                      ));
+            },
+          )
+        ],
+      );
+    });
+  }
+
+  Widget _buildQinXieChart() {
+    return Container(
+        height: 300,
+        padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
+        child: SfCartesianChart(
+            zoomPanBehavior: ZoomPanBehavior(
+              enableMouseWheelZooming: true,
+              zoomMode: ZoomMode.x,
+              maximumZoomLevel: 0.5,
+            ),
+            onZoomStart: (ZoomPanArgs args) {
+              print(args.currentZoomFactor);
+              print(args.currentZoomPosition);
+            },
+            onZoomEnd: (ZoomPanArgs args) {
+              print(args.currentZoomFactor);
+              print(args.currentZoomPosition);
+            },
+            primaryXAxis: CategoryAxis(
+                isVisible: true,
+                //显示时间轴置顶
+                opposedPosition: true,
+                //时间轴反转
+                isInversed: true,
+                autoScrollingMode: AutoScrollingMode.start),
+            //标题
+            title: ChartTitle(text: '折线图测试'),
+            //选中类型
+            selectionType: SelectionType.series,
+            //时间轴与值轴换位
+            isTransposed: true,
+            //选中手势
+            selectionGesture: ActivationMode.singleTap,
+            //图示
+            legend: Legend(
+                isVisible: true,
+                iconHeight: 10,
+                iconWidth: 10,
+                //切换系列显示
+                toggleSeriesVisibility: true,
+                //图示显示位置
+                position: LegendPosition.bottom,
+                overflowMode: LegendItemOverflowMode.wrap,
+                //图示左右位置
+                alignment: ChartAlignment.center),
+            //十字架
+            crosshairBehavior: CrosshairBehavior(
+              lineType: CrosshairLineType.horizontal, //横向选择指示器
+              enable: true,
+              shouldAlwaysShow: false, //十字架始终显示(横向选择指示器)
+              activationMode: ActivationMode.singleTap,
+            ),
+            //跟踪球
+            trackballBehavior: TrackballBehavior(
+              lineType: TrackballLineType.vertical,
+              //纵向选择指示器
+              activationMode: ActivationMode.singleTap,
+              enable: true,
+              tooltipAlignment: ChartAlignment.near,
+              //工具提示位置(顶部)
+              shouldAlwaysShow: true,
+              //跟踪球始终显示(纵向选择指示器)
+              tooltipDisplayMode:
+                  TrackballDisplayMode.groupAllPoints, //工具提示模式(全部分组)
+            ),
+            //打开工具提示
+            tooltipBehavior: TooltipBehavior(
+              enable: true,
+              shared: true,
+              activationMode: ActivationMode.singleTap,
+            ),
+            //SplineSeries为曲线 LineSeries为折线ChartSeries
+            series: <LineSeries<DateModel2, num>>[
+              LineSeries<DateModel2, num>(
+                name: '本期管形X',
+                dataSource: ceXies,
+                yValueMapper: (DateModel2 data, num _) => data.curValueX,
+                xValueMapper: (DateModel2 data, num _) =>
+                    int.tryParse(data.location ?? ''),
+                //显示数据标签
+                dataLabelSettings: DataLabelSettings(
+                  isVisible: false,
+                  // alignment: ChartAlignment.near,
+                  // labelAlignment: ChartDataLabelAlignment.outer,
+                  // textStyle: ChartTextStyle(
+                  //   fontSize: 14,
+                  // ),
+                ),
+                //修饰数据点(显示圆圈)
+                markerSettings: MarkerSettings(isVisible: true),
+              ),
+              LineSeries<DateModel2, num>(
+                name: '本期管形Y',
+                dataSource: ceXies,
+                yValueMapper: (DateModel2 data, num _) => data.curValueY,
+                xValueMapper: (DateModel2 data, num _) =>
+                    int.tryParse(data.location ?? ''),
+                //显示数据标签
+                dataLabelSettings: DataLabelSettings(
+                  isVisible: false,
+                  // alignment: ChartAlignment.near,
+                  // labelAlignment: ChartDataLabelAlignment.outer,
+                  // textStyle: ChartTextStyle(
+                  //   fontSize: 14,
+                  // ),
+                ),
+                //修饰数据点(显示圆圈)
+                markerSettings: MarkerSettings(isVisible: true),
+              ),
+              LineSeries<DateModel2, num>(
+                name: '参考管形X',
+                dataSource: ceXies,
+                yValueMapper: (DateModel2 data, num _) => data.refValueX,
+                xValueMapper: (DateModel2 data, num _) =>
+                    int.tryParse(data.location ?? ''),
+                //显示数据标签
+                dataLabelSettings: DataLabelSettings(
+                  isVisible: false,
+                  // alignment: ChartAlignment.near,
+                  // labelAlignment: ChartDataLabelAlignment.outer,
+                  // textStyle: ChartTextStyle(
+                  //   fontSize: 14,
+                  // ),
+                ),
+                //修饰数据点(显示圆圈)
+                markerSettings: MarkerSettings(isVisible: true),
+              ),
+              LineSeries<DateModel2, num>(
+                name: '参考管形Y',
+                dataSource: ceXies,
+                yValueMapper: (DateModel2 data, num _) => data.refValueY,
+                xValueMapper: (DateModel2 data, num _) =>
+                    int.tryParse(data.location ?? ''),
+                //显示数据标签
+                dataLabelSettings: DataLabelSettings(
+                  isVisible: false,
+                  // alignment: ChartAlignment.near,
+                  // labelAlignment: ChartDataLabelAlignment.outer,
+                  // textStyle: ChartTextStyle(
+                  //   fontSize: 14,
+                  // ),
+                ),
+                //修饰数据点(显示圆圈)
+                markerSettings: MarkerSettings(isVisible: true),
+              ),
+              LineSeries<DateModel2, num>(
+                name: '本期变化X',
+                dataSource: ceXies,
+                yValueMapper: (DateModel2 data, num _) => data.curOffsetX,
+                xValueMapper: (DateModel2 data, num _) =>
+                    int.tryParse(data.location ?? ''),
+                //显示数据标签
+                dataLabelSettings: DataLabelSettings(
+                  isVisible: false,
+                  // alignment: ChartAlignment.near,
+                  // labelAlignment: ChartDataLabelAlignment.outer,
+                  // textStyle: ChartTextStyle(
+                  //   fontSize: 14,
+                  // ),
+                ),
+                //修饰数据点(显示圆圈)
+                markerSettings: MarkerSettings(isVisible: true),
+              ),
+              LineSeries<DateModel2, num>(
+                name: '本期变化Y',
+                dataSource: ceXies,
+                yValueMapper: (DateModel2 data, num _) => data.curOffsetY,
+                xValueMapper: (DateModel2 data, num _) =>
+                    int.tryParse(data.location ?? ''),
+                //显示数据标签
+                dataLabelSettings: DataLabelSettings(
+                  isVisible: false,
+                  // alignment: ChartAlignment.near,
+                  // labelAlignment: ChartDataLabelAlignment.outer,
+                  // textStyle: ChartTextStyle(
+                  //   fontSize: 14,
+                  // ),
+                ),
+                //修饰数据点(显示圆圈)
+                markerSettings: MarkerSettings(isVisible: true),
+              ),
+              LineSeries<DateModel2, num>(
+                name: '累计变化X',
+                dataSource: ceXies,
+                yValueMapper: (DateModel2 data, num _) => data.offSetX,
+                xValueMapper: (DateModel2 data, num _) =>
+                    int.tryParse(data.location ?? ''),
+                //显示数据标签
+                dataLabelSettings: DataLabelSettings(
+                  isVisible: false,
+                  // alignment: ChartAlignment.near,
+                  // labelAlignment: ChartDataLabelAlignment.outer,
+                  // textStyle: ChartTextStyle(
+                  //   fontSize: 14,
+                  // ),
+                ),
+                //修饰数据点(显示圆圈)
+                markerSettings: MarkerSettings(isVisible: true),
+              ),
+              LineSeries<DateModel2, num>(
+                name: '累计变化Y',
+                dataSource: ceXies,
+                yValueMapper: (DateModel2 data, num _) => data.offSetY,
+                xValueMapper: (DateModel2 data, num _) =>
+                    int.tryParse(data.location ?? ''),
+                //显示数据标签
+                dataLabelSettings: DataLabelSettings(
+                  isVisible: false,
+                  // alignment: ChartAlignment.near,
+                  // labelAlignment: ChartDataLabelAlignment.outer,
+                  // textStyle: ChartTextStyle(
+                  //   fontSize: 14,
+                  // ),
+                ),
+                //修饰数据点(显示圆圈)
+                markerSettings: MarkerSettings(isVisible: true),
+              ),
+            ]));
   }
 
   Widget _buildCeXieCells() {

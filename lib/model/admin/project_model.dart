@@ -1,3 +1,5 @@
+import 'CollectorModel.dart';
+
 /// id : 69
 /// name : "新节点测试"
 /// projectTypeId : 1
@@ -22,6 +24,7 @@ class ProjectModel {
     this.location,
     this.warningId,
     this.events,
+    this.collectors,
   });
 
   ProjectModel.fromJson(dynamic json) {
@@ -38,6 +41,12 @@ class ProjectModel {
     events = json['list'] == null
         ? []
         : List.from(json['list']).map((e) => ProjectModel.fromJson(e)).toList();
+    if (json['collectors'] != null) {
+      collectors = [];
+      json['collectors'].forEach((v) {
+        collectors?.add(CollectorModel.fromJson(v));
+      });
+    }
   }
   int? id;
   String? name;
@@ -50,6 +59,7 @@ class ProjectModel {
   String? location;
   dynamic warningId;
   List<ProjectModel>? events;
+  List<CollectorModel>? collectors;
   ProjectModel copyWith({
     int? id,
     String? name,
@@ -86,6 +96,9 @@ class ProjectModel {
     map['parentProjectId'] = parentProjectId;
     map['location'] = location;
     map['warningId'] = warningId;
+    if (collectors != null) {
+      map['collectors'] = collectors?.map((v) => v.toJson()).toList();
+    }
     return map;
   }
 }

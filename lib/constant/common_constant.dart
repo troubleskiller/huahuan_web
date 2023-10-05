@@ -69,7 +69,7 @@ Map<String, int> eventTypeF = {
   '收敛': 7,
   '自动测斜': 8,
   '滑动测斜': 9,
-  '	支撑轴力': 10,
+  '支撑轴力': 10,
 };
 
 Map<int, int> timeMap = {

@@ -56,7 +56,7 @@ class LayoutState extends State<Layout> {
           .toList();
     }
     BaseOptions options = BaseOptions(
-      baseUrl: 'http://huahuan.f3322.net:14500',
+      baseUrl: 'http://test.shhhcl.com/TESTAPI',
       connectTimeout: 20000,
       receiveTimeout: 20000,
       sendTimeout: 20000,

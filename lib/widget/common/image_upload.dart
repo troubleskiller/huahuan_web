@@ -50,7 +50,7 @@ class ImageUploadState extends State<ImageUpload> {
     });
 
     BaseOptions options = BaseOptions(
-      baseUrl: 'http://huahuan.f3322.net:14500',
+      baseUrl: 'http://test.shhhcl.com/TESTAPI',
       connectTimeout: 200000,
       receiveTimeout: 200000,
       sendTimeout: 200000,

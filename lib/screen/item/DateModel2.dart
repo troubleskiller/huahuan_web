@@ -14,6 +14,8 @@ class DateModel2 {
     this.curShapeY,
     this.refShapeX,
     this.refShapeY,
+    this.curOffsetX,
+    this.curOffsetY,
     this.curShapeOffsetX,
     this.curShapeOffsetY,
     this.shapeOffsetX,
@@ -31,7 +33,11 @@ class DateModel2 {
     refValueY = json['refValueY'];
     curTime = json['curTime'];
     refTime = json['refTime'];
+    offSetX = json['offSetX'];
+    offSetY = json['offSetY'];
     curShapeX = json['curShapeX'];
+    curOffsetY = json['curOffsetY'];
+    curOffsetX = json['curOffsetX'];
     curShapeY = json['curShapeY'];
     refShapeX = json['refShapeX'];
     refShapeY = json['refShapeY'];
@@ -50,6 +56,10 @@ class DateModel2 {
   num? curValueY;
   num? refValueX;
   num? refValueY;
+  num? offSetX;
+  num? offSetY;
+  num? curOffsetX;
+  num? curOffsetY;
   num? curShapeX;
   num? curShapeY;
   num? refShapeX;
@@ -73,6 +83,10 @@ class DateModel2 {
     map['refValueY'] = refValueY;
     map['curShapeX'] = curShapeX;
     map['curShapeY'] = curShapeY;
+    map['offSetX'] = offSetX;
+    map['offSetY'] = offSetY;
+    map['curOffsetX'] = curOffsetX;
+    map['curOffsetY'] = curOffsetY;
     map['refShapeX'] = refShapeX;
     map['refShapeY'] = refShapeY;
     map['curShapeOffsetX'] = curShapeOffsetX;
